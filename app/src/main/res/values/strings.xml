@@ -1,0 +1,47 @@
+<resources>
+    <string name="app_name">Assisto</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_username">Username</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Login</string>
+    <string name="action_sign_in_short">Login</string>
+    <string name="error_invalid_email">This username is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">Username or Password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
+    <string name="error_network_error">Oops! Something went wrong try again.</string>
+
+    <!--Navigation bar-->
+    <string name="nav_hello_msg">Hello </string>
+
+
+    <string name="title_activity_dash_board">DashBoardActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <string name="scan_button">Scan</string>
+
+
+    <!--++ Vendor ++-->
+    <!--++ form ++-->
+    <string name="prompt_vendor_name">Vendor Name</string>
+    <string name="prompt_vendor_id">Short Name/ID of vendor</string>
+    <string name="prompt_vendor_addr1">Address Line 1 </string>
+    <string name="prompt_vendor_addr2">Address Line 2</string>
+    <string name="prompt_vendor_state">State</string>
+    <string name="prompt_vendor_city">City/Town</string>
+    <string name="prompt_vendor_pincode">Pincode</string>
+    <string name="prompt_vendor_contact">Contact No.</string>
+    <string name="prompt_vendor_cst">CST Number</string>
+    <string name="prompt_vendor_tin">TIN Number</string>
+    <string name="prompt_vendor_gst">GST Number</string>
+    <string name="prompt_vendor_remarks">Remarks</string>
+    <string name="submit">Submit</string>
+    <!--++ form ++ -->
+    <!--++ Vendor ++-->
+</resources>
