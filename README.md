@@ -1,2 +1,2 @@
 # assisto-distributor
-Android application for distribitors.
+Android application for distributors.
