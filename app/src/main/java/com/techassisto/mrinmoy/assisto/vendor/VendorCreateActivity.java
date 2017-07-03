@@ -173,8 +173,8 @@ public class VendorCreateActivity extends DashBoardActivity {
     }
 
     /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
+     * Represents an asynchronous task used to create
+     * a new vendor.
      */
     public class VendorSubmitTask extends AsyncTask<Void, Void, Integer> {
         private static final String TAG = "Assisto.VSubmitTask";

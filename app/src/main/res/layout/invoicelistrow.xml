@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/product_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="25sp">
+        </TextView>
+
+        <Button
+            android:id="@+id/product_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="0sp"
+            android:text="Delete"
+            android:textSize="10sp"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="4px"
+            android:layout_marginRight="10px"/>
+
+        <TextView
+            android:id="@+id/product_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/product_name"
+            android:textSize="25sp">
+        </TextView>
+
+        <TextView
+            android:id="@+id/product_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/product_name"
+            android:textSize="25sp"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="4px"
+            android:layout_marginRight="10px" >
+        </TextView>
+
+    </RelativeLayout>
+
+</LinearLayout>

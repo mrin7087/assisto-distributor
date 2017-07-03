@@ -15,6 +15,12 @@
         android:orientation="vertical">
 
         <!--Add your content here-->
+
+        <Button
+            android:id="@+id/createInvoiceBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/create_sales_invoice_button" />
     </LinearLayout>
 
     <include

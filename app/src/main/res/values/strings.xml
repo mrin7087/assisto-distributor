@@ -24,6 +24,8 @@
 
     <string name="action_settings">Settings</string>
 
+    <string name="action_save">Save</string>
+
     <string name="scan_button">Scan</string>
 
 
@@ -44,4 +46,19 @@
     <string name="submit">Submit</string>
     <!--++ form ++ -->
     <!--++ Vendor ++-->
+
+    <!--++ Distributor Sales ++-->
+    <string name="create_sales_invoice_button">Create Sales Invoice</string>
+
+    <!--++ Add Product Form ++-->
+    <string name="prompt_product_name">Product Name</string>
+    <string name="prompt_product_id">Product Id</string>
+    <string name="prompt_product_unit">Unit</string>
+    <string name="prompt_product_rate">Rate</string>
+    <string name="prompt_product_cgst">CGST</string>
+    <string name="prompt_product_sgst">SGST</string>
+    <string name="prompt_product_quantity">Quantity</string>
+    <!--++ Add Product Form ++-->
+
+    <!--++ Distributor Sales ++-->
 </resources>

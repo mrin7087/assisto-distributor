@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.techassisto.mrinmoy.assisto.customer.CustomerLanding;
+import com.techassisto.mrinmoy.assisto.retailSales.RetailSalesLanding;
 import com.techassisto.mrinmoy.assisto.utils.Constants;
 import com.techassisto.mrinmoy.assisto.vendor.VendorLanding;
 
@@ -108,6 +109,7 @@ public abstract class DashBoardActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Toast.makeText(getApplicationContext(), "Settings", Toast.LENGTH_SHORT).show();
             return true;
         }
 
@@ -132,6 +134,13 @@ public abstract class DashBoardActivity extends AppCompatActivity
 
             Intent intent = new Intent();
             intent.setClass(DashBoardActivity.this, VendorLanding.class);
+            startActivity(intent);
+
+        } else if (id == R.id.nav_distributor_sales) {
+            //Toast.makeText(this, "Selected Logout", Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent();
+            intent.setClass(DashBoardActivity.this, RetailSalesLanding.class);
             startActivity(intent);
 
         } else if (id == R.id.nav_manufacturer) {

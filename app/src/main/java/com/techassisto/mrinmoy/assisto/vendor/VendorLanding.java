@@ -40,7 +40,7 @@ public class VendorLanding extends DashBoardActivity {
     private final static String TAG = "Assisto.VendorList";
 
     private Activity mActivity = null;
-    private VendorAPITask mAuthTask = null;
+    private VendorAPITask mVendorAPITask = null;
     private View mProgressView = null;
     private ListView mListView = null;
     private JSONArray mVendorList = null;
@@ -82,7 +82,7 @@ public class VendorLanding extends DashBoardActivity {
     }
 
     private void getVendors() {
-        if (mAuthTask != null) {
+        if (mVendorAPITask != null) {
             return;
         }
 
@@ -94,8 +94,8 @@ public class VendorLanding extends DashBoardActivity {
         SharedPreferences userPref = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE);
         String authToken = userPref.getString(Constants.UserPref.SP_UTOKEN, null);
         if (authToken != null) {
-            mAuthTask = new VendorAPITask(authToken);
-            mAuthTask.execute((Void) null);
+            mVendorAPITask = new VendorAPITask(authToken);
+            mVendorAPITask.execute((Void) null);
         } else {
             showProgress(false);
             Toast.makeText(getApplicationContext(), "Oops!! Something went wrong. Try Again", Toast.LENGTH_SHORT).show();
@@ -221,7 +221,7 @@ public class VendorLanding extends DashBoardActivity {
 
         @Override
         protected void onPostExecute(final Integer status) {
-            mAuthTask = null;
+            mVendorAPITask = null;
             showProgress(false);
 
             if (status == Constants.Status.OK) {
@@ -236,7 +236,7 @@ public class VendorLanding extends DashBoardActivity {
 
         @Override
         protected void onCancelled() {
-            mAuthTask = null;
+            mVendorAPITask = null;
             showProgress(false);
         }
 

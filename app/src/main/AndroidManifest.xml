@@ -33,14 +33,18 @@
             android:label="Home"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <!-- ++ Customer ++ -->
+        <activity
+            android:name=".customer.CustomerLanding"
+            android:label="Customer"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <!-- ++ Customer ++ -->
+
+
         <!-- ++ Vendor ++ -->
         <activity
             android:name=".vendor.VendorLanding"
             android:label="Vendor"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".customer.CustomerLanding"
-            android:label="Customer"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".vendor.VendorCreateActivity"
@@ -48,7 +52,22 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <!-- ++Vendor++ -->
 
-        <activity android:name=".CodeScannerActivity"></activity>
+        <activity android:name=".CodeScannerActivity" />
+
+        <!-- ++ Distributor Sales ++ -->
+        <activity
+            android:name=".retailSales.RetailSalesLanding"
+            android:label="Distributor Sales"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <!-- ++ Distributor Sales ++ -->
+        <activity
+            android:name=".retailSales.NewSalesInvoice"
+            android:label="New Sales Invoice"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".retailSales.AddProduct"
+            android:label="Add Product"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar.Transparent"/>
     </application>
 
 </manifest>
