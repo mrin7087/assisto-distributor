@@ -168,10 +168,12 @@ public class NewSalesInvoice extends DashBoardActivity {
 
         InvoiceDetails newInvoice = new InvoiceDetails();
         newInvoice.bill_details = productArr;
-        newInvoice.subtotal = 0.0;
+        newInvoice.cgsttotal = 0;
+        newInvoice.sgsttotal = 0;
+        newInvoice.subtotal = billTotal;
         newInvoice.total = billTotal;
         newInvoice.warehouse = 1;
-        newInvoice.calltype = "save";
+        newInvoice.calltype = "mobilesave";
 
         showProgress(true);
         //Get the auth token
@@ -304,6 +306,8 @@ public class NewSalesInvoice extends DashBoardActivity {
         String customer_name;
         String customer_address;
         double subtotal;
+        double cgsttotal;
+        double sgsttotal;
         int warehouse;
         double total;
         String calltype;
