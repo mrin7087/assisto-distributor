@@ -7,7 +7,8 @@ package com.techassisto.mrinmoy.assisto.utils;
 public class Constants {
     //IP ADDR
     // TEMPORARY CODE
-    public static final String SERVER_ADDR = "http://192.168.1.5:7087/";
+    //public static final String SERVER_ADDR = "http://192.168.1.2:7087/";
+    public static final String SERVER_ADDR = "http://139.59.69.91/";
 
     //NETWORK STATUS
     public class Status {
