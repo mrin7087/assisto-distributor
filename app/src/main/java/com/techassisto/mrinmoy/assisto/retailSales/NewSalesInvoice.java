@@ -34,6 +34,8 @@ import com.techassisto.mrinmoy.assisto.epsonPrinter.ShowMsg;
 import com.techassisto.mrinmoy.assisto.utils.APIs;
 import com.techassisto.mrinmoy.assisto.utils.Constants;
 
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,7 +45,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class NewSalesInvoice extends DashBoardActivity implements ReceiveListener{
     private final static String TAG = "Assisto.NewSalesInvoice";
@@ -57,7 +61,10 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
     private View mInvoiceView = null;
     private InvoiceSaveTask mSubmitTask = null;
 
+    private int mWarehouseId;
+
     private InvoiceDetails mCurrentInvoice = null;
+    private int mSavedInvoiceId = -1;
 
     //Printer related
     private String mTarget = null;
@@ -71,6 +78,18 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_new_sales_invoice);
         Log.i(TAG, "oncreate");
+
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras == null) {
+                mWarehouseId = -1;
+            } else {
+                mWarehouseId = extras.getInt("warehouseId");
+            }
+        } else {
+            mWarehouseId = (int) savedInstanceState.getSerializable("warehouseId");
+        }
+        Log.i(TAG, "Warehouse ID : " + mWarehouseId);
 
         mActivity = this;
 
@@ -208,6 +227,8 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
 
         // Invoice Calculation
         double billTotal = 0;
+        double billCGSTTotal= 0;
+        double billSGSTTotal= 0;
         double billSubTotal = 0;
         for (int  i=0; i<mModelList.size(); i++) {
             double totalTaxPercent;
@@ -217,18 +238,22 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             double sgstTotal;
             double thisNonTaxTotal; //to store line total without tax
             ProductInfo pInfo = mModelList.get(i).getProduct();
-            boolean isTax = pInfo.rate.get(0).is_tax_included;
+            //boolean isTax = pInfo.rate.get(0).is_tax_included;
             productArr[i] = new Product();
             productArr[i].product_id = Integer.toString(pInfo.product_id);
             productArr[i].product_name = pInfo.product_name;
+            productArr[i].product_hsn = pInfo.product_hsn;
             productArr[i].quantity = pInfo.selectedQuantity;
+            productArr[i].inventory = pInfo.inventory;
             productArr[i].unit_id = pInfo.unit_id;
+            productArr[i].unit = pInfo.unit;
             productArr[i].sales = pInfo.selectedRate;
+            productArr[i].is_tax = pInfo.rate.get(0).is_tax_included;
             productArr[i].discount_amount = 0.0;
             productArr[i].cgst_p = pInfo.cgst;
             productArr[i].sgst_p = pInfo.sgst;
             double thisTotal = pInfo.selectedRate * pInfo.selectedQuantity; //to store line total with tax
-            if (isTax){
+            if (productArr[i].is_tax) {
                 totalTaxPercent= pInfo.cgst + pInfo.sgst;
                 totalTaxDivider=(100+totalTaxPercent)/100;
                 taxTotal=thisTotal-thisTotal/totalTaxDivider;
@@ -251,16 +276,24 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             productArr[i].sgst_v = sgstTotal;
             productArr[i].taxable_total = thisNonTaxTotal;
             productArr[i].line_total = thisTotal;
+            billCGSTTotal+=cgstTotal;
+            billSGSTTotal+=sgstTotal;
+
+            // TODO
             // Consider discount and multiple sales rate.
 
             //TODO:Update warehouse choosing options
-        }
 
+        }
         InvoiceDetails newInvoice = new InvoiceDetails();
+        newInvoice.date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        Log.i(TAG, "Date:" + newInvoice.date);
         newInvoice.bill_details = productArr;
         newInvoice.subtotal = billSubTotal;
+        newInvoice.cgsttotal = billCGSTTotal;
+        newInvoice.sgsttotal=billSGSTTotal;
         newInvoice.total = billTotal;
-        newInvoice.warehouse = 2;
+        newInvoice.warehouse = mWarehouseId;
         newInvoice.calltype = "mobilesave";
 
         showProgress(true);
@@ -414,9 +447,13 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
     private class Product {
         String product_id;
         String product_name;
+        String product_hsn;
+        String unit;
+        boolean inventory;
         int quantity;
         int unit_id;
         double sales;
+        boolean is_tax;
         double discount_amount;
         double cgst_p;
         double cgst_v;
@@ -431,13 +468,14 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         String customer_name;
         String customer_address;
         String customer_email;
+        String date;
+        int warehouse;
 
         Product[] bill_details;
         double subtotal;
         double cgsttotal;
         double sgsttotal;
         double total;
-        int warehouse;
         String calltype;
     }
 
@@ -505,6 +543,13 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
                 rd.close();
 
                 Log.i(TAG, response.toString());
+                try {
+                    JSONObject jsonObj = new JSONObject(response.toString());
+                    mSavedInvoiceId = jsonObj.getInt("id");
+                    Log.i(TAG, "Saved Invoice id:" + mSavedInvoiceId);
+                } catch (Exception e) {
+                    return Constants.Status.ERR_INVALID;
+                }
                 return Constants.Status.OK;
 
             } catch (MalformedURLException e) {
@@ -622,7 +667,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
 
     private boolean initializeObject() {
         try {
-            mPrinter = new Printer(Printer.TM_M30, Printer.MODEL_ANK, getApplicationContext());
+            mPrinter = new Printer(Printer.TM_M10, Printer.MODEL_ANK, getApplicationContext());
         }
         catch (Exception e) {
             ShowMsg.showException(e, "Printer", getApplicationContext());
@@ -747,12 +792,23 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             method = "addFeedLine";
             mPrinter.addFeedLine(1);
 
-            //TODO : INVOICE Header
+            //TODO : INVOICE Header - Tax Invoice No., Date, GSTIN, Tenant Name, Warehouse Address
+            // INVOICE ID - mSavedInvoiceId
+            // Date - mCurrentInvoice.date
+
+            //TODO : HSN Code
 
             // PRODUCT DETAILS
             textData.append("---------------------------------------\n");
-            textData.append("Item   Qty   Unit   Dcnt   Rate   Total\n");
-            textData.append("HSN   CGST%  CGST AMT   SGST%  SGST AMT\n");
+            textData.append("Tax Invoice                         Date\n");
+            textData.append("1707090001                     21-07-2017\n");
+            textData.append("           Sample Distributor          \n"); //Tenant Name
+            textData.append(" 45B Anath Nath Deblane, Kolkata-700037 \n");   //Warehouse Address
+            textData.append("                 West Bengal          \n");  //Warehouse State
+            textData.append("         GSTIN:19AWPKJ14741017B78Z     \n");
+            textData.append("Item\n");
+            textData.append("HSN   Qty   Unit   Dcnt   Rate\n");
+            textData.append("CGST%  CGST AMT   SGST%  SGST AMT  Total\n");
             textData.append("---------------------------------------\n");
             method = "addText";
             mPrinter.addTextStyle(Printer.PARAM_DEFAULT, Printer.PARAM_DEFAULT, Printer.TRUE, Printer.PARAM_DEFAULT);
@@ -764,20 +820,21 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
 
                 //Line 1
                 textData.append(product.product_name + "\n");
-                textData.append(1234 + " ");
+                textData.append(product.product_hsn+ " ");
                 textData.append(product.quantity + "  ");
-                textData.append(product.unit_id  + "  ");
-                textData.append(product.discount_amount + "  ");
-                textData.append(product.sales + "  ");
-                textData.append(product.line_total);
+                textData.append(product.unit + "  ");
+                textData.append(String.format("%.2f",product.discount_amount )+ "  ");
+                double item_rate=(product.taxable_total)/(product.quantity);
+                textData.append(String.format("%.2f",item_rate) );  //This should br the total before tax is added
                 textData.append("\n");
 
                 //Line 2
                 textData.append("  " );
                 textData.append(product.cgst_p  + "  ");
-                textData.append(product.cgst_v  + "  ");
+                textData.append(String.format("%.2f",product.cgst_v) + "  ");
                 textData.append(product.sgst_p  + "  ");
-                textData.append(product.sgst_v  + "  ");
+                textData.append(String.format("%.2f",product.sgst_v) + "  ");
+                textData.append(String.format("%.2f",product.line_total) ); //This is the line total
                 textData.append("\n");
             }
 
@@ -788,34 +845,34 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             textData.delete(0, textData.length());
 
             // SUBTOTAL
-            textData.append("SUBTOTAL");
+            textData.append("SUBTOTAL: ");
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
 
             mPrinter.addTextAlign(Printer.ALIGN_RIGHT);
-            textData.append(mCurrentInvoice.subtotal + "\n");
+            textData.append(String.format("%.2f",mCurrentInvoice.subtotal)+ "\n");
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
 
             // CGST TOTAL
             mPrinter.addTextAlign(Printer.ALIGN_CENTER);
-            textData.append("CGST");
+            textData.append("CGST: ");
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
 
             mPrinter.addTextAlign(Printer.ALIGN_RIGHT);
-            textData.append(mCurrentInvoice.cgsttotal + "\n");
+            textData.append(String.format("%.2f",mCurrentInvoice.cgsttotal )+ "\n");
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
 
             // SGST TOTAL
             mPrinter.addTextAlign(Printer.ALIGN_CENTER);
-            textData.append("SGST");
+            textData.append("SGST: ");
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
 
             mPrinter.addTextAlign(Printer.ALIGN_RIGHT);
-            textData.append(mCurrentInvoice.sgsttotal + "\n");
+            textData.append(String.format("%.2f",mCurrentInvoice.sgsttotal )+ "\n");
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
 
@@ -824,12 +881,12 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             method = "addTextSize";
             mPrinter.addTextSize(2, 2);
             method = "addText";
-            textData.append("TOTAL");
+            textData.append("TOTAL: ");
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
 
             mPrinter.addTextAlign(Printer.ALIGN_RIGHT);
-            textData.append(mCurrentInvoice.total + "\n");
+            textData.append(String.format("%.2f",mCurrentInvoice.total)+ "\n");
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
 

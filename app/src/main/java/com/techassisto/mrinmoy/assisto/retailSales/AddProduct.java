@@ -170,7 +170,7 @@ public class AddProduct extends AppCompatActivity {
             HttpURLConnection httpConnection = null;
             try {
                 targetURL += ("?product_barcode=" + mBarcode);
-                targetURL += ("&warehouse_id=" + "1");
+                targetURL += ("&warehouse_id=" + "4");
                 URL targetUrl = new URL(targetURL);
                 httpConnection = (HttpURLConnection) targetUrl.openConnection();
                 httpConnection.setRequestMethod("GET");

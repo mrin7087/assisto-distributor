@@ -39,13 +39,50 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/home_mainview"
+            android:id="@+id/create_invoice_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:paddingTop="100dp">
+            android:paddingTop="80dp">
 
-            <!--Add your content here-->
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/add_product_form"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Select Warehouse :"
+                            android:textSize="18sp"/>
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.v7.widget.AppCompatSpinner
+                        android:id="@+id/warehouse_spinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent">
+                    </android.support.v7.widget.AppCompatSpinner>
+
+                    <Button
+                        android:id="@+id/createInvoiceBtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/create_sales_invoice_button" />
+
+                </LinearLayout>
+
+            </ScrollView>
         </LinearLayout>
 
     </RelativeLayout>

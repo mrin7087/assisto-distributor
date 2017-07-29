@@ -15,12 +15,14 @@ public class ProductInfo {
 
     public int product_id;
     public String product_name;
+    public String product_hsn;
     public int unit_id;
     public String unit;
     public double sgst;
     public double cgst;
     public int quantity;
     public List<ProductRate> rate;
+    public boolean inventory;
 
     public double selectedRate;
     public int selectedQuantity;
@@ -30,6 +32,7 @@ public class ProductInfo {
         String productInfo = "ProductInfo:";
         productInfo += " id: " + product_id;
         productInfo += " name: " + product_name;
+        productInfo += " hsn: " + product_hsn;
         productInfo += " sgst: " + sgst;
         productInfo += " cgst: " + cgst;
         productInfo += " rates: [";
