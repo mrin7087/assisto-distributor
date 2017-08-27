@@ -194,7 +194,7 @@ public class HomeActivity extends DashBoardActivity {
             if (status == Constants.Status.OK) {
                 Log.i(TAG, "Successfully received tenant data");
             } else if (status == Constants.Status.ERR_INVALID){
-                Toast.makeText(getApplicationContext(), "Oops!! Something went wrong. Try Again", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Failed to validate tenant info. Some functionalities might fail.", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getApplicationContext(), R.string.error_network_error, Toast.LENGTH_SHORT).show();
             }
@@ -208,6 +208,18 @@ public class HomeActivity extends DashBoardActivity {
 
         private int parseTenantInfo(final String tenant) {
             Log.i(TAG, "parse Tenant Info");
+            // Validate tenant info
+            try {
+                JSONObject tenantJson = new JSONObject(tenant);
+                // Store the JSON as string in Shared Preference
+                SharedPreferences.Editor editor = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE).edit();
+                editor.putString(Constants.UserPref.SP_TENANT, tenantJson.toString());
+                editor.commit();
+            } catch (Exception ex) {
+                Log.e(TAG, "Failed to validate tenant info");
+                return Constants.Status.ERR_INVALID;
+            }
+
             return Constants.Status.OK;
         }
     }

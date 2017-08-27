@@ -71,19 +71,49 @@
                         android:text="@string/scan_button"
                         android:textStyle="bold" />
 
-                    <android.support.design.widget.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                    <!--<android.support.design.widget.TextInputLayout-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content">-->
 
-                        <EditText
+                        <!--<EditText-->
+                            <!--android:id="@+id/product_name"-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:hint="@string/prompt_product_name"-->
+                            <!--android:inputType="text"-->
+                            <!--android:maxLines="1"/>-->
+
+                        <!--<ProgressBar-->
+                            <!--android:id="@+id/product_loading_indicator"-->
+                            <!--style="?android:attr/progressBarStyleSmall"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_gravity="center_vertical|right"-->
+                            <!--android:layout_marginRight="@dimen/activity_horizontal_margin"-->
+                            <!--android:visibility="gone"/>-->
+
+                    <!--</android.support.design.widget.TextInputLayout>-->
+
+                    <FrameLayout android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/activity_horizontal_margin">
+
+                        <com.techassisto.mrinmoy.assisto.retailSales.ProductAutoCompleteTextView
                             android:id="@+id/product_name"
+                            android:inputType="textCapSentences"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="@string/prompt_product_name"
-                            android:inputType="text"
-                            android:maxLines="1"/>
+                            android:imeOptions="flagNoExtractUi|actionSearch"/>
 
-                    </android.support.design.widget.TextInputLayout>
+                        <ProgressBar
+                            android:id="@+id/product_loading_indicator"
+                            style="?android:attr/progressBarStyleSmall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical|right"
+                            android:layout_marginRight="@dimen/activity_horizontal_margin"
+                            android:visibility="gone"/>
+                    </FrameLayout>
 
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"

@@ -24,6 +24,7 @@ import com.techassisto.mrinmoy.assisto.R;
 import com.techassisto.mrinmoy.assisto.WarehouseInfo;
 import com.techassisto.mrinmoy.assisto.utils.APIs;
 import com.techassisto.mrinmoy.assisto.utils.Constants;
+import com.techassisto.mrinmoy.assisto.utils.TenantInfo;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -70,6 +71,7 @@ public class RetailSalesLanding extends DashBoardActivity {
                     Toast.makeText(getApplicationContext(),
                             "Select a warehouse to create Invoice!!", Toast.LENGTH_SHORT).show();
                 } else {
+                    Log.i(TAG, "Sending Warehouse id:" + mWareHouseId);
                     Intent intent = new Intent();
                     intent.putExtra("warehouseId", mWareHouseId);
                     intent.setClass(RetailSalesLanding.this, NewSalesInvoice.class);
@@ -77,6 +79,15 @@ public class RetailSalesLanding extends DashBoardActivity {
                 }
             }
         });
+
+        // Fetch Tenant Details
+        SharedPreferences userPref = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE);
+        String tenant = userPref.getString(Constants.UserPref.SP_TENANT, null);
+        if (tenant != null) {
+            Gson gson = new GsonBuilder().serializeNulls().create();
+            TenantInfo tenantInfo = gson.fromJson(tenant, TenantInfo.class);
+            Log.i(TAG, "Tenant:" + tenantInfo.tenant_name + " First Name:" + tenantInfo.first_name);
+        }
 
         getWarehouses();
     }
@@ -271,6 +282,7 @@ public class RetailSalesLanding extends DashBoardActivity {
 //                    Toast.makeText(getApplicationContext(),
 //                            wh.name, Toast.LENGTH_SHORT).show();
                     mWareHouseId = wh.id;
+                    Log.i(TAG, "Warehouse id selected:" + mWareHouseId);
                 }
 
                 @Override

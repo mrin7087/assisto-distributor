@@ -18,15 +18,24 @@ import java.util.List;
  */
 
 public class InvoiceProductListAdapter extends ArrayAdapter<InvoiceProductListModel> {
+    public interface OnItemDeletedListener {
+        void onItemDeleted();
+    }
+
     private static final String TAG = "Assisto.InvoiceAdapter";
 
     private List<InvoiceProductListModel> list;
     private final Activity context;
+    private OnItemDeletedListener mDeleteListener;
 
     public InvoiceProductListAdapter(Activity context, List<InvoiceProductListModel> list) {
         super(context, R.layout.invoicelistrow, list);
         this.context = context;
         this.list = list;
+    }
+
+    public void setOnItemDeletedListener(OnItemDeletedListener listener){
+        mDeleteListener = listener;
     }
 
     static class ViewHolder {
@@ -55,6 +64,11 @@ public class InvoiceProductListAdapter extends ArrayAdapter<InvoiceProductListMo
                     //Integer index = (Integer) v.getTag();
                     list.remove(position);
                     notifyDataSetChanged();
+                    if (mDeleteListener != null) {
+                        mDeleteListener.onItemDeleted();
+                    } else {
+                        Log.e(TAG, "OnItemDeletedListener is null!!");
+                    }
                 }
             });
 

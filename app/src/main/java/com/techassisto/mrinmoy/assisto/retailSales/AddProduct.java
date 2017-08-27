@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -46,10 +47,11 @@ public class AddProduct extends AppCompatActivity {
     private static final int SCAN_PRODUCT_REQUEST = 1;
 
     private Activity mActivity = null;
-    private GetProductFromBarcodeAPITask mProductAPITask = null;
+    private GetProductAPITask mProductAPITask = null;
     private View mProgressView = null;
     private View mAddProductFormView = null;
     private Button mSubmitBtn = null;
+    private int mWarehouseId = -1;
 
     private ProductInfo mProduct;
 
@@ -61,6 +63,34 @@ public class AddProduct extends AppCompatActivity {
         mActivity = this;
         mProgressView = findViewById(R.id.apigetproduct_progress);
         mAddProductFormView = findViewById(R.id.add_product_form);
+
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras == null) {
+                mWarehouseId = -1;
+            } else {
+                mWarehouseId = extras.getInt("warehouseId");
+            }
+        } else {
+            mWarehouseId = (int) savedInstanceState.getSerializable("warehouseId");
+        }
+        Log.i(TAG, "Warehouse ID : " + mWarehouseId);
+
+        final ProductAutoCompleteTextView prodView = (ProductAutoCompleteTextView) findViewById(R.id.product_name);
+        prodView.setThreshold(3);
+        prodView.setAdapter(new ProductAutoCompleteAdapter(this));
+        prodView.setLoadingIndicator(
+                (android.widget.ProgressBar) findViewById(R.id.product_loading_indicator));
+        prodView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                ProductAutoCompleteAdapter.Product product = (ProductAutoCompleteAdapter.Product) adapterView.getItemAtPosition(position);
+//                prodView.setText(product.getLabel());
+                Toast.makeText(getApplicationContext(), "Fetching Product Details.. " + product.getId(), Toast.LENGTH_SHORT).show();
+                getProduct(product.getId(), false);
+            }
+        });
+
         mSubmitBtn = (Button) findViewById(R.id.submit_button);
 
         Button scanBtn = (Button) findViewById(R.id.scan_button);
@@ -82,7 +112,7 @@ public class AddProduct extends AppCompatActivity {
             if (resultCode == Activity.RESULT_OK) {
                 String barcode = data.getStringExtra("barcode");
                 Toast.makeText(getApplicationContext(), "Fetching Product Details: " + barcode, Toast.LENGTH_SHORT).show();
-                getProduct(barcode);
+                getProduct(barcode, true);
             }
         }
     }
@@ -123,20 +153,24 @@ public class AddProduct extends AppCompatActivity {
         }
     }
 
-    private void getProduct(final String barcode) {
+    private void getProduct(final String prodDetail, boolean isBarcode) {
         if (mProductAPITask != null) {
             return;
         }
 
         showProgress(true);
 
-        Log.i(TAG, "getProduct: " + barcode);
+        if (isBarcode) {
+            Log.i(TAG, "getProduct by barcode:" + prodDetail);
+        } else {
+            Log.i(TAG, "getProduct by id:" + prodDetail);
+        }
 
         //Get the auth token
         SharedPreferences userPref = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE);
         String authToken = userPref.getString(Constants.UserPref.SP_UTOKEN, null);
         if (authToken != null) {
-            mProductAPITask = new GetProductFromBarcodeAPITask(authToken, barcode);
+            mProductAPITask = new GetProductAPITask(authToken, prodDetail, isBarcode);
             mProductAPITask.execute((Void) null);
         } else {
             showProgress(false);
@@ -147,15 +181,17 @@ public class AddProduct extends AppCompatActivity {
     }
 
     // AsyncTask to send requests
-    public class GetProductFromBarcodeAPITask extends AsyncTask<Void, Void, Integer> {
-        private static final String TAG = "Assisto.BarcodeAPITask";
-        private String targetURL = Constants.SERVER_ADDR + APIs.product_barcode_get;
+    public class GetProductAPITask extends AsyncTask<Void, Void, Integer> {
+        private static final String TAG = "Assisto.GetProdAPITask";
+        private String targetURL = null;
         private final String mToken;
-        private final String mBarcode;
+        private final String mProdDetail;
+        private final boolean mBarcode;
 
-        GetProductFromBarcodeAPITask(String token, String barcode) {
+        GetProductAPITask(String token, String prodDetail, boolean isBarcode) {
             mToken = token;
-            mBarcode = barcode;
+            mProdDetail = prodDetail;
+            mBarcode = isBarcode;
         }
 
         @Override
@@ -164,19 +200,25 @@ public class AddProduct extends AppCompatActivity {
 
             //Compose the get Request
 
+            if(mBarcode) {
+                targetURL = Constants.SERVER_ADDR + APIs.product_barcode_get;
+                targetURL += ("?product_barcode=" + mProdDetail);
+            } else {
+                targetURL = Constants.SERVER_ADDR + APIs.product_id_get;
+                targetURL += ("?product_id=" + mProdDetail);
+            }
+
             StringBuffer response = new StringBuffer();
 
             Log.i(TAG, "try to POST HTTP request");
             HttpURLConnection httpConnection = null;
             try {
-                targetURL += ("?product_barcode=" + mBarcode);
-                targetURL += ("&warehouse_id=" + "4");
+                targetURL += ("&warehouse_id=" + Integer.toString(mWarehouseId));
+                Log.i(TAG, "Sending request:" + targetURL);
                 URL targetUrl = new URL(targetURL);
                 httpConnection = (HttpURLConnection) targetUrl.openConnection();
                 httpConnection.setRequestMethod("GET");
                 httpConnection.setRequestProperty("Authorization", "jwt " + mToken);
-                //httpConnection.setRequestProperty("product_barcode", mBarcode);
-                //httpConnection.setRequestProperty("warehouse_id", "1");
                 httpConnection.setConnectTimeout(10000); //10secs
                 httpConnection.connect();
 

@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.epson.epos2.Epos2Exception;
@@ -52,6 +53,7 @@ import java.util.Date;
 public class NewSalesInvoice extends DashBoardActivity implements ReceiveListener{
     private final static String TAG = "Assisto.NewSalesInvoice";
 
+    private Context mContext = null;
     private Activity mActivity = null;
     private ListView mListView = null;
     ArrayList<InvoiceProductListModel> mModelList;
@@ -59,6 +61,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
 
     private View mProgressView = null;
     private View mInvoiceView = null;
+    private TextView mInvoiceTotalView = null;
     private InvoiceSaveTask mSubmitTask = null;
 
     private int mWarehouseId;
@@ -79,6 +82,8 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         //setContentView(R.layout.activity_new_sales_invoice);
         Log.i(TAG, "oncreate");
 
+        mContext = this;
+
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if(extras == null) {
@@ -95,10 +100,19 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
 
         mInvoiceView = findViewById(R.id.invoiceView);
         mProgressView = findViewById(R.id.apisubmit_progress);
+        mInvoiceTotalView = (TextView) findViewById(R.id.invoicetotalview);
 
         mListView = (ListView) findViewById(R.id.invoicelistview);
         mModelList = new ArrayList<InvoiceProductListModel>();
         mAdapter = new InvoiceProductListAdapter(mActivity, mModelList);
+        mAdapter.setOnItemDeletedListener(new InvoiceProductListAdapter.OnItemDeletedListener() {
+            @Override
+            public void onItemDeleted() {
+                Log.i(TAG, "Received item deleted callback");
+                double billTotal = calculateBillTotal();
+                mInvoiceTotalView.setText("Total: " + String.format("%.02f", billTotal));
+            }
+        });
         mListView.setAdapter(mAdapter);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -107,6 +121,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             public void onClick(View view) {
                 Intent intent = new Intent();
                 intent.setClass(NewSalesInvoice.this, AddProduct.class);
+                intent.putExtra("warehouseId", mWarehouseId);
                 startActivityForResult(intent, ADD_PRODUCT_REQUEST);
             }
         });
@@ -312,6 +327,17 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         }
     }
 
+    private double calculateBillTotal() {
+        Log.i(TAG, "Remaining list size: " + mModelList.size());
+        double billTotal = 0;
+        for (int i=0; i<mModelList.size(); i++) {
+            Log.i(TAG, mModelList.get(i).getProduct().toString() + " qty: " + mModelList.get(i).getProduct().selectedQuantity);
+            billTotal += mModelList.get(i).getPrice() * mModelList.get(i).getQuantity();
+        }
+
+        return billTotal;
+    }
+
     private void printInvoice() {
         Log.i(TAG, "printInvoice");
         if (mCurrentInvoice == null) {
@@ -340,6 +366,10 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         mAdapter.notifyDataSetChanged();
 
         Log.i(TAG, "List adapter updated");
+
+        // Update Bill Total View
+        double billTotal = calculateBillTotal();
+        mInvoiceTotalView.setText("Total: " + String.format("%.02f", billTotal));
     }
 
     @Override
@@ -638,7 +668,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         dispPrinterWarnings(status);
 
         if (!isPrintable(status)) {
-            ShowMsg.showMsg(makeErrorMessage(status), getApplicationContext());
+            ShowMsg.showMsg(makeErrorMessage(status), mContext);
             try {
                 mPrinter.disconnect();
             }
@@ -652,7 +682,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             mPrinter.sendData(Printer.PARAM_DEFAULT);
         }
         catch (Exception e) {
-            ShowMsg.showException(e, "sendData", getApplicationContext());
+            ShowMsg.showException(e, "sendData", mContext);
             try {
                 mPrinter.disconnect();
             }
@@ -667,10 +697,10 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
 
     private boolean initializeObject() {
         try {
-            mPrinter = new Printer(Printer.TM_M10, Printer.MODEL_ANK, getApplicationContext());
+            mPrinter = new Printer(Printer.TM_M10, Printer.MODEL_ANK, mContext);
         }
         catch (Exception e) {
-            ShowMsg.showException(e, "Printer", getApplicationContext());
+            ShowMsg.showException(e, "Printer", mContext);
             return false;
         }
 
@@ -702,7 +732,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             mPrinter.connect(mTarget.toString(), Printer.PARAM_DEFAULT);
         }
         catch (Exception e) {
-            ShowMsg.showException(e, "connect", getApplicationContext());
+            ShowMsg.showException(e, "connect", mContext);
             return false;
         }
 
@@ -711,7 +741,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             isBeginTransaction = true;
         }
         catch (Exception e) {
-            ShowMsg.showException(e, "beginTransaction", getApplicationContext());
+            ShowMsg.showException(e, "beginTransaction", mContext);
         }
 
         if (isBeginTransaction == false) {
@@ -739,7 +769,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             runOnUiThread(new Runnable() {
                 @Override
                 public synchronized void run() {
-                    ShowMsg.showException(e, "endTransaction", getApplicationContext());
+                    ShowMsg.showException(e, "endTransaction", mContext);
                 }
             });
         }
@@ -751,7 +781,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             runOnUiThread(new Runnable() {
                 @Override
                 public synchronized void run() {
-                    ShowMsg.showException(e, "disconnect", getApplicationContext());
+                    ShowMsg.showException(e, "disconnect", mContext);
                 }
             });
         }
@@ -901,7 +931,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             mPrinter.addCut(Printer.CUT_FEED);
         }
         catch (Exception e) {
-            ShowMsg.showException(e, method, getApplicationContext());
+            ShowMsg.showException(e, method, mContext);
             return false;
         }
 
@@ -982,7 +1012,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         runOnUiThread(new Runnable() {
             @Override
             public synchronized void run() {
-                ShowMsg.showResult(code, makeErrorMessage(status), getApplicationContext());
+                ShowMsg.showResult(code, makeErrorMessage(status), mContext);
 
                 dispPrinterWarnings(status);
 

@@ -7,7 +7,7 @@ package com.techassisto.mrinmoy.assisto.utils;
 public class Constants {
     //IP ADDR
     // TEMPORARY CODE
-    public static final String SERVER_ADDR = "http://192.168.1.4:7087/";
+    public static final String SERVER_ADDR = "http://192.168.1.3:7087/";
     //public static final String SERVER_ADDR = "http://139.59.69.91/";
 
     //NETWORK STATUS
@@ -26,5 +26,6 @@ public class Constants {
         public static final String SP_USERNAME = "UserName";
         public static final String SP_PASSWORD = "Password";
         public static final String SP_UTOKEN = "JWTToken";
+        public static final String SP_TENANT = "TenantInfo";
     }
 }
