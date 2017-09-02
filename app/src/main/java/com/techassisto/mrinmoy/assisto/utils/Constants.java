@@ -22,11 +22,11 @@ public class Constants {
 
     // SHARED PREFERENCE
     public class UserPref {
-        public static final String SP_NAME = "UserSharedPreference";
-        public static final String SP_USERNAME = "UserName";
-        public static final String SP_PASSWORD = "Password";
-        public static final String SP_UTOKEN = "JWTToken";
-        public static final String SP_TENANT = "TenantInfo";
+        public static final String SP_NAME        = "UserSharedPreference";
+        public static final String SP_USERNAME    = "UserName";
+        public static final String SP_PASSWORD    = "Password";
+        public static final String SP_UTOKEN      = "JWTToken";
+        public static final String SP_TENANT      = "TenantInfo";
     }
 
     // STATES
