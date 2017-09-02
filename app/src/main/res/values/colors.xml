@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#04a5e0</color>
+    <color name="colorPrimaryDark">#0381ad</color>
+    <color name="colorAccent">#0381ad</color>
+    <color name="textColorWebApp">#034a63</color>
+    <color name="textColorDark">#004060</color>
+    <color name="buttonColor">#0381ad</color>
+    <color name="textNearWhite">#f0ffff</color>
+    <color name="semiTransparentButton">#1E00D1FF</color>
     <color name="semiTransparentBlack">#00000000</color>
 </resources>

@@ -1,4 +1,4 @@
-package com.techassisto.mrinmoy.assisto.retailSales;
+package com.techassisto.mrinmoy.assisto.retailSales.retailNewInvoice;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -14,6 +14,7 @@ import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -65,6 +66,9 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
     private InvoiceSaveTask mSubmitTask = null;
 
     private int mWarehouseId;
+    private String mWarehouseAddress;
+    private int mWarehouseState;
+    private String mWarehouseStateName;
 
     private InvoiceDetails mCurrentInvoice = null;
     private int mSavedInvoiceId = -1;
@@ -90,9 +94,18 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
                 mWarehouseId = -1;
             } else {
                 mWarehouseId = extras.getInt("warehouseId");
+                mWarehouseState = extras.getInt("warehouseState");
+                mWarehouseStateName = Constants.STATE_LIST[mWarehouseState];
+                mWarehouseAddress = extras.getString("warehouseAddress");
+//                mWarehouseAddress = (String) savedInstanceState.getSerializable("warehouseAddress");
+                Log.i(TAG, "Warehouse Address in intent new: "+mWarehouseAddress);
             }
         } else {
             mWarehouseId = (int) savedInstanceState.getSerializable("warehouseId");
+            mWarehouseAddress = (String) savedInstanceState.getSerializable("warehouseAddress");
+            mWarehouseState= (int) savedInstanceState.getSerializable("warehouseState");
+            mWarehouseStateName = Constants.STATE_LIST[mWarehouseState];
+            Log.i(TAG, "Warehouse Address in intent saved: "+mWarehouseAddress);
         }
         Log.i(TAG, "Warehouse ID : " + mWarehouseId);
 
@@ -831,10 +844,11 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             // PRODUCT DETAILS
             textData.append("---------------------------------------\n");
             textData.append("Tax Invoice                         Date\n");
-            textData.append("1707090001                     21-07-2017\n");
-            textData.append("           Sample Distributor          \n"); //Tenant Name
-            textData.append(" 45B Anath Nath Deblane, Kolkata-700037 \n");   //Warehouse Address
-            textData.append("                 West Bengal          \n");  //Warehouse State
+//            textData.append("1707090001                     21-07-2017\n");
+            textData.append(mSavedInvoiceId+"                     "+mCurrentInvoice.date+"\n");
+            textData.append("           Shankari Stores          \n"); //Tenant Name
+            textData.append(mWarehouseAddress+ "\n");   //Warehouse Address
+            textData.append(mWarehouseStateName+"\n");  //Warehouse State
             textData.append("         GSTIN:19AWPKJ14741017B78Z     \n");
             textData.append("Item\n");
             textData.append("HSN   Qty   Unit   Dcnt   Rate\n");
@@ -850,7 +864,12 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
 
                 //Line 1
                 textData.append(product.product_name + "\n");
-                textData.append(product.product_hsn+ " ");
+                if (TextUtils.isEmpty(product.product_hsn)) {
+                    textData.append("     ");
+                }
+                else {
+                    textData.append(product.product_hsn + " ");
+                }
                 textData.append(product.quantity + "  ");
                 textData.append(product.unit + "  ");
                 textData.append(String.format("%.2f",product.discount_amount )+ "  ");
@@ -926,6 +945,19 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             mPrinter.addFeedLine(1);
 
             textData.append("---------------------------------------\n");
+
+            //This is used to print barcode of invoice id.
+            int barcodeWidth=2;
+            int barcodeHeight=100;
+            method = "addFeedLine";
+            mPrinter.addFeedLine(2);
+            method = "addBarcode";
+            mPrinter.addBarcode(String.valueOf(mSavedInvoiceId),
+                    Printer.BARCODE_CODE39,
+                    Printer.HRI_BELOW,
+                    Printer.FONT_A,
+                    barcodeWidth,
+                    barcodeHeight);
 
             method = "addCut";
             mPrinter.addCut(Printer.CUT_FEED);
@@ -1009,6 +1041,18 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
 
     @Override
     public void onPtrReceive(final Printer printerObj, final int code, final PrinterStatusInfo status, final String printJobId) {
+        Log.i(TAG, "onPtrReceive Code: "+code);
+        if (status == null){
+            Log.i(TAG, "onPtrReceive status is null");
+        }
+        else{
+            Log.i(TAG, "onPtrReceive status not null");
+        }
+        Log.i(TAG, "onPtrReceive printjobid: "+printJobId);
+
+//        if (printJobId == null ){
+//            return;
+//        }
         runOnUiThread(new Runnable() {
             @Override
             public synchronized void run() {

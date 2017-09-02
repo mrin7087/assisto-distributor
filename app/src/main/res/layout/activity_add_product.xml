@@ -5,7 +5,7 @@
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
-    tools:context="com.techassisto.mrinmoy.assisto.retailSales.AddProduct">
+    tools:context="com.techassisto.mrinmoy.assisto.retailSales.retailNewInvoice.AddProduct">
 
     <!--android:paddingBottom="@dimen/activity_vertical_margin"-->
     <!--android:paddingLeft="@dimen/activity_horizontal_margin"-->
@@ -68,12 +68,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
+                        android:drawableStart="@drawable/ic_barcode_scan"
+                        android:backgroundTint="@color/semiTransparentButton"
                         android:text="@string/scan_button"
-                        android:textStyle="bold" />
+                        android:textStyle="italic" />
 
-                    <!--<android.support.design.widget.TextInputLayout-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="wrap_content">-->
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
 
                         <!--<EditText-->
                             <!--android:id="@+id/product_name"-->
@@ -98,7 +100,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/activity_horizontal_margin">
 
-                        <com.techassisto.mrinmoy.assisto.retailSales.ProductAutoCompleteTextView
+                        <com.techassisto.mrinmoy.assisto.retailSales.retailNewInvoice.ProductAutoCompleteTextView
                             android:id="@+id/product_name"
                             android:inputType="textCapSentences"
                             android:layout_width="match_parent"
@@ -125,6 +127,8 @@
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_product_id"
                             android:inputType="number"
+                            android:textColorHint="@color/textNearWhite"
+                            android:textColor="@color/textNearWhite"
                             android:maxLines="1"/>
 
                     </android.support.design.widget.TextInputLayout>
@@ -139,6 +143,8 @@
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_product_unit"
                             android:inputType="text"
+                            android:textColorHint="@color/textNearWhite"
+                            android:textColor="@color/textNearWhite"
                             android:maxLines="1" />
 
                     </android.support.design.widget.TextInputLayout>
@@ -153,6 +159,8 @@
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_product_cgst"
                             android:inputType="text"
+                            android:textColorHint="@color/textNearWhite"
+                            android:textColor="@color/textNearWhite"
                             android:maxLines="1" />
 
                     </android.support.design.widget.TextInputLayout>
@@ -167,6 +175,8 @@
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_product_sgst"
                             android:inputType="text"
+                            android:textColorHint="@color/textNearWhite"
+                            android:textColor="@color/textNearWhite"
                             android:maxLines="1"/>
 
                     </android.support.design.widget.TextInputLayout>
@@ -178,7 +188,9 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Rates"
+                            android:text="@string/product_rates"
+                            android:textColorHint="@color/textNearWhite"
+                            android:textColor="@color/textNearWhite"
                             android:textSize="18sp"/>
 
                     </android.support.design.widget.TextInputLayout>
@@ -199,6 +211,8 @@
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_product_quantity"
                             android:inputType="number"
+                            android:textColorHint="@color/textNearWhite"
+                            android:textColor="@color/textNearWhite"
                             android:maxLines="1" />
 
                     </android.support.design.widget.TextInputLayout>
@@ -212,6 +226,7 @@
                         android:text="@string/submit"
                         android:visibility="invisible"
                         android:textStyle="bold"
+                        android:backgroundTint="@color/semiTransparentButton"
                         android:onClick="submitProduct"/>
 
                 </LinearLayout>

@@ -63,15 +63,15 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <!-- ++ Distributor Sales ++ -->
         <activity
-            android:name=".retailSales.NewSalesInvoice"
+            android:name=".retailSales.retailNewInvoice.NewSalesInvoice"
             android:label="New Sales Invoice"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".retailSales.AddProduct"
+            android:name=".retailSales.retailNewInvoice.AddProduct"
             android:label="Add Product"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar.Transparent" />
-
-        <activity android:name=".epsonPrinter.PrinterDiscoveryActivity"
+        <activity
+            android:name=".epsonPrinter.PrinterDiscoveryActivity"
             android:label="Add Printer"
             android:theme="@style/AppTheme.NoActionBar">
 
@@ -79,9 +79,23 @@
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
-            <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
-        </activity>>
+        </activity>
+
+        <activity
+            android:name=".retailSales.retailInvoiceList.InvoiceActivity"
+            android:label="Retail Invoice List"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".retailSales.retailInvoiceDetails.RetailInvoiceDetailsActivity"
+            android:label="Retail Invoice Details"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".retailSales.retailDashboard.RetailDashboardActivity"
+            android:label="Retail Dashboard"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

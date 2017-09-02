@@ -1,4 +1,4 @@
-package com.techassisto.mrinmoy.assisto.retailSales;
+package com.techassisto.mrinmoy.assisto.retailSales.retailNewInvoice;
 
 import com.techassisto.mrinmoy.assisto.ProductInfo;
 

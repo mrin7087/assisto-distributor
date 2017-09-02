@@ -30,4 +30,6 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'me.dm7.barcodescanner:zxing:1.9'
     testCompile 'junit:junit:4.12'
+    // To add a graph
+    compile 'com.jjoe64:graphview:4.2.1'
 }

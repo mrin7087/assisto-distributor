@@ -12,6 +12,7 @@
     <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
     <string name="error_network_error">Oops! Something went wrong try again.</string>
+    <string name="click_register"><a href="https://www.techassisto.com/register">Not registered? Click Here To Login</a> </string>
 
     <!--Navigation bar-->
     <string name="nav_hello_msg">Hello </string>
@@ -25,10 +26,13 @@
     <string name="action_settings">Settings</string>
 
     <string name="action_save">Save</string>
-    <string name="action_save_and_print">Save and Print</string>action_add_printer
+    <string name="action_save_and_print">Save and Print</string>
     <string name="action_add_printer">Add Printer</string>
 
+    <string name="action_delete">Delete</string>
+
     <string name="scan_button">Scan</string>
+    <string name="scan_button_invoice">Scan Invoice Barcode</string>
 
 
     <!--++ Vendor ++-->
@@ -49,8 +53,13 @@
     <!--++ form ++ -->
     <!--++ Vendor ++-->
 
-    <!--++ Distributor Sales ++-->
+    <!--++ Retail Sales ++-->
+    <string name="retail_dashboard">Retail Dashboard</string>
     <string name="create_sales_invoice_button">Create Sales Invoice</string>
+    <string name="create_sales_return_button">Create Sales Return</string>
+    <string name="view_latest_invoices">View Latest Invoices</string>
+    <string name="product_rates">Rates</string>
+    <string name="total_sales_graph">Total Sales in the last 5 Days</string>
 
     <!--++ Add Product Form ++-->
     <string name="prompt_product_name">Product Name</string>
@@ -62,8 +71,14 @@
     <string name="prompt_product_quantity">Quantity</string>
     <!--++ Add Product Form ++-->
 
-    <!--++ Distributor Sales ++-->
-
+    <!--++ Retail Sales Invoice View++-->
+    <string name="search_invoice">Enter Invoice No</string>
+    <string name="search_button">Search</string>
+    <string name="view_invoice_no">Invoice No</string>
+    <string name="view_invoice_date">Date</string>
+    <string name="view_invoice_cgst">CGST</string>
+    <string name="view_invoice_sgst">SGST</string>
+    <string name="view_invoice_total">Total</string>
 
     <!--EPSON-->
     <string name="title_err_code">Error Code</string>

@@ -23,4 +23,10 @@ public class APIs {
     public static final String product_autocomplete_get    = "retailsales/invoice/api/getproduct";
     public static final String product_id_get              = "retailsales/invoice/api/getproduct/details";
     public static final String retail_invoice_save         = "retailsales/invoice/save/";
+    public static final String retail_invoice_list         = "retailsales/invoicelist/listall/";
+    public static final String retail_invoice_no_details   = "retailsales/invoice/invoicenodetails/";
+
+    public static final String retail_invoice_delete       = "retailsales/invoice/delete/";
+
+    public static final String retail_sales_summary_graph  = "retailsales/salessummarygraph/";
 }

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/invoice_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Invoice"
+            android:textSize="12.5sp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:textColor="@color/textColorWebApp"/>
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="20dp"
+            android:hint="Date"
+            android:textSize="12.5sp"
+            android:textColor="@color/textColorWebApp"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/cgsttotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="CGST"
+            android:textSize="12.5sp"
+            android:textColor="@color/textColorWebApp"/>
+
+        <TextView
+            android:id="@+id/sgsttotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:hint="SGST"
+            android:textSize="12.5sp"
+            android:textColor="@color/textColorWebApp"/>
+
+        <TextView
+            android:id="@+id/total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="20dp"
+            android:hint="Total"
+            android:textSize="12.5sp"
+            android:textColor="@color/textColorWebApp"/>
+
+    </RelativeLayout>
+
+</LinearLayout>

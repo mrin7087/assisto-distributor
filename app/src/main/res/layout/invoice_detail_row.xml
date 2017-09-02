@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:hint="Product Name"
+            android:textColor="@color/textColorWebApp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textSize="12.5sp" />
+
+        <TextView
+            android:id="@+id/quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:hint="Quantity"
+            android:textColor="@color/textColorWebApp"
+            android:textSize="12.5sp"
+            android:layout_alignParentTop="true"
+            android:layout_toStartOf="@+id/rate" />
+
+        <TextView
+            android:id="@+id/rate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:hint="Rate"
+            android:textColor="@color/textColorWebApp"
+            android:textSize="12.5sp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/cgst"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="CGST"
+            android:textSize="12.5sp"
+            android:textColor="@color/textColorWebApp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:id="@+id/sgst"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="SGST"
+            android:textSize="12.5sp"
+            android:textColor="@color/textColorWebApp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:id="@+id/total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Total"
+            android:textSize="12.5sp"
+            android:textColor="@color/textColorWebApp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
+
+</LinearLayout>

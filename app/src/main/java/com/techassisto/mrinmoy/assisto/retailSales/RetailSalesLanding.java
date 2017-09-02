@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -22,6 +21,10 @@ import com.google.gson.GsonBuilder;
 import com.techassisto.mrinmoy.assisto.DashBoardActivity;
 import com.techassisto.mrinmoy.assisto.R;
 import com.techassisto.mrinmoy.assisto.WarehouseInfo;
+import com.techassisto.mrinmoy.assisto.retailSales.retailDashboard.RetailDashboardActivity;
+import com.techassisto.mrinmoy.assisto.retailSales.retailInvoiceList.InvoiceActivity;
+import com.techassisto.mrinmoy.assisto.retailSales.retailNewInvoice.NewSalesInvoice;
+import com.techassisto.mrinmoy.assisto.retailSales.retailNewInvoice.WarehouseAdapter;
 import com.techassisto.mrinmoy.assisto.utils.APIs;
 import com.techassisto.mrinmoy.assisto.utils.Constants;
 import com.techassisto.mrinmoy.assisto.utils.TenantInfo;
@@ -53,6 +56,8 @@ public class RetailSalesLanding extends DashBoardActivity {
     private JSONArray mWarehouseList = null;
 
     private int mWareHouseId = -1;
+    private String mWarehouseAddress;
+    private int mWarehouseState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,9 +76,11 @@ public class RetailSalesLanding extends DashBoardActivity {
                     Toast.makeText(getApplicationContext(),
                             "Select a warehouse to create Invoice!!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Log.i(TAG, "Sending Warehouse id:" + mWareHouseId);
+                    Log.i(TAG, "Warehouse Address in intent: "+mWarehouseAddress);
                     Intent intent = new Intent();
                     intent.putExtra("warehouseId", mWareHouseId);
+                    intent.putExtra("warehouseAddress", mWarehouseAddress);
+                    intent.putExtra("warehouseState", mWarehouseState);
                     intent.setClass(RetailSalesLanding.this, NewSalesInvoice.class);
                     startActivity(intent);
                 }
@@ -88,6 +95,25 @@ public class RetailSalesLanding extends DashBoardActivity {
             TenantInfo tenantInfo = gson.fromJson(tenant, TenantInfo.class);
             Log.i(TAG, "Tenant:" + tenantInfo.tenant_name + " First Name:" + tenantInfo.first_name);
         }
+        Button viewInvoiceBtn = (Button) findViewById(R.id.viewInvoiceBtn);
+        viewInvoiceBtn .setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(RetailSalesLanding.this, InvoiceActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        Button retailDashboardBtn = (Button) findViewById(R.id.viewRetailDashboardBtn);
+        retailDashboardBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(RetailSalesLanding.this, RetailDashboardActivity.class);
+                startActivity(intent);
+            }
+        });
 
         getWarehouses();
     }
@@ -282,7 +308,9 @@ public class RetailSalesLanding extends DashBoardActivity {
 //                    Toast.makeText(getApplicationContext(),
 //                            wh.name, Toast.LENGTH_SHORT).show();
                     mWareHouseId = wh.id;
-                    Log.i(TAG, "Warehouse id selected:" + mWareHouseId);
+                    mWarehouseAddress  = wh.address_1+ " "+wh.address_2+", "+wh.city;
+                    mWarehouseState = Integer.parseInt(wh.state);
+                    Log.i(TAG, "Warehouse Address in spinner: "+mWarehouseAddress);
                 }
 
                 @Override
@@ -303,7 +331,12 @@ public class RetailSalesLanding extends DashBoardActivity {
                     WarehouseInfo wh = gson.fromJson(warehouse.toString(), WarehouseInfo.class);
 
                     if (wh.name.length() == 0) {
-                        wh.name = "<Unknown>";
+                        if (wh.address_1.length() == 0) {
+                            wh.name = "<Unknown>";
+                        }
+                        else{
+                            wh.name = wh.address_1 + " " + wh.address_2;
+                        }
                     }
 
                     //list.add(Integer.toString(warehouse.getInt("id")));

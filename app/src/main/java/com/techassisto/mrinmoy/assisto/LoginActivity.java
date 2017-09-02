@@ -20,7 +20,9 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.text.Html;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -100,6 +102,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 attemptLogin();
             }
         });
+
+//        Create a link to let user register via website
+
+        TextView mLink = (TextView) findViewById(R.id.register);
+        mLink.setClickable(true);
+        if (mLink != null){
+            mLink.setMovementMethod(LinkMovementMethod.getInstance());
+        }
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);

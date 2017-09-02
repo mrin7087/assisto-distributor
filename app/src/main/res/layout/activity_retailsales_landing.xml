@@ -74,11 +74,36 @@
                     </android.support.v7.widget.AppCompatSpinner>
 
                     <Button
+                        android:id="@+id/viewRetailDashboardBtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:backgroundTint="@color/buttonColor"
+                        android:text="@string/retail_dashboard" />
+
+                    <Button
                         android:id="@+id/createInvoiceBtn"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
+                        android:backgroundTint="@color/buttonColor"
                         android:text="@string/create_sales_invoice_button" />
+
+                    <Button
+                        android:id="@+id/createReturnBtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:backgroundTint="@color/buttonColor"
+                        android:text="@string/create_sales_return_button" />
+
+                    <Button
+                        android:id="@+id/viewInvoiceBtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:backgroundTint="@color/buttonColor"
+                        android:text="@string/view_latest_invoices" />
 
                 </LinearLayout>
 

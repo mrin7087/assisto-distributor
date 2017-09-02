@@ -7,7 +7,7 @@ package com.techassisto.mrinmoy.assisto.utils;
 public class Constants {
     //IP ADDR
     // TEMPORARY CODE
-    public static final String SERVER_ADDR = "http://192.168.1.3:7087/";
+    public static final String SERVER_ADDR = "http://192.168.1.2:7087/";
     //public static final String SERVER_ADDR = "http://139.59.69.91/";
 
     //NETWORK STATUS
@@ -28,4 +28,13 @@ public class Constants {
         public static final String SP_UTOKEN = "JWTToken";
         public static final String SP_TENANT = "TenantInfo";
     }
+
+    // STATES
+    public static String[] STATE_LIST = {"None", "Jammu & Kashmir", "Himachal Pradesh", "Punjab",
+            "Chandigarh", "Uttarkhand", "Haryana", "National Capital Territory of Delhi",
+            "Rajashtan", "Uttar Pradesh", "Bihar", "Sikkim", "Arunachal Pradesh", "Nagaland",
+            "Manipur", "Mizoram", "Tripura", "Meghalaya", "Assam", "West Bengal", "Jharkhand",
+            "Odisha", "Chattisgarh", "Madhya Pradesh", "Gujrat", "Daman & Diu", "Dadra & Nagar Haveli",
+            "Maharashtra", "Andhra Pradesh", "Karnataka", "Goa", "Lakshadweep", "Kerala",
+            "Tamil Nadu", "Puducherry", "Andaman & Nicobar Island", "Telengana", "Uttarkhand"};
 }

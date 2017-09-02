@@ -5,19 +5,23 @@
         <item
             android:id="@+id/nav_customer"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Customer" />
+            android:title="Customer"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_vendor"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Vendor" />
+            android:title="Vendor"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_manufacturer"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Manufacturer" />
+            android:title="Manufacturer"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_product"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Product" />
+            android:title="Product"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_distributor_sales"
             android:icon="@drawable/ic_menu_manage"
