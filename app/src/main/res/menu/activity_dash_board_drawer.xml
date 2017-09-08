@@ -24,7 +24,7 @@
             android:visible="false"/>
         <item
             android:id="@+id/nav_distributor_sales"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/ic_retail_sales"
             android:title="Retail Sales" />
     </group>
 

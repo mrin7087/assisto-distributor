@@ -28,6 +28,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -151,7 +152,9 @@ public class ProductAutoCompleteAdapter extends BaseAdapter implements Filterabl
         Log.i(TAG, "try to POST HTTP request");
         HttpURLConnection httpConnection = null;
         try {
-            targetURL += ("?term=" + prodPattern);
+            targetURL += ("?term=");
+            String query = URLEncoder.encode(prodPattern, "utf-8");
+            targetURL += (query);
             URL targetUrl = new URL(targetURL);
             httpConnection = (HttpURLConnection) targetUrl.openConnection();
             httpConnection.setRequestMethod("GET");

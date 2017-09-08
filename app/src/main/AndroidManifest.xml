@@ -65,6 +65,7 @@
         <activity
             android:name=".retailSales.retailNewInvoice.NewSalesInvoice"
             android:label="New Sales Invoice"
+            android:parentActivityName=".retailSales.RetailSalesLanding"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".retailSales.retailNewInvoice.AddProduct"
@@ -88,13 +89,17 @@
         <activity
             android:name=".retailSales.retailInvoiceList.InvoiceActivity"
             android:label="Retail Invoice List"
+            android:parentActivityName=".retailSales.RetailSalesLanding"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".retailSales.retailInvoiceDetails.RetailInvoiceDetailsActivity"
             android:label="Retail Invoice Details"
+            android:parentActivityName=".retailSales.retailInvoiceList.InvoiceActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity android:name=".retailSales.retailDashboard.RetailDashboardActivity"
             android:label="Retail Dashboard"
+            android:parentActivityName=".retailSales.RetailSalesLanding"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
 

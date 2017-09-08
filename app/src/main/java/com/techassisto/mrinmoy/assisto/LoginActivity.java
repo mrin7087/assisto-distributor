@@ -341,16 +341,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         @Override
         protected Integer doInBackground(Void... uInfo) {
             Log.i(TAG, "doInBackground");
-            Log.i(TAG, "username: " + mUserName + " password: " + mPassword);
+//            Log.i(TAG, "username: " + mUserName + " password: " + mPassword);
             UserInfo userinfo = new UserInfo();
             userinfo.username = mUserName;
             userinfo.password = mPassword;
             StringBuffer response = new StringBuffer();
             Gson gson= new Gson();
             String userinfoJson = gson.toJson(userinfo);
-            Log.i(TAG, "UserInfo:" + userinfoJson);
+//            Log.i(TAG, "UserInfo:" + userinfoJson);
 
             Log.i(TAG, "try to POST HTTP request");
+            Log.i(TAG, targetURL);
             HttpURLConnection httpConnection = null;
             try{
                 URL tagetUrl = new URL(targetURL);

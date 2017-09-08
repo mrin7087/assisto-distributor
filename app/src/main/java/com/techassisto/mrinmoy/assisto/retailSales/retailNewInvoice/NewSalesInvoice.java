@@ -28,6 +28,7 @@ import com.epson.epos2.printer.Printer;
 import com.epson.epos2.printer.PrinterStatusInfo;
 import com.epson.epos2.printer.ReceiveListener;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.techassisto.mrinmoy.assisto.DashBoardActivity;
 import com.techassisto.mrinmoy.assisto.ProductInfo;
 import com.techassisto.mrinmoy.assisto.R;
@@ -35,6 +36,7 @@ import com.techassisto.mrinmoy.assisto.epsonPrinter.PrinterDiscoveryActivity;
 import com.techassisto.mrinmoy.assisto.epsonPrinter.ShowMsg;
 import com.techassisto.mrinmoy.assisto.utils.APIs;
 import com.techassisto.mrinmoy.assisto.utils.Constants;
+import com.techassisto.mrinmoy.assisto.utils.TenantInfo;
 
 import org.json.JSONObject;
 
@@ -50,6 +52,8 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
+import static com.techassisto.mrinmoy.assisto.RoundClass.round;
 
 public class NewSalesInvoice extends DashBoardActivity implements ReceiveListener{
     private final static String TAG = "Assisto.NewSalesInvoice";
@@ -289,7 +293,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
                 sgstTotal=taxTotal/2;
                 billTotal+=thisTotal;
                 billSubTotal+=thisTotal-taxTotal;
-                thisNonTaxTotal = thisTotal-taxTotal;
+                thisNonTaxTotal = round(thisTotal-taxTotal, 2);
             }
             else{
                 cgstTotal=(thisTotal*pInfo.cgst)/100;
@@ -840,16 +844,26 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             // Date - mCurrentInvoice.date
 
             //TODO : HSN Code
+            TenantInfo tenantInfo = null;
+            SharedPreferences userPref = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE);
+            String tenant = userPref.getString(Constants.UserPref.SP_TENANT, null);
+            if (tenant != null) {
+                Gson gson = new GsonBuilder().serializeNulls().create();
+                tenantInfo = gson.fromJson(tenant, TenantInfo.class);
+                Log.i(TAG, "Tenant:" + tenantInfo.tenant_name + " First Name:" + tenantInfo.first_name);
+            }
+
 
             // PRODUCT DETAILS
             textData.append("---------------------------------------\n");
             textData.append("Tax Invoice                         Date\n");
 //            textData.append("1707090001                     21-07-2017\n");
             textData.append(mSavedInvoiceId+"                     "+mCurrentInvoice.date+"\n");
-            textData.append("           Shankari Stores          \n"); //Tenant Name
+            textData.append(tenantInfo.tenant_name+"\n"); //Tenant Name
             textData.append(mWarehouseAddress+ "\n");   //Warehouse Address
             textData.append(mWarehouseStateName+"\n");  //Warehouse State
-            textData.append("         GSTIN:19AWPKJ14741017B78Z     \n");
+//            textData.append("         GSTIN:19AWPKJ14741017B78Z     \n");
+            textData.append("         GSTIN:"+tenantInfo.tenant_gst+"\n");
             textData.append("Item\n");
             textData.append("HSN   Qty   Unit   Dcnt   Rate\n");
             textData.append("CGST%  CGST AMT   SGST%  SGST AMT  Total\n");
