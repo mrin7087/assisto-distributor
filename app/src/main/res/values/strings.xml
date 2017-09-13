@@ -62,6 +62,7 @@
     <string name="total_sales_graph">Total Sales in the last 5 Days</string>
 
     <!--++ Add Product Form ++-->
+    <string name="retail_payment_mode">Payment Mode</string>
     <string name="prompt_product_name">Product Name</string>
     <string name="prompt_product_id">Product Id</string>
     <string name="prompt_product_unit">Unit</string>

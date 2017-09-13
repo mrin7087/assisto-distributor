@@ -18,6 +18,9 @@ public class APIs {
     // Warehouse get
     public static final String warehouse_get               = "master/warehouse/getdata/";
 
+    // Retail Payment get
+    public static final String payment_mode_get               = "retailsales/paymentmode/";
+
     // Invoice Retail Sales APIs
     public static final String product_barcode_get         = "retailsales/invoice/api/getproductbarcode";
     public static final String product_autocomplete_get    = "retailsales/invoice/api/getproduct";

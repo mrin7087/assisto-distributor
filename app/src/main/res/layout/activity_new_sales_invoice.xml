@@ -61,30 +61,26 @@
             android:layout_alignParentTop="true"
             android:orientation="vertical">
 
-            <android.support.design.widget.TextInputLayout
+            <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:text="@string/retail_payment_mode"
+                android:textColor="@color/textColorWebApp"
+                android:textSize="15sp"/>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Payment Mode :"
-                    android:textColor="@color/textColorWebApp"
-                    android:textSize="15sp"/>
-
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.v7.widget.AppCompatSpinner
+            <Spinner
+                android:id="@+id/paymentMode_spinner"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent">
-            </android.support.v7.widget.AppCompatSpinner>
+                android:layout_height="wrap_content"
+                android:spinnerMode="dropdown">
+            </Spinner>
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="140dp"
+            android:paddingTop="175dp"
             android:orientation="vertical">
 
             <LinearLayout

@@ -19,7 +19,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +32,7 @@ import com.epson.epos2.printer.ReceiveListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.techassisto.mrinmoy.assisto.DashBoardActivity;
+import com.techassisto.mrinmoy.assisto.PaymentModeInfo;
 import com.techassisto.mrinmoy.assisto.ProductInfo;
 import com.techassisto.mrinmoy.assisto.R;
 import com.techassisto.mrinmoy.assisto.epsonPrinter.PrinterDiscoveryActivity;
@@ -38,6 +41,7 @@ import com.techassisto.mrinmoy.assisto.utils.APIs;
 import com.techassisto.mrinmoy.assisto.utils.Constants;
 import com.techassisto.mrinmoy.assisto.utils.TenantInfo;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -52,6 +56,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static com.techassisto.mrinmoy.assisto.RoundClass.round;
 
@@ -83,6 +88,13 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
 
     private static final int ADD_PRODUCT_REQUEST = 1;
     private static final int ADD_PRINTER_REQUEST = 2;
+
+    //Payment Mode related
+    private PaymentModeAPITask mPaymentModeAPITask = null;
+    private Spinner mPaymentModeSpnr = null;
+    private JSONArray mPaymentModeList = null;
+    private int mPaymentModeId = -1;
+    private String mPaymentModeName = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +154,8 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
                 startActivityForResult(intent, ADD_PRODUCT_REQUEST);
             }
         });
+
+        getPaymentMode();
     }
 
     @Override
@@ -173,8 +187,10 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             } else {
                 builder = new AlertDialog.Builder(this);
             }
+            double billTotal = calculateBillTotal();
             builder.setTitle("Save Invoice")
-                    .setMessage("Save current invoice ?")
+                    .setMessage("Save current invoice ?" +
+                            "\nPayment Mode: "+mPaymentModeName+ "\nTotal: "+String.format("%.02f", billTotal))
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             // continue with delete
@@ -201,8 +217,10 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             } else {
                 builder = new AlertDialog.Builder(this);
             }
+            double billTotal = calculateBillTotal();
             builder.setTitle("Save Invoice and Print")
-                    .setMessage("Save current invoice and Print?")
+                    .setMessage("Save current invoice and Print?"+
+                            "\nPayment Mode: "+mPaymentModeName+ "\nTotal: "+String.format("%.02f", billTotal))
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             saveInvoice(true);
@@ -311,10 +329,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             billCGSTTotal+=cgstTotal;
             billSGSTTotal+=sgstTotal;
 
-            // TODO
-            // Consider discount and multiple sales rate.
-
-            //TODO:Update warehouse choosing options
+            // TODO Consider discount and multiple sales rate.
 
         }
         InvoiceDetails newInvoice = new InvoiceDetails();
@@ -326,6 +341,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         newInvoice.sgsttotal=billSGSTTotal;
         newInvoice.total = billTotal;
         newInvoice.warehouse = mWarehouseId;
+        newInvoice.paymentmode = mPaymentModeId;
         newInvoice.calltype = "mobilesave";
 
         showProgress(true);
@@ -517,6 +533,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         String customer_email;
         String date;
         int warehouse;
+        int paymentmode;
 
         Product[] bill_details;
         double subtotal;
@@ -551,7 +568,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             Gson gson = new Gson();
             String invoiceJson = gson.toJson(mInvoice);
             Log.i(TAG, "Invoice details:" + invoiceJson);
-            Log.i(TAG, "Token: " + mToken);
+//            Log.i(TAG, "Token: " + mToken);
 
             Log.i(TAG, "try to POST HTTP request");
             HttpURLConnection httpConnection = null;
@@ -1085,4 +1102,194 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             }
         });
     }
+
+    private void getPaymentMode() {
+        if (mPaymentModeAPITask != null) {
+            return;
+        }
+
+//        showProgress(true);
+
+        Log.i(TAG, "get Payment Modes...");
+
+        //Get the auth token
+        SharedPreferences userPref = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE);
+        String authToken = userPref.getString(Constants.UserPref.SP_UTOKEN, null);
+        if (authToken != null) {
+            mPaymentModeAPITask = new PaymentModeAPITask(authToken);
+            mPaymentModeAPITask.execute((Void) null);
+        } else {
+//            showProgress(false);
+            Toast.makeText(getApplicationContext(), "Oops!! Something went wrong. Try Again", Toast.LENGTH_SHORT).show();
+
+            // REDIRECT TO LOGIN PAGE
+        }
+    }
+
+    public class PaymentModeAPITask extends AsyncTask<Void, Void, Integer>  {
+
+        private static final String TAG = "Assisto.GetPaymentMode";
+        private static final String targetURL = Constants.SERVER_ADDR + APIs.payment_mode_get;
+        private final String mToken;
+
+        PaymentModeAPITask(String token) {
+            this.mToken = token;
+        }
+
+        @Override
+        protected Integer doInBackground(Void... params) {
+            Log.i(TAG, "doInBackground");
+
+            //Compose the get Request
+            String authHeader = "{\"authorization\": \"jwt " + mToken + "\"}";
+            JSONObject authJson;
+            try {
+                authJson = new JSONObject(authHeader);
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to make json ex:" + e);
+                return Constants.Status.ERR_UNKNOWN;
+            }
+
+            StringBuffer response = new StringBuffer();
+            Log.i(TAG, "auth header:" + authJson);
+
+            Log.i(TAG, "try to POST HTTP request");
+            HttpURLConnection httpConnection = null;
+
+            try{
+                URL tagetUrl = new URL(targetURL);
+                httpConnection = (HttpURLConnection) tagetUrl.openConnection();
+                httpConnection.setRequestMethod("GET");
+                httpConnection.setRequestProperty("Authorization", "jwt " + mToken);
+                httpConnection.setConnectTimeout(10000); //10secs
+                httpConnection.connect();
+
+                Log.i(TAG, "response code:" + httpConnection.getResponseCode());
+                if (httpConnection.getResponseCode() != 200){
+                    Log.e(TAG, "Failed : HTTP error code : " + httpConnection.getResponseCode());
+                    return Constants.Status.ERR_INVALID;
+                }
+
+                //Received Response
+                InputStream is = httpConnection.getInputStream();
+                BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+
+                String line;
+                while((line = rd.readLine()) != null) {
+                    response.append(line);
+                    //response.append('\r');
+                }
+                rd.close();
+
+                Log.i(TAG, response.toString());
+                // Save the warehouse details
+                return parsePaymentModeInfo(response.toString());
+
+            }catch (MalformedURLException e) {
+                e.printStackTrace();
+                return Constants.Status.ERR_NETWORK;
+
+            } catch (SocketTimeoutException e) {
+                e.printStackTrace();
+                return Constants.Status.ERR_NETWORK;
+            }
+
+            catch (IOException e) {
+                e.printStackTrace();
+                return Constants.Status.ERR_UNKNOWN;
+            }finally {
+
+                if(httpConnection != null) {
+                    httpConnection.disconnect();
+                }
+            }
+        }
+
+        @Override
+        protected void onPostExecute(final Integer status) {
+            mPaymentModeAPITask = null;
+//            showProgress(false);
+
+            if (status == Constants.Status.OK) {
+                Log.i(TAG, "Successfully received warehouse data");
+                populatePaymentModeInfo();
+            } else if (status == Constants.Status.ERR_INVALID){
+                Toast.makeText(getApplicationContext(), "Oops!! Something went wrong. Try Again", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.error_network_error, Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mPaymentModeAPITask = null;
+//            showProgress(false);
+        }
+
+        private int parsePaymentModeInfo(final String paymentModes){
+            Log.i(TAG, "parse Payment Mode Info");
+            try {
+                mPaymentModeList = new JSONArray(paymentModes);
+                if (mPaymentModeList.length() == 0) {
+                    Log.i(TAG, "User has no payment mode registered");
+                    mPaymentModeList = null;
+                    return Constants.Status.ERR_INVALID;
+                }
+
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to add payment mode data, ex:" + e);
+                return Constants.Status.ERR_UNKNOWN;
+            }
+
+            return Constants.Status.OK;
+        }
+
+        private void  populatePaymentModeInfo(){
+
+            // Populate the rates spinner
+            mPaymentModeSpnr = (Spinner) findViewById(R.id.paymentMode_spinner);
+            mPaymentModeSpnr.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    PaymentModeInfo pminfo = (PaymentModeInfo) parent.getItemAtPosition(position);
+//                    Toast.makeText(getApplicationContext(),
+//                            wh.name, Toast.LENGTH_SHORT).show()
+                    mPaymentModeId = pminfo.id;
+                    mPaymentModeName = pminfo.name;
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                    Toast.makeText(getApplicationContext(),
+                            "Nothing selected!!", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            List<PaymentModeInfo> list = new ArrayList<>();
+            for (int i=0; i<mPaymentModeList.length(); i++) {
+                try {
+                    JSONObject paymentModes = mPaymentModeList.getJSONObject(i);
+                    Log.i(TAG, "Mode name:" + paymentModes.getString("name"));
+                    Log.i(TAG, "Mode ID:" + paymentModes.getInt("id"));
+
+                    Gson gson = new GsonBuilder().serializeNulls().create();
+                    PaymentModeInfo pm = gson.fromJson(paymentModes.toString(), PaymentModeInfo.class);
+
+                    //list.add(Integer.toString(warehouse.getInt("id")));
+                    list.add(pm);
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to populate payment mode list, ex:" + e);
+                }
+            }
+            for (PaymentModeInfo pminfo: list){
+                Log.i(TAG, "Payment Mode Array: "+pminfo.name);
+            }
+            PaymentModeAdapter dataAdapter = new PaymentModeAdapter(mActivity,android.R.layout.simple_spinner_item, list);
+//            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//            dataAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+            mPaymentModeSpnr.setAdapter(dataAdapter);
+
+        }
+    }
+
 }
