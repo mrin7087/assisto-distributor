@@ -287,6 +287,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             double cgstTotal;
             double sgstTotal;
             double thisNonTaxTotal; //to store line total without tax
+            double thisNonTaxEach; //to store item total without tax
             ProductInfo pInfo = mModelList.get(i).getProduct();
             //boolean isTax = pInfo.rate.get(0).is_tax_included;
             productArr[i] = new Product();
@@ -325,9 +326,13 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             productArr[i].cgst_v = cgstTotal;
             productArr[i].sgst_v = sgstTotal;
             productArr[i].taxable_total = thisNonTaxTotal;
+            thisNonTaxEach = round((thisNonTaxTotal/pInfo.selectedQuantity),2);
+            productArr[i].sales_after_tax = thisNonTaxEach;
             productArr[i].line_total = thisTotal;
             billCGSTTotal+=cgstTotal;
             billSGSTTotal+=sgstTotal;
+
+//            Log.i(TAG, "Product Taxable Value: "+productArr[i].sales_after_tax);
 
             // TODO Consider discount and multiple sales rate.
 
@@ -516,6 +521,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         int quantity;
         int unit_id;
         double sales;
+        double sales_after_tax;
         boolean is_tax;
         double discount_amount;
         double cgst_p;
@@ -648,6 +654,8 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
                 mAdapter.notifyDataSetChanged();
 
                 mCurrentInvoice = mInvoice;
+
+                mPaymentModeSpnr.setSelection(0);
 
                 if (mPrintInvoice) {
                     printInvoice();
@@ -904,8 +912,8 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
                 textData.append(product.quantity + "  ");
                 textData.append(product.unit + "  ");
                 textData.append(String.format("%.2f",product.discount_amount )+ "  ");
-                double item_rate=(product.taxable_total)/(product.quantity);
-                textData.append(String.format("%.2f",item_rate) );  //This should br the total before tax is added
+//                double item_rate=(product.taxable_total)/(product.quantity);
+                textData.append(String.format("%.2f",product.sales_after_tax) );  //This should br the total before tax is added
                 textData.append("\n");
 
                 //Line 2

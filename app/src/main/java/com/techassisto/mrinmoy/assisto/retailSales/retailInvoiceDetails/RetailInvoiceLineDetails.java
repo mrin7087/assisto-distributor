@@ -7,10 +7,14 @@ package com.techassisto.mrinmoy.assisto.retailSales.retailInvoiceDetails;
 public class RetailInvoiceLineDetails {
 
     private String product_name;
+    private String product_hsn;
+    private String unit;
     private String sales_price;
     private String quantity;
     private String cgst_value;
+    private String cgst_percent;
     private String sgst_value;
+    private String sgst_percent;
     private String line_total;
 
     public RetailInvoiceLineDetails(String product_name, String sales_price, String quantity, String cgst_value, String sgst_value, String line_total) {
