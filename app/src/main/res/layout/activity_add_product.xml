@@ -224,6 +224,13 @@
 
                     </android.support.design.widget.TextInputLayout>
 
+                    <CheckBox
+                        android:id="@+id/product_custom_istax_chkbox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:text="@string/prompt_custom_istax"/>
+
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">

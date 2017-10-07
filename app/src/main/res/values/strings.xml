@@ -71,6 +71,7 @@
     <string name="prompt_product_sgst">SGST</string>
     <string name="prompt_product_custom_rate">Custom Rate</string>
     <string name="prompt_add_custom_rate">Add Custom Rate?</string>
+    <string name="prompt_custom_istax">Is Tax included ?</string>
     <string name="prompt_product_quantity">Quantity</string>
     <!--++ Add Product Form ++-->
 

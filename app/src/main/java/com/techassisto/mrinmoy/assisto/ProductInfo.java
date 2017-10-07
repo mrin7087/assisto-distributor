@@ -25,6 +25,7 @@ public class ProductInfo {
     public boolean inventory;
 
     public double selectedRate;
+    public boolean selectedIsTaxIncluded;
     public int selectedQuantity;
 
     @Override

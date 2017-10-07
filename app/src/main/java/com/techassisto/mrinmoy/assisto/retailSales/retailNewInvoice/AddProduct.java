@@ -50,6 +50,7 @@ public class AddProduct extends AppCompatActivity {
     private View mAddProductFormView = null;
     private Button mSubmitBtn = null;
     private CheckBox mCustomRateChkbox = null;
+    private CheckBox mCustomIsTaxInclChkbox = null;
     private EditText mCustomRate = null;
     private int mWarehouseId = -1;
 
@@ -94,13 +95,18 @@ public class AddProduct extends AppCompatActivity {
         mCustomRate = (EditText) findViewById(R.id.product_custom_rate);
 
         mCustomRateChkbox = (CheckBox) findViewById(R.id.product_custom_rate_chkbox);
+        mCustomIsTaxInclChkbox = (CheckBox) findViewById(R.id.product_custom_istax_chkbox);
+
         mCustomRateChkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mCustomIsTaxInclChkbox.setChecked(false);
                 if(isChecked) {
                     mCustomRate.setVisibility(View.VISIBLE);
+                    mCustomIsTaxInclChkbox.setVisibility(View.VISIBLE);
                 } else {
                     mCustomRate.setVisibility(View.INVISIBLE);
+                    mCustomIsTaxInclChkbox.setVisibility(View.GONE);
                 }
             }
         });
@@ -366,11 +372,16 @@ public class AddProduct extends AppCompatActivity {
         // Set the selected quantity
         mProduct.selectedQuantity = Integer.valueOf(pQuantityView.getText().toString());
 
-        // TODO : Set the selected rate from SPINNER
-        //mProduct.selectedRate = Double.valueOf(mProduct.rate.get(0).tentative_sales_rate);
-
         if(!mCustomRateChkbox.isChecked()) {
+            // Show error msg if no Rates are available.
+            if (mProduct.rate.size() == 0) {
+                Toast.makeText(getApplicationContext(), "No rates found!! Add a custom rate", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            // TODO : Set the selected rate from SPINNER
             mProduct.selectedRate = Double.valueOf(mProduct.rate.get(0).tentative_sales_rate);
+            mProduct.selectedIsTaxIncluded =  mProduct.rate.get(0).is_tax_included;
         } else {
             if ((mCustomRate.getText().toString().length() == 0) ||
                 (Double.valueOf(mCustomRate.getText().toString()) == 0)) {
@@ -379,6 +390,7 @@ public class AddProduct extends AppCompatActivity {
                 return;
             }
             mProduct.selectedRate = Double.valueOf(mCustomRate.getText().toString());
+            mProduct.selectedIsTaxIncluded = mCustomIsTaxInclChkbox.isSelected() ? true : false;
         }
 
         // Send the added product
