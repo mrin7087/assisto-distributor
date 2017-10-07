@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -47,6 +49,8 @@ public class AddProduct extends AppCompatActivity {
     private View mProgressView = null;
     private View mAddProductFormView = null;
     private Button mSubmitBtn = null;
+    private CheckBox mCustomRateChkbox = null;
+    private EditText mCustomRate = null;
     private int mWarehouseId = -1;
 
     private ProductInfo mProduct;
@@ -84,6 +88,20 @@ public class AddProduct extends AppCompatActivity {
 //                prodView.setText(product.getLabel());
                 Toast.makeText(getApplicationContext(), "Fetching Product Details.. " + product.getId(), Toast.LENGTH_SHORT).show();
                 getProduct(product.getId(), false);
+            }
+        });
+
+        mCustomRate = (EditText) findViewById(R.id.product_custom_rate);
+
+        mCustomRateChkbox = (CheckBox) findViewById(R.id.product_custom_rate_chkbox);
+        mCustomRateChkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    mCustomRate.setVisibility(View.VISIBLE);
+                } else {
+                    mCustomRate.setVisibility(View.INVISIBLE);
+                }
             }
         });
 
@@ -349,7 +367,19 @@ public class AddProduct extends AppCompatActivity {
         mProduct.selectedQuantity = Integer.valueOf(pQuantityView.getText().toString());
 
         // TODO : Set the selected rate from SPINNER
-        mProduct.selectedRate = Double.valueOf(mProduct.rate.get(0).tentative_sales_rate);
+        //mProduct.selectedRate = Double.valueOf(mProduct.rate.get(0).tentative_sales_rate);
+
+        if(!mCustomRateChkbox.isChecked()) {
+            mProduct.selectedRate = Double.valueOf(mProduct.rate.get(0).tentative_sales_rate);
+        } else {
+            if ((mCustomRate.getText().toString().length() == 0) ||
+                (Double.valueOf(mCustomRate.getText().toString()) == 0)) {
+                mCustomRate.setError("Add proper custom rate!");
+                mCustomRate.requestFocus();
+                return;
+            }
+            mProduct.selectedRate = Double.valueOf(mCustomRate.getText().toString());
+        }
 
         // Send the added product
         String product = (new Gson().toJson(mProduct));

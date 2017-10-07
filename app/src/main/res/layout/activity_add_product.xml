@@ -201,6 +201,29 @@
                         android:layout_height="match_parent">
                     </android.support.v7.widget.AppCompatSpinner>
 
+                    <CheckBox
+                        android:id="@+id/product_custom_rate_chkbox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/prompt_add_custom_rate"/>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <EditText
+                            android:id="@+id/product_custom_rate"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="invisible"
+                            android:hint="@string/prompt_product_custom_rate"
+                            android:inputType="numberDecimal"
+                            android:textColorHint="@color/textNearWhite"
+                            android:textColor="@color/textNearWhite"
+                            android:maxLines="1" />
+
+                    </android.support.design.widget.TextInputLayout>
+
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
