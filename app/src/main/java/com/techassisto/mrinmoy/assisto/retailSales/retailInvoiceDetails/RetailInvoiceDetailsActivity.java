@@ -261,7 +261,7 @@ public class RetailInvoiceDetailsActivity extends DashBoardActivity {
             try{
                 mProductDetails = new JSONObject(details);
                 if (mProductDetails.length() == 0){
-                    Log.i(TAG, "Product Details Length: "+ mProductDetails.length());
+                    Log.i(TAG, "Vendor Details Length: "+ mProductDetails.length());
 //                    Toast.makeText(getApplicationContext(), "No Invoices found", Toast.LENGTH_SHORT).show();
                     mProductDetails = null;
                     return Constants.Status.ERR_INVALID;
@@ -437,7 +437,7 @@ public class RetailInvoiceDetailsActivity extends DashBoardActivity {
             try{
                 mInvoiceDelete = new JSONObject(details);
                 if (mInvoiceDelete.length() == 0){
-                    Log.i(TAG, "Product Details Length: "+ mInvoiceDelete.length());
+                    Log.i(TAG, "Vendor Details Length: "+ mInvoiceDelete.length());
 //                    Toast.makeText(getApplicationContext(), "No Invoices found", Toast.LENGTH_SHORT).show();
                     mInvoiceDelete = null;
                     return Constants.Status.ERR_INVALID;

@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -40,6 +41,9 @@ public class HomeActivity extends DashBoardActivity {
 
         mMainView = findViewById(R.id.home_mainview);
         mProgressView = findViewById(R.id.apiget_progress);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.hide();
 
         // Retrieve TENANT info
         getTenantInfo();

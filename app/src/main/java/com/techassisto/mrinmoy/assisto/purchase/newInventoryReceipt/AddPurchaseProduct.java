@@ -1,4 +1,4 @@
-package com.techassisto.mrinmoy.assisto.retailSales.retailNewInvoice;
+package com.techassisto.mrinmoy.assisto.purchase.newInventoryReceipt;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -24,7 +24,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.techassisto.mrinmoy.assisto.CodeScannerActivity;
-import com.techassisto.mrinmoy.assisto.ProductInfo;
+import com.techassisto.mrinmoy.assisto.PurchaseProductInfo;
 import com.techassisto.mrinmoy.assisto.R;
 import com.techassisto.mrinmoy.assisto.utils.APIs;
 import com.techassisto.mrinmoy.assisto.utils.Constants;
@@ -40,8 +40,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddProduct extends AppCompatActivity {
-    private static final String TAG = "Assisto.AddProduct";
+/**
+ * Created by sayantan on 26/10/17.
+ */
+
+public class AddPurchaseProduct extends AppCompatActivity {
+    private static final String TAG = "Assisto.AddPurProduct";
     private static final int SCAN_PRODUCT_REQUEST = 1;
 
     private Activity mActivity = null;
@@ -49,17 +53,17 @@ public class AddProduct extends AppCompatActivity {
     private View mProgressView = null;
     private View mAddProductFormView = null;
     private Button mSubmitBtn = null;
-    private CheckBox mCustomRateChkbox = null;
-    private CheckBox mCustomIsTaxInclChkbox = null;
-    private EditText mCustomRate = null;
+    // TODO: Remove these custom checkboxes
+    private EditText mDiscount = null;
+    private EditText mDiscount_2 = null;
     private int mWarehouseId = -1;
 
-    private ProductInfo mProduct;
+    private PurchaseProductInfo mProduct;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_product);
+        setContentView(R.layout.activity_add_purchase_product);
 
         mActivity = this;
         mProgressView = findViewById(R.id.apigetproduct_progress);
@@ -67,7 +71,7 @@ public class AddProduct extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
-            if(extras == null) {
+            if (extras == null) {
                 mWarehouseId = -1;
             } else {
                 mWarehouseId = extras.getInt("warehouseId");
@@ -75,41 +79,41 @@ public class AddProduct extends AppCompatActivity {
         } else {
             mWarehouseId = (int) savedInstanceState.getSerializable("warehouseId");
         }
-        Log.i(TAG, "Warehouse ID : " + mWarehouseId);
+        Log.i(TAG, "Warehouse ID: " + mWarehouseId);
 
-        final ProductAutoCompleteTextView prodView = (ProductAutoCompleteTextView) findViewById(R.id.product_name);
+        final PurchaseProductAutoCompleteTextView prodView = (PurchaseProductAutoCompleteTextView) findViewById(R.id.product_name);
         prodView.setThreshold(3);
-        prodView.setAdapter(new ProductAutoCompleteAdapter(this));
+        prodView.setAdapter(new PurchaseProductAutoCompleteAdapter(this));
         prodView.setLoadingIndicator(
                 (android.widget.ProgressBar) findViewById(R.id.product_loading_indicator));
         prodView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                ProductAutoCompleteAdapter.Product product = (ProductAutoCompleteAdapter.Product) adapterView.getItemAtPosition(position);
+                PurchaseProductAutoCompleteAdapter.Product product = (PurchaseProductAutoCompleteAdapter.Product) adapterView.getItemAtPosition(position);
 //                prodView.setText(product.getLabel());
                 Toast.makeText(getApplicationContext(), "Fetching Vendor Details.. " + product.getId(), Toast.LENGTH_SHORT).show();
                 getProduct(product.getId(), false);
             }
         });
 
-        mCustomRate = (EditText) findViewById(R.id.product_custom_rate);
+        //// TODO: ADD DISCOUNT
 
-        mCustomRateChkbox = (CheckBox) findViewById(R.id.product_custom_rate_chkbox);
-        mCustomIsTaxInclChkbox = (CheckBox) findViewById(R.id.product_custom_istax_chkbox);
+//        mCustomRateChkbox = (CheckBox) findViewById(R.id.product_custom_rate_chkbox);
+//        mCustomIsTaxInclChkbox = (CheckBox) findViewById(R.id.product_custom_istax_chkbox);
 
-        mCustomRateChkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mCustomIsTaxInclChkbox.setChecked(false);
-                if(isChecked) {
-                    mCustomRate.setVisibility(View.VISIBLE);
-                    mCustomIsTaxInclChkbox.setVisibility(View.VISIBLE);
-                } else {
-                    mCustomRate.setVisibility(View.INVISIBLE);
-                    mCustomIsTaxInclChkbox.setVisibility(View.GONE);
-                }
-            }
-        });
+//        mCustomRateChkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                mCustomIsTaxInclChkbox.setChecked(false);
+//                if (isChecked) {
+//                    mCustomRate.setVisibility(View.VISIBLE);
+//                    mCustomIsTaxInclChkbox.setVisibility(View.VISIBLE);
+//                } else {
+//                    mCustomRate.setVisibility(View.INVISIBLE);
+//                    mCustomIsTaxInclChkbox.setVisibility(View.GONE);
+//                }
+//            }
+//        });
 
         mSubmitBtn = (Button) findViewById(R.id.submit_button);
 
@@ -118,7 +122,7 @@ public class AddProduct extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
-                intent.setClass(AddProduct.this, CodeScannerActivity.class);
+                intent.setClass(AddPurchaseProduct.this, CodeScannerActivity.class);
                 startActivityForResult(intent, SCAN_PRODUCT_REQUEST);
             }
         });
@@ -220,11 +224,11 @@ public class AddProduct extends AppCompatActivity {
 
             //Compose the get Request
 
-            if(mBarcode) {
+            if (mBarcode) {
                 targetURL = Constants.SERVER_ADDR + APIs.product_barcode_get;
                 targetURL += ("?product_barcode=" + mProdDetail);
             } else {
-                targetURL = Constants.SERVER_ADDR + APIs.product_id_get;
+                targetURL = Constants.SERVER_ADDR + APIs.purchase_product_id_get;
                 targetURL += ("?product_id=" + mProdDetail);
             }
 
@@ -310,7 +314,7 @@ public class AddProduct extends AppCompatActivity {
 
             Log.i(TAG, "parse Vendor Info: " + product);
             Gson gson = new GsonBuilder().serializeNulls().create();
-            ProductInfo productInfo = gson.fromJson(product, ProductInfo.class);
+            PurchaseProductInfo productInfo = gson.fromJson(product, PurchaseProductInfo.class);
             Log.i(TAG, "ProductInfo :" + productInfo);
 
             mProduct = productInfo;
@@ -326,29 +330,32 @@ public class AddProduct extends AppCompatActivity {
             // Auto Fill the product form
 
             EditText pNameView = (EditText) findViewById(R.id.product_name);
-            EditText pIdView = (EditText) findViewById(R.id.product_id);
-            EditText pUnitView = (EditText) findViewById(R.id.product_unit);
-            Spinner pRatesView = (Spinner) findViewById(R.id.product_rate_spinner);
+//            EditText pIdView = (EditText) findViewById(R.id.product_id);
+//            EditText pUnitView = (EditText) findViewById(R.id.product_unit);
+//            Spinner pRatesView = (Spinner) findViewById(R.id.product_rate_spinner);
             EditText pCGSTView = (EditText) findViewById(R.id.product_cgst);
             EditText pSGSTView = (EditText) findViewById(R.id.product_sgst);
             EditText pQuantityView = (EditText) findViewById(R.id.product_quantity);
 
+            EditText pPurchaseView = (EditText) findViewById(R.id.product_purchase);
+            EditText pTSPView = (EditText) findViewById(R.id.product_tsp);
+            EditText pMRPView = (EditText) findViewById(R.id.product_mrp);
+
             pNameView.setText(mProduct.product_name);
-            pIdView.setText(Integer.toString(mProduct.product_id));
-            pUnitView.setText(mProduct.unit);
+//            pIdView.setText(Integer.toString(mProduct.product_id));
+//            pUnitView.setText(mProduct.unit);
             pCGSTView.setText(Double.toString(mProduct.cgst));
             pSGSTView.setText(Double.toString(mProduct.sgst));
             pQuantityView.setText(Integer.toString(0));
+            pPurchaseView.setText(Integer.toString(0));
+            pTSPView.setText(Integer.toString(0));
+            pMRPView.setText(Integer.toString(0));
 
-            // Populate the rates spinner
-            List<String> list = new ArrayList<String>();
-            for (int i=0; i<mProduct.rate.size(); i++) {
-                list.add(mProduct.rate.get(i).tentative_sales_rate);
-            }
-            ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(mActivity,
-                    android.R.layout.simple_spinner_item, list);
-            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            pRatesView.setAdapter(dataAdapter);
+            //TODO: UPDATE DISCOUNT TYPES
+//            List<String> list = new ArrayList<String>();
+//            for (int i=0; i<mProduct.rate.size(); i++) {
+//                list.add(mProduct.rate.get(i).tentative_sales_rate);
+//            }
 
             pQuantityView.requestFocus();
         }
@@ -363,6 +370,9 @@ public class AddProduct extends AppCompatActivity {
         //Error Handling
         // Check if quantity is 0
         EditText pQuantityView = (EditText) findViewById(R.id.product_quantity);
+        EditText pPurchaseView = (EditText) findViewById(R.id.product_purchase);
+        EditText pTSPView = (EditText) findViewById(R.id.product_tsp);
+        EditText pMRPView = (EditText) findViewById(R.id.product_mrp);
         if (Integer.valueOf(pQuantityView.getText().toString()) == 0) {
             pQuantityView.setError("Quantity cannot be 0");
             pQuantityView.requestFocus();
@@ -371,27 +381,34 @@ public class AddProduct extends AppCompatActivity {
 
         // Set the selected quantity
         mProduct.selectedQuantity = Integer.valueOf(pQuantityView.getText().toString());
+        mProduct.purchase_rate = Integer.valueOf(pPurchaseView.getText().toString());
+        mProduct.tsp = Integer.valueOf(pTSPView.getText().toString());
+        mProduct.mrp = Integer.valueOf(pMRPView.getText().toString());
 
-        if(!mCustomRateChkbox.isChecked()) {
-            // Show error msg if no Rates are available.
-            if (mProduct.rate.size() == 0) {
-                Toast.makeText(getApplicationContext(), "No rates found!! Add a custom rate", Toast.LENGTH_LONG).show();
-                return;
-            }
+        mProduct.disc_type = 0;
+        mProduct.disc = 0;
+        mProduct.disc_type2 = 0;
+        mProduct.disc_2 = 0;
 
-            // TODO : Set the selected rate from SPINNER
-            mProduct.selectedRate = Double.valueOf(mProduct.rate.get(0).tentative_sales_rate);
-            mProduct.selectedIsTaxIncluded =  mProduct.rate.get(0).is_tax_included;
-        } else {
-            if ((mCustomRate.getText().toString().length() == 0) ||
-                (Double.valueOf(mCustomRate.getText().toString()) == 0)) {
-                mCustomRate.setError("Add proper custom rate!");
-                mCustomRate.requestFocus();
-                return;
-            }
-            mProduct.selectedRate = Double.valueOf(mCustomRate.getText().toString());
-            mProduct.selectedIsTaxIncluded = mCustomIsTaxInclChkbox.isSelected() ? true : false;
-        }
+//        if (!mCustomRateChkbox.isChecked()) {
+//            // Show error msg if no Rates are available.
+////            if (mProduct.rate.size() == 0) {
+////                Toast.makeText(getApplicationContext(), "No rates found!! Add a custom rate", Toast.LENGTH_LONG).show();
+////                return;
+////            }
+//
+////            mProduct.selectedRate = Double.valueOf(mProduct.rate.get(0).tentative_sales_rate);
+////            mProduct.selectedIsTaxIncluded =  mProduct.rate.get(0).is_tax_included;
+//        } else {
+//            if ((mCustomRate.getText().toString().length() == 0) ||
+//                    (Double.valueOf(mCustomRate.getText().toString()) == 0)) {
+//                mCustomRate.setError("Add proper custom rate!");
+//                mCustomRate.requestFocus();
+//                return;
+//            }
+//            mProduct.selectedRate = Double.valueOf(mCustomRate.getText().toString());
+////            mProduct.selectedIsTaxIncluded = mCustomIsTaxInclChkbox.isSelected() ? true : false;
+//        }
 
         // Send the added product
         String product = (new Gson().toJson(mProduct));
@@ -400,4 +417,5 @@ public class AddProduct extends AppCompatActivity {
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
+
 }

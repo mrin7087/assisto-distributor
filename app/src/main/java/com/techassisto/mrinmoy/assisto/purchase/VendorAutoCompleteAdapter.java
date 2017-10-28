@@ -1,4 +1,4 @@
-package com.techassisto.mrinmoy.assisto.retailSales.retailNewInvoice;
+package com.techassisto.mrinmoy.assisto.purchase;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -35,16 +35,16 @@ import java.util.List;
 import static android.content.Context.MODE_PRIVATE;
 
 /**
- * Created by Mrinmoy on 8/25/2017.
+ * Created by sayantan on 28/10/17.
  */
 
-public class ProductAutoCompleteAdapter extends BaseAdapter implements Filterable {
-    private static final String TAG = "Assisto.ProductAdapter";
+public class VendorAutoCompleteAdapter extends BaseAdapter implements Filterable {
+    private static final String TAG = "Assisto.VendorAdapter";
     private static final int MAX_RESULTS = 10;
     private Context mContext;
-    private List<Product> resultList = new ArrayList<Product>();
+    private List<Vendor> resultList = new ArrayList<Vendor>();
 
-    public ProductAutoCompleteAdapter(Context context) {
+    public VendorAutoCompleteAdapter(Context context) {
         mContext = context;
     }
 
@@ -54,7 +54,7 @@ public class ProductAutoCompleteAdapter extends BaseAdapter implements Filterabl
     }
 
     @Override
-    public Product getItem(int index) {
+    public Vendor getItem(int index) {
         return resultList.get(index);
     }
 
@@ -82,15 +82,15 @@ public class ProductAutoCompleteAdapter extends BaseAdapter implements Filterabl
             protected FilterResults performFiltering(CharSequence constraint) {
                 FilterResults filterResults = new FilterResults();
                 if (constraint != null) {
-                    List<Product> products = getProducts(mContext, constraint.toString());
+                    List<Vendor> vendors = getVendors(mContext, constraint.toString());
 
-                    if(products == null) {
+                    if(vendors == null) {
                         return null;
                     }
 
                     // Assign the data to the FilterResults
-                    filterResults.values = products;
-                    filterResults.count = products.size();
+                    filterResults.values = vendors;
+                    filterResults.count = vendors.size();
                 }
                 return filterResults;
             }
@@ -98,7 +98,7 @@ public class ProductAutoCompleteAdapter extends BaseAdapter implements Filterabl
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
                 if (results != null && results.count > 0) {
-                    resultList = (List<Product>) results.values;
+                    resultList = (List<Vendor>) results.values;
                     notifyDataSetChanged();
                 } else {
                     notifyDataSetInvalidated();
@@ -107,7 +107,7 @@ public class ProductAutoCompleteAdapter extends BaseAdapter implements Filterabl
         return filter;
     }
 
-    public class Product {
+    public class Vendor {
         public String label;
         public int id;
 
@@ -123,16 +123,16 @@ public class ProductAutoCompleteAdapter extends BaseAdapter implements Filterabl
     /**
      * Returns a search result for the given product pattern;
      */
-    private List<Product> getProducts(Context context, String prodPattern) {
-        Log.i(TAG, "getProducts, term:" + prodPattern);
+    private List<Vendor> getVendors(Context context, String vendPattern) {
+        Log.i(TAG, "getVendors, term:" + vendPattern);
 
-        if (prodPattern == null) {
+        if (vendPattern == null) {
             Log.i(TAG, "Ignore null request..");
             return null;
         }
 
-        if (prodPattern.length() < 3) {
-            Log.i(TAG, "Ignore request of length:" + prodPattern.length());
+        if (vendPattern.length() < 3) {
+            Log.i(TAG, "Ignore request of length:" + vendPattern.length());
             return null;
         }
 
@@ -145,7 +145,7 @@ public class ProductAutoCompleteAdapter extends BaseAdapter implements Filterabl
         }
 
         //Compose the get Request
-        String targetURL = Constants.SERVER_ADDR + APIs.product_autocomplete_get;
+        String targetURL = Constants.SERVER_ADDR + APIs.vendor_autocomplete_get;
 
         StringBuffer response = new StringBuffer();
 
@@ -153,7 +153,7 @@ public class ProductAutoCompleteAdapter extends BaseAdapter implements Filterabl
         HttpURLConnection httpConnection = null;
         try {
             targetURL += ("?term=");
-            String query = URLEncoder.encode(prodPattern, "utf-8");
+            String query = URLEncoder.encode(vendPattern, "utf-8");
             targetURL += (query);
             URL targetUrl = new URL(targetURL);
             httpConnection = (HttpURLConnection) targetUrl.openConnection();
@@ -180,7 +180,7 @@ public class ProductAutoCompleteAdapter extends BaseAdapter implements Filterabl
 
             Log.i(TAG, response.toString());
             // Save the product details
-            return parseProductList(response.toString());
+            return parseVendorList(response.toString());
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -202,27 +202,27 @@ public class ProductAutoCompleteAdapter extends BaseAdapter implements Filterabl
         }
     }
 
-    private List<Product> parseProductList(String response) {
-        Log.i(TAG, "parseProductList..");
-        List<Product> prodList = new ArrayList<Product>();
+    private List<Vendor> parseVendorList(String response) {
+        Log.i(TAG, "parseVendorList..");
+        List<Vendor> vendList = new ArrayList<Vendor>();
         try {
-            JSONArray jsonProdArr = new JSONArray(response);
-            if (jsonProdArr.length() == 0) {
-                Log.i(TAG, "No matching product found!!");
+            JSONArray jsonVendArr = new JSONArray(response);
+            if (jsonVendArr.length() == 0) {
+                Log.i(TAG, "No matching vendor found!!");
                 return null;
             }
 
-            for (int i = 0; i < jsonProdArr.length(); i++) {
-                JSONObject jsonProd = jsonProdArr.getJSONObject(i);
+            for (int i = 0; i < jsonVendArr.length(); i++) {
+                JSONObject jsonVend = jsonVendArr.getJSONObject(i);
                 // Serialize and add to list
                 Gson gson = new GsonBuilder().serializeNulls().create();
-                Product product = gson.fromJson(jsonProd.toString(), Product.class);
-                prodList.add(product);
-                Log.i(TAG, "Added Vendor to list:" + jsonProd.toString());
+                Vendor vendor = gson.fromJson(jsonVend.toString(), Vendor.class);
+                vendList.add(vendor);
+                Log.i(TAG, "Added Vendor to list:" + jsonVend.toString());
             }
-            return prodList;
+            return vendList;
         } catch (Exception ex) {
-            Log.e(TAG, "Failed to parse product Json array, ex:" + ex.toString());
+            Log.e(TAG, "Failed to parse vendor Json array, ex:" + ex.toString());
         }
         return null;
     }

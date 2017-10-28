@@ -56,12 +56,12 @@
 
         <activity android:name=".CodeScannerActivity" />
 
-        <!-- ++ Distributor Sales ++ -->
+        <!-- ++ Retail Sales ++ -->
         <activity
             android:name=".retailSales.RetailSalesLanding"
             android:label="Retail Sales"
             android:theme="@style/AppTheme.NoActionBar" />
-        <!-- ++ Distributor Sales ++ -->
+
         <activity
             android:name=".retailSales.retailNewInvoice.NewSalesInvoice"
             android:label="New Sales Invoice"
@@ -101,6 +101,23 @@
             android:label="Retail Dashboard"
             android:parentActivityName=".retailSales.RetailSalesLanding"
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <!-- ++ Purchase ++ -->
+        <activity
+            android:name=".purchase.PurchaseLanding"
+            android:label="Purchase"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name=".purchase.newInventoryReceipt.NewProductReceipt"
+            android:label="New Receipt"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity
+            android:name=".purchase.newInventoryReceipt.AddPurchaseProduct"
+            android:label="Add Product"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar.Transparent" />
+
     </application>
 
 </manifest>

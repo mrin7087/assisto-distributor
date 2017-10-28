@@ -11,11 +11,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.GravityCompat;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -145,6 +148,11 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         mListView.setAdapter(mAdapter);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setAlpha((float) 0.7);
+        CoordinatorLayout.LayoutParams params= (CoordinatorLayout.LayoutParams)
+                fab.getLayoutParams();
+        params.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -252,7 +260,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         Log.i(TAG, "Save Invoice");
 
         if (mModelList.size() == 0) {
-            Toast.makeText(getApplicationContext(), "Product list is empty!!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Vendor list is empty!!", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -332,7 +340,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             billCGSTTotal+=cgstTotal;
             billSGSTTotal+=sgstTotal;
 
-//            Log.i(TAG, "Product Taxable Value: "+productArr[i].sales_after_tax);
+//            Log.i(TAG, "Vendor Taxable Value: "+productArr[i].sales_after_tax);
 
             // TODO Consider discount and multiple sales rate.
 
@@ -396,7 +404,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
     }
 
     private void addProduct(String product) {
-        Log.i(TAG, "Product: " + product);
+        Log.i(TAG, "Vendor: " + product);
         ProductInfo productInfo = new Gson().fromJson(product, ProductInfo.class);
         Log.i(TAG, "ProductInfo: " + productInfo);
 
@@ -445,7 +453,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         Log.i(TAG, "onBackPressed");
 
         if (mModelList.size() == 0) {
-            Log.i(TAG, "Product List Empty.. return");
+            Log.i(TAG, "Vendor List Empty.. return");
             finish();
             return;
         }

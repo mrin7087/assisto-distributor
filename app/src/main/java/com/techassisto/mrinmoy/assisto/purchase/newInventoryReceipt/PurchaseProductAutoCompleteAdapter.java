@@ -1,4 +1,4 @@
-package com.techassisto.mrinmoy.assisto.retailSales.retailNewInvoice;
+package com.techassisto.mrinmoy.assisto.purchase.newInventoryReceipt;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -35,16 +35,16 @@ import java.util.List;
 import static android.content.Context.MODE_PRIVATE;
 
 /**
- * Created by Mrinmoy on 8/25/2017.
+ * Created by sayantan on 26/10/17.
  */
 
-public class ProductAutoCompleteAdapter extends BaseAdapter implements Filterable {
-    private static final String TAG = "Assisto.ProductAdapter";
+public class PurchaseProductAutoCompleteAdapter extends BaseAdapter implements Filterable {
+    private static final String TAG = "Assisto.PurProdAdapter";
     private static final int MAX_RESULTS = 10;
     private Context mContext;
     private List<Product> resultList = new ArrayList<Product>();
 
-    public ProductAutoCompleteAdapter(Context context) {
+    public PurchaseProductAutoCompleteAdapter(Context context) {
         mContext = context;
     }
 
@@ -145,7 +145,7 @@ public class ProductAutoCompleteAdapter extends BaseAdapter implements Filterabl
         }
 
         //Compose the get Request
-        String targetURL = Constants.SERVER_ADDR + APIs.product_autocomplete_get;
+        String targetURL = Constants.SERVER_ADDR + APIs.purchase_product_autocomplete_get;
 
         StringBuffer response = new StringBuffer();
 

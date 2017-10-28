@@ -34,6 +34,15 @@
     <string name="scan_button">Scan</string>
     <string name="scan_button_invoice">Scan Invoice Barcode</string>
 
+    <!-- ++ Purchase ++ -->
+
+    <string name="prompt_purchase_price">Purchase Rate</string>
+    <string name="prompt_tsp">Tentative Sales Rate</string>
+    <string name="prompt_mrp">MRP</string>
+    <string name="prompt_receipt_details">Add Receipt Details</string>
+    <string name="prompt_receipt_date">Select Date</string>
+    <string name="prompt_receipt_vendor_invoice">Vendor Invoice No</string>
+
 
     <!--++ Vendor ++-->
     <!--++ form ++-->
@@ -61,7 +70,7 @@
     <string name="product_rates">Rates</string>
     <string name="total_sales_graph">Total Sales in the last 5 Days</string>
 
-    <!--++ Add Product Form ++-->
+    <!--++ Add Vendor Form ++-->
     <string name="retail_payment_mode">Payment Mode</string>
     <string name="prompt_product_name">Product Name</string>
     <string name="prompt_product_id">Product Id</string>
@@ -73,7 +82,7 @@
     <string name="prompt_add_custom_rate">Add Custom Rate?</string>
     <string name="prompt_custom_istax">Is Tax included ?</string>
     <string name="prompt_product_quantity">Quantity</string>
-    <!--++ Add Product Form ++-->
+    <!--++ Add Vendor Form ++-->
 
     <!--++ Retail Sales Invoice View++-->
     <string name="search_invoice">Enter Invoice No</string>

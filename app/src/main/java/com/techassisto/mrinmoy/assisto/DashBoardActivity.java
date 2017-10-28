@@ -19,9 +19,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.techassisto.mrinmoy.assisto.customer.CustomerLanding;
+import com.techassisto.mrinmoy.assisto.purchase.PurchaseLanding;
 import com.techassisto.mrinmoy.assisto.retailSales.RetailSalesLanding;
 import com.techassisto.mrinmoy.assisto.utils.Constants;
+import com.techassisto.mrinmoy.assisto.utils.TenantInfo;
 import com.techassisto.mrinmoy.assisto.vendor.VendorLanding;
 
 public abstract class DashBoardActivity extends AppCompatActivity
@@ -58,17 +62,33 @@ public abstract class DashBoardActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         // Set some info and actions in NAV Header
         View nav_header = navigationView.getHeaderView(0);
         //Display the username in the Nav Header
+//        SharedPreferences userPref = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE);
+//        String username = userPref.getString(Constants.UserPref.SP_USERNAME, null);
+//        if (username != null) {
+//            TextView nav_header_profileName = (TextView) nav_header.findViewById(R.id.nav_header_profilename);
+//            nav_header_profileName.append(" " + username);
+//        }
+
+        TenantInfo tenantInfo = null;
         SharedPreferences userPref = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE);
-        String username = userPref.getString(Constants.UserPref.SP_USERNAME, null);
-        if (username != null) {
+        String tenant = userPref.getString(Constants.UserPref.SP_TENANT, null);
+        if (tenant != null) {
+            Gson gson = new GsonBuilder().serializeNulls().create();
+            tenantInfo = gson.fromJson(tenant, TenantInfo.class);
+//            Log.i(TAG, "Tenant:" + tenantInfo.tenant_name + " First Name:" + tenantInfo.first_name);
             TextView nav_header_profileName = (TextView) nav_header.findViewById(R.id.nav_header_profilename);
-            nav_header_profileName.append(" " + username);
+            nav_header_profileName.append(" " + tenantInfo.first_name);
+
+            TextView nav_header_tenantName = (TextView) nav_header.findViewById(R.id.nav_header_tenantname);
+            nav_header_tenantName.append(" " + tenantInfo.tenant_name);
         }
 
         //Set the Nav Header image to redirect to Home Activiity
@@ -143,10 +163,17 @@ public abstract class DashBoardActivity extends AppCompatActivity
             intent.setClass(DashBoardActivity.this, RetailSalesLanding.class);
             startActivity(intent);
 
+        } else if (id == R.id.nav_purchase) {
+            //Toast.makeText(this, "Selected Logout", Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent();
+            intent.setClass(DashBoardActivity.this, PurchaseLanding.class);
+            startActivity(intent);
+
         } else if (id == R.id.nav_manufacturer) {
             //Toast.makeText(this, "Selected Manufacturer", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_product) {
-            //Toast.makeText(this, "Selected Product", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Selected Vendor", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_settings) {
             //Toast.makeText(this, "Selected Settings", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_logout) {

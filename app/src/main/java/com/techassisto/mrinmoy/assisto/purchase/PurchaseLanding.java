@@ -1,4 +1,4 @@
-package com.techassisto.mrinmoy.assisto.retailSales;
+package com.techassisto.mrinmoy.assisto.purchase;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -22,9 +22,7 @@ import com.google.gson.GsonBuilder;
 import com.techassisto.mrinmoy.assisto.DashBoardActivity;
 import com.techassisto.mrinmoy.assisto.R;
 import com.techassisto.mrinmoy.assisto.WarehouseInfo;
-import com.techassisto.mrinmoy.assisto.retailSales.retailDashboard.RetailDashboardActivity;
-import com.techassisto.mrinmoy.assisto.retailSales.retailInvoiceList.InvoiceActivity;
-import com.techassisto.mrinmoy.assisto.retailSales.retailNewInvoice.NewSalesInvoice;
+import com.techassisto.mrinmoy.assisto.purchase.newInventoryReceipt.NewProductReceipt;
 import com.techassisto.mrinmoy.assisto.retailSales.retailNewInvoice.WarehouseAdapter;
 import com.techassisto.mrinmoy.assisto.utils.APIs;
 import com.techassisto.mrinmoy.assisto.utils.Constants;
@@ -44,8 +42,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RetailSalesLanding extends DashBoardActivity {
-    private static final String TAG = "Assisto.RetailLanding";
+/**
+ * Created by sayantan on 25/10/17.
+ */
+
+public class PurchaseLanding extends DashBoardActivity {
+    private static final String TAG = "Assisto.PurchaseLanding";
 
     private Activity mActivity = null;
 
@@ -60,7 +62,6 @@ public class RetailSalesLanding extends DashBoardActivity {
     private String mWarehouseAddress;
     private int mWarehouseState;
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_retailsales_landing);
@@ -85,7 +86,7 @@ public class RetailSalesLanding extends DashBoardActivity {
                     intent.putExtra("warehouseId", mWareHouseId);
                     intent.putExtra("warehouseAddress", mWarehouseAddress);
                     intent.putExtra("warehouseState", mWarehouseState);
-                    intent.setClass(RetailSalesLanding.this, NewSalesInvoice.class);
+                    intent.setClass(PurchaseLanding.this, NewProductReceipt.class);
                     startActivity(intent);
                 }
             }
@@ -99,31 +100,22 @@ public class RetailSalesLanding extends DashBoardActivity {
             TenantInfo tenantInfo = gson.fromJson(tenant, TenantInfo.class);
             Log.i(TAG, "Tenant:" + tenantInfo.tenant_name + " First Name:" + tenantInfo.first_name);
         }
-        Button viewInvoiceBtn = (Button) findViewById(R.id.viewInvoiceBtn);
-        viewInvoiceBtn .setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setClass(RetailSalesLanding.this, InvoiceActivity.class);
-                startActivity(intent);
-            }
-        });
+//        Button viewInvoiceBtn = (Button) findViewById(R.id.viewInvoiceBtn);
+//        viewInvoiceBtn .setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent();
+//                intent.setClass(RetailSalesLanding.this, InvoiceActivity.class);
+//                startActivity(intent);
+//            }
+//        });
 
-        Button retailDashboardBtn = (Button) findViewById(R.id.viewRetailDashboardBtn);
-        retailDashboardBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setClass(RetailSalesLanding.this, RetailDashboardActivity.class);
-                startActivity(intent);
-            }
-        });
 
         getWarehouses();
     }
 
     public int getLayoutResId() {
-        return R.layout.activity_retailsales_landing;
+        return R.layout.actvity_purchase_landing;
     }
 
     /**
@@ -355,4 +347,5 @@ public class RetailSalesLanding extends DashBoardActivity {
             mWarehousesSpnr.setAdapter(dataAdapter);
         }
     }
+
 }
