@@ -1,13 +1,19 @@
 package com.techassisto.mrinmoy.assisto;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -33,6 +39,8 @@ public class HomeActivity extends DashBoardActivity {
 
     private View mMainView = null;
     private View mProgressView = null;
+    public static final int PERMISSION_REQUEST = 200;
+    boolean doubleBackToExitPressedOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +55,31 @@ public class HomeActivity extends DashBoardActivity {
 
         // Retrieve TENANT info
         getTenantInfo();
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST);
+        }
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, PERMISSION_REQUEST);
+        }
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH}, PERMISSION_REQUEST);
+        }
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_ADMIN}, PERMISSION_REQUEST);
+        }
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_REQUEST);
+        }
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.GET_ACCOUNTS}, PERMISSION_REQUEST);
+        }
+
     }
 
     public int getLayoutResId() {
@@ -75,6 +108,31 @@ public class HomeActivity extends DashBoardActivity {
             // REDIRECT TO LOGIN PAGE
         }
     }
+
+//    @Override
+//    public void onBackPressed() {
+//        if (doubleBackToExitPressedOnce) {
+////            super.onBackPressed();
+////            return;
+//            finish();
+//            Intent intent = new Intent(Intent.ACTION_MAIN);
+//            intent.addCategory(Intent.CATEGORY_HOME);
+//            startActivity(intent);
+//        }
+//        else {
+//
+//            this.doubleBackToExitPressedOnce = true;
+//            Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+//
+//            new Handler().postDelayed(new Runnable() {
+//
+//                @Override
+//                public void run() {
+//                    doubleBackToExitPressedOnce = false;
+//                }
+//            }, 2000);
+//        }
+//    }
 
     /**
      * Shows the progress UI and hides the login form.

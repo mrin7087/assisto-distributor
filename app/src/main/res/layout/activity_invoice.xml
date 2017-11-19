@@ -62,7 +62,7 @@
                     android:textSize="12sp"
                     android:gravity="center"
                     android:textAlignment="gravity"
-                    android:background="@color/semiTransparentButton"
+                    android:backgroundTint="@color/lightBlueSemiTransparentButton"
                     android:alpha="0.75"
                     android:layout_alignParentEnd="true"/>
             </RelativeLayout>
@@ -77,7 +77,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:drawableStart="@drawable/ic_barcode_scan"
-                    android:backgroundTint="@color/semiTransparentButton"
+                    android:backgroundTint="@color/lightBlueSemiTransparentButton"
                     android:text="@string/scan_button_invoice"
                     android:textStyle="italic" />
             </RelativeLayout>

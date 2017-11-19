@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/product_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="Name"
+            android:textColor="@color/textColorWebApp"
+            android:textSize="15sp">
+        </TextView>
+
+        <Button
+            android:id="@+id/product_delete"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:padding="0sp"
+            android:background="@drawable/ic_delete_black_24dp"
+            android:backgroundTint="@color/textColorWebApp"
+            android:textSize="10sp"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="4px"
+            android:layout_marginRight="10px"/>
+
+        <!--<TextView-->
+            <!--android:id="@+id/product_quantity"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:hint="Qty"-->
+            <!--android:layout_below="@id/product_name"-->
+            <!--android:textColor="@color/textColorWebApp"-->
+            <!--android:textSize="15sp">-->
+        <!--</TextView>-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/product_price"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:hint="Purchase"-->
+            <!--android:layout_below="@id/product_name"-->
+            <!--android:textSize="15sp"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:textColor="@color/textColorWebApp"-->
+            <!--android:layout_marginLeft="4px"-->
+            <!--android:layout_marginRight="10px" >-->
+        <!--</TextView>-->
+
+        <TextView
+            android:id="@+id/product_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Qty"
+            android:textSize="12sp"
+            android:textColor="@color/textColorWebApp"
+            android:layout_below="@+id/product_delete"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:id="@+id/disc_1_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/product_quantity"
+            android:layout_marginStart="45dp"
+            android:layout_toEndOf="@+id/product_quantity"
+            android:hint="Disc1 Type"
+            android:textSize="12sp"
+            android:textColor="@color/textColorWebApp"/>
+
+        <TextView
+            android:id="@+id/disc_1_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/disc_1_type"
+            android:layout_marginStart="15dp"
+            android:layout_toEndOf="@+id/disc_1_type"
+            android:hint="Val"
+            android:textSize="12sp"
+            android:textColor="@color/textColorWebApp"/>
+
+        <TextView
+            android:id="@+id/disc_2_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/product_delete"
+            android:layout_marginEnd="19dp"
+            android:layout_toStartOf="@+id/product_delete"
+            android:hint="Disc2 Type"
+            android:textSize="12sp"
+            android:textColor="@color/textColorWebApp"/>
+
+        <TextView
+            android:id="@+id/disc_2_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Val"
+            android:layout_below="@+id/product_delete"
+            android:layout_alignEnd="@+id/product_delete"
+            android:textSize="12sp"
+            android:textColor="@color/textColorWebApp"/>
+
+        <TextView
+            android:id="@+id/product_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="PP"
+            android:layout_below="@+id/product_quantity"
+            android:layout_alignParentStart="true"
+            android:textSize="12sp"
+            android:textColor="@color/textColorWebApp"/>
+
+        <TextView
+            android:id="@+id/product_tsp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/product_price"
+            android:layout_centerHorizontal="true"
+            android:hint="MRP"
+            android:textSize="12sp"
+            android:textColor="@color/textColorWebApp"/>
+
+        <TextView
+            android:id="@+id/product_mrp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/product_tsp"
+            android:layout_alignParentEnd="true"
+            android:hint="TSP"
+            android:textSize="12sp"
+            android:textColor="@color/textColorWebApp"/>
+
+
+    </RelativeLayout>
+
+</LinearLayout>

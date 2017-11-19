@@ -11,6 +11,7 @@ public class InvoiceProductListModel {
     private String product_name;
     private int product_quantity;
     private double product_price;
+    private boolean is_tax_included;
 
 //    public InvoiceProductListModel(String name, int quantity, double price) {
 //        this.product_name = name;
@@ -23,6 +24,7 @@ public class InvoiceProductListModel {
         this.product_name = product.product_name;
         this.product_quantity = product.selectedQuantity;
         this.product_price = product.selectedRate;
+        this.is_tax_included = product.selectedIsTaxIncluded;
     }
 
     public ProductInfo getProduct() {
@@ -37,6 +39,9 @@ public class InvoiceProductListModel {
     }
     public double getPrice() {
         return product_price;
+    }
+    public boolean is_tax_included() {
+        return is_tax_included;
     }
 
     public void setName(String name) {

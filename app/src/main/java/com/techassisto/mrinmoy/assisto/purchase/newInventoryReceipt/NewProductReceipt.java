@@ -21,6 +21,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -31,11 +33,10 @@ import com.google.gson.Gson;
 import com.techassisto.mrinmoy.assisto.DashBoardActivity;
 import com.techassisto.mrinmoy.assisto.PurchaseProductInfo;
 import com.techassisto.mrinmoy.assisto.R;
-import com.techassisto.mrinmoy.assisto.purchase.VendorAutoCompleteAdapter;
-import com.techassisto.mrinmoy.assisto.purchase.VendorAutoCompleteTextView;
 import com.techassisto.mrinmoy.assisto.utils.APIs;
 import com.techassisto.mrinmoy.assisto.utils.Constants;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -52,6 +53,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.techassisto.mrinmoy.assisto.RoundClass.round;
 
@@ -79,10 +82,14 @@ public class NewProductReceipt extends DashBoardActivity {
     private int mWarehouseState;
     private String mWarehouseStateName;
 
+    private VendorAPITask mVendorAPITask = null;
+    private JSONArray mVendorList = null;
+    Map <String, String> mapVendor = new HashMap<>();
+    ArrayList<String> mVendorAutCompleteList = new ArrayList<>();
+
     EditText date;
     DatePickerDialog datePickerDialog;
 
-    private InvoiceDetails mCurrentInvoice = null;
     private int mSavedInvoiceId = -1;
 
     //Printer related
@@ -139,7 +146,7 @@ public class NewProductReceipt extends DashBoardActivity {
                 double[] billTotals = calculateBillTotal("Not Round");
                 double rounded_total = round(billTotals[0],0);
                 double round_value = rounded_total - billTotals[0];
-                mInvoiceTotalView.setText("Gross: " + String.format("%.02f", rounded_total)+ ", Taxable: " + String.format("%.02f", billTotals[1]));
+                mInvoiceTotalView.setText("Gross: " + String.format("%.02f", billTotals[0])+ ", Taxable: " + String.format("%.02f", billTotals[1]));
                 mInvoiceRoundView.setText(String.format("%.02f", round_value));
             }
         });
@@ -188,29 +195,23 @@ public class NewProductReceipt extends DashBoardActivity {
 
         // Used for vendor name autocomplete
 
-        final VendorAutoCompleteTextView vendorView = (VendorAutoCompleteTextView) findViewById(R.id.vendor_name);
-        vendorView.setThreshold(3);
-        vendorView.setAdapter(new VendorAutoCompleteAdapter(this));
-        vendorView.setAdapter(new VendorAutoCompleteAdapter(this));
-        vendorView.setLoadingIndicator(
-                (android.widget.ProgressBar) findViewById(R.id.vendor_loading_indicator));
-        vendorView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        AutoCompleteTextView autocompleteVendor = (AutoCompleteTextView)findViewById(R.id.vendor_name);
+        final ArrayAdapter<String> adapter = new ArrayAdapter<> (this,R.layout.select_dialog_lightbackground_smalltext, mVendorAutCompleteList);
+        autocompleteVendor.setThreshold(2);
+        autocompleteVendor.setAdapter(adapter);
+
+        autocompleteVendor.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                VendorAutoCompleteAdapter.Vendor vendor = (VendorAutoCompleteAdapter.Vendor) adapterView.getItemAtPosition(position);
-                Toast.makeText(getApplicationContext(), "Fetching Vendor Details.. " + vendor.getId(), Toast.LENGTH_SHORT).show();
-
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                String vendorName = adapter.getItem(position).toString();
+                String vendorId = mapVendor.get(vendorName);
+                Toast.makeText(NewProductReceipt.this, vendorName, Toast.LENGTH_SHORT).show();
                 TextView vendorIDView = (TextView) findViewById(R.id.vendor_id);
-                vendorIDView.setText(vendor.getId());
-                vendorView.setText(vendor.getLabel());
-
-                Intent intent = new Intent();
-                intent.setClass(NewProductReceipt.this, AddPurchaseProduct.class);
-                intent.putExtra("warehouseId", mWarehouseId);
-                startActivityForResult(intent, ADD_PRODUCT_REQUEST);
+                vendorIDView.setText(vendorId);
             }
         });
-
         //Taking care of manual updation of round_off value
 
         mInvoiceRoundView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -233,6 +234,178 @@ public class NewProductReceipt extends DashBoardActivity {
             }
         });
 
+        getVendors();
+
+        // To display line item details
+
+//        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+////                ReceiptProductListModel item = (ReceiptProductListModel) parent.getAdapter().getItem(position);
+//                Toast.makeText(getApplicationContext(), "Itm PP: ", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+
+    }
+
+    private void getVendors() {
+        if (mVendorAPITask != null) {
+            return;
+        }
+
+        showProgress(true);
+
+        Log.i(TAG, "getVendors...");
+
+        //Get the auth token
+        SharedPreferences userPref = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE);
+        String authToken = userPref.getString(Constants.UserPref.SP_UTOKEN, null);
+        if (authToken != null) {
+            mVendorAPITask = new VendorAPITask(authToken);
+            mVendorAPITask.execute((Void) null);
+        } else {
+            showProgress(false);
+            Toast.makeText(getApplicationContext(), "Oops!! Something went wrong. Try Again", Toast.LENGTH_SHORT).show();
+
+            // REDIRECT TO LOGIN PAGE
+        }
+    }
+
+    public class VendorAPITask extends AsyncTask<Void, Void, Integer> {
+        private static final String targetURL = Constants.SERVER_ADDR + APIs.vendor_get;
+        private final String mToken;
+
+        VendorAPITask(String token) {
+            mToken = token;
+        }
+
+        @Override
+        protected Integer doInBackground(Void... uInfo) {
+            Log.i(TAG, "doInBackground");
+
+            //Compose the get Request
+            String authHeader = "{\"authorization\": \"jwt " + mToken + "\"}";
+            JSONObject authJson;
+            try {
+                authJson = new JSONObject(authHeader);
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to make json ex:" + e);
+                return Constants.Status.ERR_UNKNOWN;
+            }
+
+            StringBuffer response = new StringBuffer();
+            Log.i(TAG, "auth header:" + authJson);
+
+            Log.i(TAG, "try to POST HTTP request");
+            HttpURLConnection httpConnection = null;
+            try{
+                URL tagetUrl = new URL(targetURL);
+                httpConnection = (HttpURLConnection) tagetUrl.openConnection();
+                httpConnection.setRequestMethod("GET");
+                httpConnection.setRequestProperty("Authorization", "jwt " + mToken);
+                httpConnection.setConnectTimeout(10000); //10secs
+                httpConnection.connect();
+
+                Log.i(TAG, "response code:" + httpConnection.getResponseCode());
+                if (httpConnection.getResponseCode() != 200){
+                    Log.e(TAG, "Failed : HTTP error code : " + httpConnection.getResponseCode());
+                    return Constants.Status.ERR_INVALID;
+                }
+
+                //Received Response
+                InputStream is = httpConnection.getInputStream();
+                BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+
+                String line;
+                while((line = rd.readLine()) != null) {
+                    response.append(line);
+                    //response.append('\r');
+                }
+                rd.close();
+
+                Log.i(TAG, response.toString());
+                // Save the vendor details
+                return parseVendorInfo(response.toString());
+
+            }catch (MalformedURLException e) {
+                e.printStackTrace();
+                return Constants.Status.ERR_NETWORK;
+
+            } catch (SocketTimeoutException e) {
+                e.printStackTrace();
+                return Constants.Status.ERR_NETWORK;
+            }
+
+            catch (IOException e) {
+                e.printStackTrace();
+                return Constants.Status.ERR_UNKNOWN;
+            }finally {
+
+                if(httpConnection != null) {
+                    httpConnection.disconnect();
+                }
+            }
+        }
+
+        @Override
+        protected void onPostExecute(final Integer status) {
+            mVendorAPITask = null;
+            showProgress(false);
+
+            if (status == Constants.Status.OK) {
+                Log.i(TAG, "Successfully received vendor data");
+                populateVendorInfo();
+            } else if (status == Constants.Status.ERR_INVALID){
+                Toast.makeText(getApplicationContext(), "Oops!! Something went wrong. Vendor details not fetched. Try again.", Toast.LENGTH_LONG).show();
+            } else {
+//                Toast.makeText(getApplicationContext(), R.string.error_network_error, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Oops!! Something went wrong. Vendor details not fetched. Try again.", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mVendorAPITask = null;
+            showProgress(false);
+        }
+
+        private int parseVendorInfo(final String vendors) {
+            Log.i(TAG, "parse Vendor Info");
+            try {
+                mVendorList = new JSONArray(vendors);
+                if (mVendorList.length() == 0) {
+                    Log.i(TAG, "User has no vendors registered");
+                    mVendorList = null;
+                    return Constants.Status.ERR_INVALID;
+                }
+
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to add vendor data, ex:" + e);
+                return Constants.Status.ERR_UNKNOWN;
+            }
+
+            return Constants.Status.OK;
+        }
+
+        private void populateVendorInfo() {
+            Log.i(TAG, "populate vendor info");
+            for (int i = 0; i < mVendorList.length(); i++) {
+                try {
+                    JSONObject vendor = mVendorList.getJSONObject(i);
+                    Log.i(TAG, "Vendor name:" + vendor.getString("name"));
+                    Log.i(TAG, "Vendor key:" + vendor.getString("key"));
+                    Log.i(TAG, "Vendor ID:" + vendor.getString("id"));
+
+                    mapVendor.put(vendor.getString("name"), vendor.getString("id"));
+                    mVendorAutCompleteList.add(vendor.getString("name"));
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to populate vendor list, ex:" + e);
+                }
+            }
+            Log.i(TAG, "Map created");
+
+            Log.i(TAG, "Autocomplete List updated");
+        }
     }
 
 
@@ -266,9 +439,17 @@ public class NewProductReceipt extends DashBoardActivity {
                 builder = new AlertDialog.Builder(this);
             }
             double[] billTotals = calculateBillTotal("Not Round");
+            double round_value;
+            try {
+                round_value = Double.parseDouble(mInvoiceRoundView.getText().toString());
+            }catch (Exception e){
+                round_value = 0;
+            }
+            double rounded_total = billTotals[0] + round_value;
+
             builder.setTitle("Save Invoice")
                     .setMessage("Save current invoice ?" +
-                            "\nGross Value: "+String.format("%.02f", billTotals[0]))
+                            "\nGross Value: "+String.format("%.02f", rounded_total))
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             // continue with delete
@@ -276,7 +457,7 @@ public class NewProductReceipt extends DashBoardActivity {
                                 saveReceipt();
                             } catch (ParseException e) {
                                 e.printStackTrace();
-                                Toast.makeText(getApplicationContext(), "Oops... There were some error!!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Oops... There were some error in saving!!", Toast.LENGTH_SHORT).show();
                             }
                         }
                     })
@@ -298,7 +479,7 @@ public class NewProductReceipt extends DashBoardActivity {
         Log.i(TAG, "Save Invoice");
 
         if (mModelList.size() == 0) {
-            Toast.makeText(getApplicationContext(), "Vendor list is empty!!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Product list is empty!!", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -335,7 +516,7 @@ public class NewProductReceipt extends DashBoardActivity {
             productArr[i].unit = pInfo.unit;
             productArr[i].disc_type = pInfo.disc_type;
             productArr[i].disc = pInfo.disc;
-            productArr[i].disc_type2 = pInfo.disc_type2;
+            productArr[i].disc_type_2 = pInfo.disc_type_2;
             productArr[i].disc_2 = pInfo.disc_2;
             productArr[i].purchase = pInfo.purchase_rate;
             productArr[i].tsp= pInfo.tsp;
@@ -356,11 +537,11 @@ public class NewProductReceipt extends DashBoardActivity {
                 purchase_disc_rate = purchase_disc_rate - pInfo.disc;
                 thisTotal=(thisTotal - pInfo.disc);
             }
-            if (pInfo.disc_type2 == 1){
+            if (pInfo.disc_type_2 == 1){
                 purchase_disc_rate = purchase_disc_rate-(pInfo.disc_2*thisTotal/100);
                 thisTotal=(thisTotal)-(pInfo.disc_2*thisTotal/100);
             }
-            else if(pInfo.disc_type2 == 2){
+            else if(pInfo.disc_type_2 == 2){
                 purchase_disc_rate = purchase_disc_rate - pInfo.disc_2;
                 thisTotal = (thisTotal - pInfo.disc_2);
             }
@@ -369,63 +550,88 @@ public class NewProductReceipt extends DashBoardActivity {
             sgstTotal=(purchase_disc_rate*pInfo.sgst)/100;
             taxTotal = cgstTotal + sgstTotal;
 
-            productArr[i].taxable_total = thisTotal;
+            productArr[i].taxable_total = round(thisTotal,2);
 
-            billTotal+=thisTotal+taxTotal;
-            billSubTotal+=purchase_disc_rate ;
+//            billTotal+=thisTotal+taxTotal;
+//            billSubTotal+=purchase_disc_rate ;
             thisTotal = thisTotal+taxTotal;
 
-            productArr[i].cgst_v = cgstTotal;
-            productArr[i].sgst_v = sgstTotal;
+            productArr[i].cgst_v = round(cgstTotal,2);
+            productArr[i].sgst_v = round(sgstTotal,2);
 //            productArr[i].taxable_total = thisNonTaxTotal;
 //            thisNonTaxEach = round((thisNonTaxTotal/pInfo.selectedQuantity),2);
 //            productArr[i].sales_after_tax = thisNonTaxEach;
-            productArr[i].line_total = thisTotal;
+            productArr[i].line_total = round(thisTotal,2);
             billCGSTTotal+=cgstTotal;
             billSGSTTotal+=sgstTotal;
 //            Log.i(TAG, "Vendor Taxable Value: "+productArr[i].sales_after_tax);
         }
 
         InvoiceDetails newInvoice = new InvoiceDetails();
-
-        EditText invoiceDateView = (EditText) findViewById(R.id.date);
-        String invoiceDateString = invoiceDateView.getText().toString();
-        Date date = new SimpleDateFormat("dd/MM/yyyy").parse(invoiceDateString);;
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        newInvoice.date = dateFormat.format(date);
+        Boolean proceed = true;
+        try {
+            EditText invoiceDateView = (EditText) findViewById(R.id.date);
+            String invoiceDateString = invoiceDateView.getText().toString();
+            Date date = new SimpleDateFormat("dd/MM/yyyy").parse(invoiceDateString);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            newInvoice.date = dateFormat.format(date);
+        }catch (Exception e){
+            Toast.makeText(getApplicationContext(), "Oops!! Please enter a valid date", Toast.LENGTH_SHORT).show();
+            proceed = false;
+        }
 
         EditText supplierInvoiceView = (EditText) findViewById(R.id.vendorInvoiceNo);
         newInvoice.supplier_invoice = supplierInvoiceView.getText().toString();
+        if (newInvoice.supplier_invoice.length() < 1){
+            Toast.makeText(getApplicationContext(), "Oops!! Please enter a vendor invoice no.", Toast.LENGTH_SHORT).show();
+            proceed = false;
+        }
 
+        TextView vendorNameView = (TextView) findViewById(R.id.vendor_name);
+        String vendorName = vendorNameView.getText().toString();
         TextView vendorIDView = (TextView) findViewById(R.id.vendor_id);
         newInvoice.vendor = vendorIDView.getText().toString();
+        if (vendorName.length() < 1){
+            Toast.makeText(getApplicationContext(), "Oops!! Please select a vendor", Toast.LENGTH_SHORT).show();
+            proceed = false;
+        }
+
+        double[] billTotals = calculateBillTotal("Round");
 
         Log.i(TAG, "Date:" + newInvoice.date);
         newInvoice.bill_details = productArr;
-//        newInvoice.supplier_invoice;
-        // Need to select vendor as well
-        newInvoice.subtotal = billSubTotal;
-        newInvoice.cgsttotal = billCGSTTotal;
-        newInvoice.sgsttotal=billSGSTTotal;
-        newInvoice.total = billTotal;
+        newInvoice.subtotal = billTotals[1];
+        newInvoice.cgsttotal = round(billCGSTTotal,2);
+        newInvoice.sgsttotal = round(billSGSTTotal,2);
+        newInvoice.igsttotal = 0;
 //        newInvoice.round_value;
         newInvoice.warehouse = mWarehouseId;
-        // TODO: Add the following - newInvoice.supplier_invoice, newInvoice.vendor and date has to be user input.
+        double round_value;
+        try {
+            round_value = Double.parseDouble(mInvoiceRoundView.getText().toString());
+        }catch (Exception e){
+            round_value = 0;
+        }
+        newInvoice.round_value = round_value;
+
+        newInvoice.total = billTotals[0];
+
         newInvoice.calltype = "mobilesave";
 
-        showProgress(true);
-        //Get the auth token
-        SharedPreferences userPref = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE);
-        String authToken = userPref.getString(Constants.UserPref.SP_UTOKEN, null);
-        if (authToken != null) {
-            Log.i(TAG, "Start task to save new invoice...");
-            mSubmitTask = new ReceiptSaveTask(newInvoice, authToken);
-            mSubmitTask.execute((Void) null);
-        } else {
-            showProgress(false);
-            Toast.makeText(getApplicationContext(), "Oops!! Something went wrong. Try Again", Toast.LENGTH_SHORT).show();
+        if (proceed) {
+            showProgress(true);
+            //Get the auth token
+            SharedPreferences userPref = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE);
+            String authToken = userPref.getString(Constants.UserPref.SP_UTOKEN, null);
+            if (authToken != null) {
+                Log.i(TAG, "Start task to save new invoice...");
+                mSubmitTask = new ReceiptSaveTask(newInvoice, authToken);
+                mSubmitTask.execute((Void) null);
+            } else {
+                showProgress(false);
+                Toast.makeText(getApplicationContext(), "Oops!! Something went wrong. Try Again", Toast.LENGTH_SHORT).show();
 
-            // REDIRECT TO LOGIN PAGE
+            }
         }
     }
 
@@ -447,14 +653,36 @@ public class NewProductReceipt extends DashBoardActivity {
             double thisLineTotalWOTax = 0;
             double thisLineTotal = 0;
             double thisQuantity = 0;
-            double thisTotalTaxP = 0;
-
+            double thisCGSTP = 0;
+            double thisSGSTP = 0;
+            double thisCGSTV = 0;
+            double thisSGSTV = 0;
+            thisCGSTP = mModelList.get(i).getProduct().cgst;
+            thisSGSTP = mModelList.get(i).getProduct().sgst;
             Log.i(TAG, mModelList.get(i).getProduct().toString() + " qty: " + mModelList.get(i).getProduct().selectedQuantity);
             thisQuantity = mModelList.get(i).getQuantity();
-            thisLineTotalWOTax = mModelList.get(i).getPurchasePrice() * thisQuantity;
-            thisTotalTaxP = mModelList.get(i).getProduct().cgst + mModelList.get(i).getProduct().sgst;
-            thisLineTotal = thisLineTotalWOTax + thisLineTotalWOTax*thisTotalTaxP/100;
-            billGrossTotal += thisLineTotal;
+            thisLineTotalWOTax = round(mModelList.get(i).getPurchasePrice() * thisQuantity,2);
+            if (mModelList.get(i).getProduct().disc_type == 1){
+                thisLineTotalWOTax = (thisLineTotalWOTax)-(mModelList.get(i).getProduct().disc*thisLineTotalWOTax/100);
+            }
+            else if(mModelList.get(i).getProduct().disc_type == 2){
+                thisLineTotalWOTax = (thisLineTotalWOTax- mModelList.get(i).getProduct().disc);
+            }
+            if (mModelList.get(i).getProduct().disc_type_2 == 1){
+                thisLineTotalWOTax = (thisLineTotalWOTax)-(mModelList.get(i).getProduct().disc_2*thisLineTotalWOTax/100);
+            }
+            else if(mModelList.get(i).getProduct().disc_type_2 == 2){
+                thisLineTotalWOTax = (thisLineTotalWOTax - mModelList.get(i).getProduct().disc_2);
+            }
+            thisLineTotalWOTax = round(thisLineTotalWOTax,2);
+            thisCGSTV = round(thisLineTotalWOTax*thisCGSTP/100,2);
+            thisSGSTV = round(thisLineTotalWOTax*thisSGSTP/100,2);
+            Log.i(TAG, "Line CGST: " + thisCGSTV);
+            Log.i(TAG, "Line SGST: " + thisSGSTV);
+            thisLineTotal = round(thisLineTotalWOTax + (thisCGSTV + thisSGSTV),2);
+            Log.i(TAG, "Line Taxable: " +thisLineTotalWOTax);
+            Log.i(TAG, "Line Total: " +thisLineTotal);
+            billGrossTotal += round(thisLineTotal,2);
             billTaxableTotal += thisLineTotalWOTax;
         }
         billGrossTotal = billGrossTotal + round_value;
@@ -463,7 +691,7 @@ public class NewProductReceipt extends DashBoardActivity {
     }
 
     private void addProduct(String product) {
-        Log.i(TAG, "Vendor: " + product);
+        Log.i(TAG, "Product: " + product);
         PurchaseProductInfo productInfo = new Gson().fromJson(product, PurchaseProductInfo.class);
         Log.i(TAG, "ProductInfo: " + productInfo);
 
@@ -549,7 +777,7 @@ public class NewProductReceipt extends DashBoardActivity {
         double mrp;
         int disc_type;
         double disc;
-        int disc_type2;
+        int disc_type_2;
         double disc_2;
         double cgst_p;
         double cgst_v;
@@ -568,6 +796,7 @@ public class NewProductReceipt extends DashBoardActivity {
         double subtotal;
         double cgsttotal;
         double sgsttotal;
+        double igsttotal;
         double round_value;
         double total;
         String calltype;
@@ -678,8 +907,11 @@ public class NewProductReceipt extends DashBoardActivity {
                 // Clear the data
                 mModelList.clear();
                 mAdapter.notifyDataSetChanged();
-
-                mCurrentInvoice = mInvoice;
+                mInvoiceTotalView.setText("Total: 0.00");
+                EditText supplierInvoiceView = (EditText) findViewById(R.id.vendorInvoiceNo);
+                supplierInvoiceView.setText("");
+//                AutoCompleteTextView autocompleteVendor = (AutoCompleteTextView)findViewById(R.id.vendor_name);
+//                autocompleteVendor.setText("");
 
             } else if (status == Constants.Status.ERR_INVALID) {
                 Toast.makeText(getApplicationContext(), R.string.error_network_error, Toast.LENGTH_SHORT).show();

@@ -21,11 +21,14 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.techassisto.mrinmoy.assisto.BarcodeFiles.ScanActivity;
 import com.techassisto.mrinmoy.assisto.CodeScannerActivity;
 import com.techassisto.mrinmoy.assisto.ProductInfo;
 import com.techassisto.mrinmoy.assisto.R;
+import com.techassisto.mrinmoy.assisto.purchase.newInventoryReceipt.AddPurchaseProduct;
 import com.techassisto.mrinmoy.assisto.utils.APIs;
 import com.techassisto.mrinmoy.assisto.utils.Constants;
 
@@ -87,7 +90,7 @@ public class AddProduct extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 ProductAutoCompleteAdapter.Product product = (ProductAutoCompleteAdapter.Product) adapterView.getItemAtPosition(position);
 //                prodView.setText(product.getLabel());
-                Toast.makeText(getApplicationContext(), "Fetching Vendor Details.. " + product.getId(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Fetching Details.. " + product.getLabel(), Toast.LENGTH_SHORT).show();
                 getProduct(product.getId(), false);
             }
         });
@@ -117,8 +120,10 @@ public class AddProduct extends AppCompatActivity {
         scanBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setClass(AddProduct.this, CodeScannerActivity.class);
+//                Intent intent = new Intent();
+//                intent.setClass(AddProduct.this, CodeScannerActivity.class);
+//                startActivityForResult(intent, SCAN_PRODUCT_REQUEST);
+                Intent intent = new Intent(AddProduct.this, ScanActivity.class);
                 startActivityForResult(intent, SCAN_PRODUCT_REQUEST);
             }
         });
@@ -130,8 +135,10 @@ public class AddProduct extends AppCompatActivity {
 
         if (requestCode == SCAN_PRODUCT_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
-                String barcode = data.getStringExtra("barcode");
-                Toast.makeText(getApplicationContext(), "Fetching Vendor Details: " + barcode, Toast.LENGTH_SHORT).show();
+//                String barcode = data.getStringExtra("barcode");
+                Barcode barcodedata = data.getParcelableExtra("barcode");
+                String barcode = barcodedata.displayValue;
+                Toast.makeText(getApplicationContext(), "Fetching Product Details: " + barcode, Toast.LENGTH_LONG).show();
                 getProduct(barcode, true);
             }
         }
@@ -290,7 +297,7 @@ public class AddProduct extends AppCompatActivity {
                 Log.i(TAG, "Successfully received product data");
                 populateProductInfo();
             } else if (status == Constants.Status.ERR_INVALID) {
-                Toast.makeText(getApplicationContext(), "Sorry! Vendor does not exist.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Sorry! Product does not exist.", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getApplicationContext(), R.string.error_network_error, Toast.LENGTH_SHORT).show();
             }
@@ -303,12 +310,12 @@ public class AddProduct extends AppCompatActivity {
         }
 
         private int parseProductInfo(String product) {
-            if (product.contentEquals("{\"error\": \"Vendor Does not exist\"}")) {
-                Log.i(TAG, "Vendor doesn't exist");
+            if (product.contentEquals("{\"error\": \"Product Does not exist\"}")) {
+                Log.i(TAG, "Product doesn't exist");
                 return Constants.Status.ERR_INVALID;
             }
 
-            Log.i(TAG, "parse Vendor Info: " + product);
+            Log.i(TAG, "parse Product Info: " + product);
             Gson gson = new GsonBuilder().serializeNulls().create();
             ProductInfo productInfo = gson.fromJson(product, ProductInfo.class);
             Log.i(TAG, "ProductInfo :" + productInfo);
@@ -319,7 +326,7 @@ public class AddProduct extends AppCompatActivity {
         }
 
         private void populateProductInfo() {
-            Log.i(TAG, "populate Vendor info" + mProduct);
+            Log.i(TAG, "populate Product info" + mProduct);
 
             mSubmitBtn.setVisibility(View.VISIBLE);
 
@@ -389,8 +396,9 @@ public class AddProduct extends AppCompatActivity {
                 mCustomRate.requestFocus();
                 return;
             }
+//            mCustomIsTaxInclChkbox = (CheckBox) findViewById(R.id.product_custom_istax_chkbox);
             mProduct.selectedRate = Double.valueOf(mCustomRate.getText().toString());
-            mProduct.selectedIsTaxIncluded = mCustomIsTaxInclChkbox.isSelected() ? true : false;
+            mProduct.selectedIsTaxIncluded = mCustomIsTaxInclChkbox.isChecked();
         }
 
         // Send the added product

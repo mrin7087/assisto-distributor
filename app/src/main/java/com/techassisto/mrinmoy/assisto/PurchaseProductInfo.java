@@ -1,7 +1,5 @@
 package com.techassisto.mrinmoy.assisto;
 
-import java.util.List;
-
 /**
  * Created by sayantan on 25/10/17.
  */
@@ -20,7 +18,7 @@ public class PurchaseProductInfo {
     public double tsp;
     public double mrp;
     public int disc_type;
-    public int disc_type2;
+    public int disc_type_2;
     public double disc;
     public double disc_2;
 
@@ -36,6 +34,12 @@ public class PurchaseProductInfo {
         productInfo += " sgst: " + sgst;
         productInfo += " cgst: " + cgst;
         productInfo += " purchase: " + purchase_rate;
+        productInfo += " tsp: " + tsp;
+        productInfo += " mrp: " + mrp;
+        productInfo += " disc_1 type: " + disc_type;
+        productInfo += " disc_2 type: " + disc_type_2;
+        productInfo += " disc_1 val: " + disc;
+        productInfo += " disc_2 val: " + disc_2;
         productInfo += "]";
 
         return productInfo;

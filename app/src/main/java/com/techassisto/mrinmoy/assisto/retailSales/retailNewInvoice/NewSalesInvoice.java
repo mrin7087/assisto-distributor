@@ -142,7 +142,9 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             public void onItemDeleted() {
                 Log.i(TAG, "Received item deleted callback");
                 double billTotal = calculateBillTotal();
-                mInvoiceTotalView.setText("Total: " + String.format("%.02f", billTotal));
+                double rounded_total = round(billTotal,0);
+                double round_value = rounded_total - billTotal;
+                mInvoiceTotalView.setText("Total: " + String.format("%.02f", rounded_total));
             }
         });
         mListView.setAdapter(mAdapter);
@@ -196,9 +198,11 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
                 builder = new AlertDialog.Builder(this);
             }
             double billTotal = calculateBillTotal();
+            double rounded_total = round(billTotal,0);
+            double round_value = rounded_total - billTotal;
             builder.setTitle("Save Invoice")
                     .setMessage("Save current invoice ?" +
-                            "\nPayment Mode: "+mPaymentModeName+ "\nTotal: "+String.format("%.02f", billTotal))
+                            "\nPayment Mode: "+mPaymentModeName+ "\nTotal: "+String.format("%.02f", rounded_total))
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             // continue with delete
@@ -226,9 +230,11 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
                 builder = new AlertDialog.Builder(this);
             }
             double billTotal = calculateBillTotal();
+            double rounded_total = round(billTotal,0);
+            double round_value = rounded_total - billTotal;
             builder.setTitle("Save Invoice and Print")
                     .setMessage("Save current invoice and Print?"+
-                            "\nPayment Mode: "+mPaymentModeName+ "\nTotal: "+String.format("%.02f", billTotal))
+                            "\nPayment Mode: "+mPaymentModeName+ "\nTotal: "+String.format("%.02f", rounded_total))
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             saveInvoice(true);
@@ -260,7 +266,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         Log.i(TAG, "Save Invoice");
 
         if (mModelList.size() == 0) {
-            Toast.makeText(getApplicationContext(), "Vendor list is empty!!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Invoice is empty!!", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -307,28 +313,29 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             productArr[i].unit_id = pInfo.unit_id;
             productArr[i].unit = pInfo.unit;
             productArr[i].sales = pInfo.selectedRate;
-            productArr[i].is_tax = pInfo.rate.get(0).is_tax_included;
+            productArr[i].is_tax = pInfo.selectedIsTaxIncluded;
             productArr[i].discount_amount = 0.0;
             productArr[i].cgst_p = pInfo.cgst;
             productArr[i].sgst_p = pInfo.sgst;
             double thisTotal = pInfo.selectedRate * pInfo.selectedQuantity; //to store line total with tax
             if (productArr[i].is_tax) {
+
                 totalTaxPercent= pInfo.cgst + pInfo.sgst;
                 totalTaxDivider=(100+totalTaxPercent)/100;
-                taxTotal=thisTotal-thisTotal/totalTaxDivider;
-                cgstTotal=taxTotal/2;
-                sgstTotal=taxTotal/2;
-                billTotal+=thisTotal;
-                billSubTotal+=thisTotal-taxTotal;
+                taxTotal=round(thisTotal-thisTotal/totalTaxDivider,2);
+                cgstTotal=round(taxTotal/2,2);
+                sgstTotal=round(taxTotal/2,2);
+//                billTotal+=round(thisTotal,2);
+//                billSubTotal+=thisTotal-taxTotal;
                 thisNonTaxTotal = round(thisTotal-taxTotal, 2);
             }
             else{
-                cgstTotal=(thisTotal*pInfo.cgst)/100;
-                sgstTotal=(thisTotal*pInfo.sgst)/100;
+                cgstTotal=round((thisTotal*pInfo.cgst)/100,2);
+                sgstTotal=round((thisTotal*pInfo.sgst)/100,2);
                 taxTotal = cgstTotal + sgstTotal;
                 thisNonTaxTotal = thisTotal;
-                billTotal+=thisTotal+taxTotal;
-                billSubTotal+=thisNonTaxTotal ;
+//                billTotal+=thisTotal+taxTotal;
+//                billSubTotal+=thisNonTaxTotal ;
                 thisTotal = thisTotal+taxTotal;
             }
             productArr[i].cgst_v = cgstTotal;
@@ -337,6 +344,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             thisNonTaxEach = round((thisNonTaxTotal/pInfo.selectedQuantity),2);
             productArr[i].sales_after_tax = thisNonTaxEach;
             productArr[i].line_total = thisTotal;
+            billSubTotal+= round(productArr[i].sales_after_tax* productArr[i].quantity,2);
             billCGSTTotal+=cgstTotal;
             billSGSTTotal+=sgstTotal;
 
@@ -345,6 +353,12 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             // TODO Consider discount and multiple sales rate.
 
         }
+
+        billTotal = round(billCGSTTotal + billSGSTTotal + billSubTotal,2);
+
+        double rounded_total = round(billTotal,0);
+        double round_value = rounded_total - billTotal;
+
         InvoiceDetails newInvoice = new InvoiceDetails();
         newInvoice.date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         Log.i(TAG, "Date:" + newInvoice.date);
@@ -352,7 +366,8 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         newInvoice.subtotal = billSubTotal;
         newInvoice.cgsttotal = billCGSTTotal;
         newInvoice.sgsttotal=billSGSTTotal;
-        newInvoice.total = billTotal;
+        newInvoice.total = rounded_total;
+        newInvoice.roundoff = round_value;
         newInvoice.warehouse = mWarehouseId;
         newInvoice.paymentmode = mPaymentModeId;
         newInvoice.calltype = "mobilesave";
@@ -375,12 +390,51 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
 
     private double calculateBillTotal() {
         Log.i(TAG, "Remaining list size: " + mModelList.size());
+        double billCGSTTotal = 0;
+        double billSGSTTotal = 0;
+        double billSubTotal = 0;
         double billTotal = 0;
         for (int i=0; i<mModelList.size(); i++) {
-            Log.i(TAG, mModelList.get(i).getProduct().toString() + " qty: " + mModelList.get(i).getProduct().selectedQuantity);
-            billTotal += mModelList.get(i).getPrice() * mModelList.get(i).getQuantity();
-        }
+            double cgst_p = 0;
+            double sgst_p = 0;
+            double lineTaxableTotal = 0;
+            double line_tax = 0;
+            double line_qty = 0;
+            double cgst_v = 0;
+            double sgst_v = 0;
+            double totalTaxPercent = 0;
+            double totalTaxDivider = 0;
+            double preTaxEachRate = 0;
 
+            Log.i(TAG, mModelList.get(i).getProduct().toString() + " qty: " + mModelList.get(i).getProduct().selectedQuantity);
+            boolean is_tax_included = mModelList.get(i).getProduct().selectedIsTaxIncluded;
+            Log.i(TAG, "Is tax included: " + mModelList.get(i).getProduct().selectedIsTaxIncluded);
+            line_qty = mModelList.get(i).getQuantity();
+            if (is_tax_included) {
+                double thisTotal = mModelList.get(i).getProduct().selectedRate * line_qty;
+                totalTaxPercent= mModelList.get(i).getProduct().cgst + mModelList.get(i).getProduct().sgst;
+                totalTaxDivider=(100+totalTaxPercent)/100;
+                line_tax=round(thisTotal-thisTotal/totalTaxDivider,2);
+                cgst_v=round(line_tax/2,2);
+                sgst_v=round(line_tax/2,2);
+                lineTaxableTotal = round(thisTotal-line_tax, 2);
+                preTaxEachRate = round((lineTaxableTotal/line_qty),2);
+//                billTotal += mModelList.get(i).getPrice() * mModelList.get(i).getQuantity();
+            }
+            else{
+                cgst_p = mModelList.get(i).getProduct().cgst;
+                sgst_p = mModelList.get(i).getProduct().sgst;
+                preTaxEachRate = mModelList.get(i).getPrice();
+                cgst_v = round((preTaxEachRate * line_qty)*cgst_p/100,2);
+                sgst_v = round((preTaxEachRate * line_qty)*sgst_p/100,2);
+                billTotal += preTaxEachRate * line_qty + cgst_v + sgst_v;
+            }
+            billCGSTTotal+= cgst_v;
+            billSGSTTotal+= sgst_v;
+            billSubTotal+= round(preTaxEachRate*line_qty,2);
+
+        }
+        billTotal = round(billCGSTTotal + billSGSTTotal + billSubTotal,2);
         return billTotal;
     }
 
@@ -407,6 +461,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         Log.i(TAG, "Vendor: " + product);
         ProductInfo productInfo = new Gson().fromJson(product, ProductInfo.class);
         Log.i(TAG, "ProductInfo: " + productInfo);
+        Log.i(TAG, "ProductInfo Is tax: " + productInfo.selectedIsTaxIncluded);
 
         mModelList.add(new InvoiceProductListModel(productInfo));
         mAdapter.notifyDataSetChanged();
@@ -415,7 +470,14 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
 
         // Update Bill Total View
         double billTotal = calculateBillTotal();
-        mInvoiceTotalView.setText("Total: " + String.format("%.02f", billTotal));
+        double rounded_total = round(billTotal,0);
+        double round_value = rounded_total - billTotal;
+        if (round_value == 0) {
+            mInvoiceTotalView.setText("Total: " + String.format("%.02f", rounded_total));
+        }
+        else{
+            mInvoiceTotalView.setText("Round-off: " + String.format("%.02f", round_value) + " ,Total: " + String.format("%.02f", rounded_total)  );
+        }
     }
 
     @Override
@@ -453,7 +515,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         Log.i(TAG, "onBackPressed");
 
         if (mModelList.size() == 0) {
-            Log.i(TAG, "Vendor List Empty.. return");
+            Log.i(TAG, "Invoice is Empty.. return");
             finish();
             return;
         }
@@ -554,6 +616,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         double cgsttotal;
         double sgsttotal;
         double total;
+        double roundoff;
         String calltype;
     }
 
@@ -969,6 +1032,17 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
 
             mPrinter.addTextAlign(Printer.ALIGN_RIGHT);
             textData.append(String.format("%.2f",mCurrentInvoice.sgsttotal )+ "\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            // ROUND OFF
+            mPrinter.addTextAlign(Printer.ALIGN_CENTER);
+            textData.append("Round off: ");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addTextAlign(Printer.ALIGN_RIGHT);
+            textData.append(String.format("%.2f",mCurrentInvoice.roundoff )+ "\n");
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
 

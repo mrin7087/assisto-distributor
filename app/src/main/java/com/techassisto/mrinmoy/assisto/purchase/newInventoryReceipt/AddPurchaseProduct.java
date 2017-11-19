@@ -15,15 +15,14 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.techassisto.mrinmoy.assisto.CodeScannerActivity;
+import com.techassisto.mrinmoy.assisto.BarcodeFiles.ScanActivity;
 import com.techassisto.mrinmoy.assisto.PurchaseProductInfo;
 import com.techassisto.mrinmoy.assisto.R;
 import com.techassisto.mrinmoy.assisto.utils.APIs;
@@ -44,7 +43,7 @@ import java.util.List;
  * Created by sayantan on 26/10/17.
  */
 
-public class AddPurchaseProduct extends AppCompatActivity {
+public class AddPurchaseProduct extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private static final String TAG = "Assisto.AddPurProduct";
     private static final int SCAN_PRODUCT_REQUEST = 1;
 
@@ -91,29 +90,33 @@ public class AddPurchaseProduct extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 PurchaseProductAutoCompleteAdapter.Product product = (PurchaseProductAutoCompleteAdapter.Product) adapterView.getItemAtPosition(position);
 //                prodView.setText(product.getLabel());
-                Toast.makeText(getApplicationContext(), "Fetching Vendor Details.. " + product.getId(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Fetching Details.. " + product.getLabel(), Toast.LENGTH_SHORT).show();
                 getProduct(product.getId(), false);
             }
         });
 
-        //// TODO: ADD DISCOUNT
+        List<String> discount1Type = new ArrayList<String>();
+        discount1Type.add("Discount -1: No Discount");
+        discount1Type.add("Discount -1: Percent");
+        discount1Type.add("Discount -1: Value");
 
-//        mCustomRateChkbox = (CheckBox) findViewById(R.id.product_custom_rate_chkbox);
-//        mCustomIsTaxInclChkbox = (CheckBox) findViewById(R.id.product_custom_istax_chkbox);
+        List<String> discount2Type = new ArrayList<String>();
+        discount2Type.add("Discount -2: No Discount");
+        discount2Type.add("Discount -2: Percent");
+        discount2Type.add("Discount -2: Value");
 
-//        mCustomRateChkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                mCustomIsTaxInclChkbox.setChecked(false);
-//                if (isChecked) {
-//                    mCustomRate.setVisibility(View.VISIBLE);
-//                    mCustomIsTaxInclChkbox.setVisibility(View.VISIBLE);
-//                } else {
-//                    mCustomRate.setVisibility(View.INVISIBLE);
-//                    mCustomIsTaxInclChkbox.setVisibility(View.GONE);
-//                }
-//            }
-//        });
+        Spinner disc1Spinner = (Spinner) findViewById(R.id.disc_1_type);
+        ArrayAdapter<String> disc1Adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, discount1Type);
+        disc1Adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        disc1Spinner.setAdapter(disc1Adapter);
+        disc1Spinner.setOnItemSelectedListener(this);
+
+        Spinner disc2Spinner = (Spinner) findViewById(R.id.disc_2_type);
+        ArrayAdapter<String> disc2Adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, discount2Type);
+        disc2Adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        disc2Spinner.setAdapter(disc2Adapter);
+        disc2Spinner.setOnItemSelectedListener(this);
+
 
         mSubmitBtn = (Button) findViewById(R.id.submit_button);
 
@@ -121,8 +124,12 @@ public class AddPurchaseProduct extends AppCompatActivity {
         scanBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setClass(AddPurchaseProduct.this, CodeScannerActivity.class);
+//                Intent intent = new Intent();
+//                intent.setClass(AddPurchaseProduct.this, CodeScannerActivity.class);
+//                startActivityForResult(intent, SCAN_PRODUCT_REQUEST);
+
+//                Intent intent = new Intent(AddPurchaseProduct.this, BarcodeCaptureActivity.class);
+                Intent intent = new Intent(AddPurchaseProduct.this, ScanActivity.class);
                 startActivityForResult(intent, SCAN_PRODUCT_REQUEST);
             }
         });
@@ -132,13 +139,65 @@ public class AddPurchaseProduct extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+//        Toast.makeText(getApplicationContext(), "Request code: " + requestCode, Toast.LENGTH_SHORT).show();
+
         if (requestCode == SCAN_PRODUCT_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
-                String barcode = data.getStringExtra("barcode");
-                Toast.makeText(getApplicationContext(), "Fetching Vendor Details: " + barcode, Toast.LENGTH_SHORT).show();
+
+                Barcode barcodedata = data.getParcelableExtra("barcode");
+
+                Log.i(TAG, "Barcode From Cam: " + barcodedata);
+
+                String barcode = barcodedata.displayValue;
+//                statusMessage.setText(R.string.barcode_success);
+//                barcodeValue.setText(barcode.displayValue);
+
+                Toast.makeText(getApplicationContext(), "Fetching Product Details: " + barcode, Toast.LENGTH_LONG).show();
                 getProduct(barcode, true);
             }
         }
+    }
+
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        // On selecting a spinner item
+        Spinner spinner = (Spinner) parent;
+        if(spinner.getId() == R.id.disc_1_type){
+            String item = parent.getItemAtPosition(position).toString();
+            EditText discount1ValueView = (EditText) findViewById(R.id.disc_1_value);
+            if (item == "Discount -1: No Discount"){
+                discount1ValueView.setText("0.00");
+                discount1ValueView.setHint("");
+                discount1ValueView.setVisibility(View.GONE);
+                Log.i(TAG, "Discount: No discount 1" );
+            }
+            else{
+                discount1ValueView.setVisibility(View.VISIBLE);
+                Log.i(TAG, "Discount: Some discount 1" );
+                discount1ValueView.setText("");
+                discount1ValueView.setHint("Discount -1");
+            }
+        }else{
+            String item = parent.getItemAtPosition(position).toString();
+            EditText discount2ValueView = (EditText) findViewById(R.id.disc_2_value);
+            if (item == "Discount -2: No Discount"){
+                discount2ValueView.setText("0.00");
+                discount2ValueView.setHint("");
+                discount2ValueView.setVisibility(View.GONE);
+            }
+            else{
+                discount2ValueView.setVisibility(View.VISIBLE);
+                discount2ValueView.setText("");
+                discount2ValueView.setHint("Discount -2");
+            }
+        }
+
+        // Showing selected spinner item
+//        Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 
     /**
@@ -225,7 +284,7 @@ public class AddPurchaseProduct extends AppCompatActivity {
             //Compose the get Request
 
             if (mBarcode) {
-                targetURL = Constants.SERVER_ADDR + APIs.product_barcode_get;
+                targetURL = Constants.SERVER_ADDR + APIs.purchase_product_barcode_get;
                 targetURL += ("?product_barcode=" + mProdDetail);
             } else {
                 targetURL = Constants.SERVER_ADDR + APIs.purchase_product_id_get;
@@ -294,7 +353,7 @@ public class AddPurchaseProduct extends AppCompatActivity {
                 Log.i(TAG, "Successfully received product data");
                 populateProductInfo();
             } else if (status == Constants.Status.ERR_INVALID) {
-                Toast.makeText(getApplicationContext(), "Sorry! Vendor does not exist.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Sorry! Product does not exist.", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getApplicationContext(), R.string.error_network_error, Toast.LENGTH_SHORT).show();
             }
@@ -307,12 +366,12 @@ public class AddPurchaseProduct extends AppCompatActivity {
         }
 
         private int parseProductInfo(String product) {
-            if (product.contentEquals("{\"error\": \"Vendor Does not exist\"}")) {
-                Log.i(TAG, "Vendor doesn't exist");
+            if (product.contentEquals("{\"error\": \"Product Does not exist\"}")) {
+                Log.i(TAG, "Product doesn't exist");
                 return Constants.Status.ERR_INVALID;
             }
 
-            Log.i(TAG, "parse Vendor Info: " + product);
+            Log.i(TAG, "parse Product Info: " + product);
             Gson gson = new GsonBuilder().serializeNulls().create();
             PurchaseProductInfo productInfo = gson.fromJson(product, PurchaseProductInfo.class);
             Log.i(TAG, "ProductInfo :" + productInfo);
@@ -323,7 +382,7 @@ public class AddPurchaseProduct extends AppCompatActivity {
         }
 
         private void populateProductInfo() {
-            Log.i(TAG, "populate Vendor info" + mProduct);
+            Log.i(TAG, "populate Product info" + mProduct);
 
             mSubmitBtn.setVisibility(View.VISIBLE);
 
@@ -351,13 +410,12 @@ public class AddPurchaseProduct extends AppCompatActivity {
             pTSPView.setText(Integer.toString(0));
             pMRPView.setText(Integer.toString(0));
 
-            //TODO: UPDATE DISCOUNT TYPES
 //            List<String> list = new ArrayList<String>();
 //            for (int i=0; i<mProduct.rate.size(); i++) {
 //                list.add(mProduct.rate.get(i).tentative_sales_rate);
 //            }
 
-            pQuantityView.requestFocus();
+            pPurchaseView.requestFocus();
         }
     }
 
@@ -373,6 +431,15 @@ public class AddPurchaseProduct extends AppCompatActivity {
         EditText pPurchaseView = (EditText) findViewById(R.id.product_purchase);
         EditText pTSPView = (EditText) findViewById(R.id.product_tsp);
         EditText pMRPView = (EditText) findViewById(R.id.product_mrp);
+
+        Spinner disc1Spinner = (Spinner) findViewById(R.id.disc_1_type);
+        String discount1Text = disc1Spinner.getSelectedItem().toString();
+        EditText discount1Value = (EditText) findViewById(R.id.disc_1_value);
+
+        Spinner disc2Spinner = (Spinner) findViewById(R.id.disc_2_type);
+        String discount2Text = disc2Spinner.getSelectedItem().toString();
+        EditText discount2Value = (EditText) findViewById(R.id.disc_2_value);
+
         if (Integer.valueOf(pQuantityView.getText().toString()) == 0) {
             pQuantityView.setError("Quantity cannot be 0");
             pQuantityView.requestFocus();
@@ -381,36 +448,46 @@ public class AddPurchaseProduct extends AppCompatActivity {
 
         // Set the selected quantity
         mProduct.selectedQuantity = Integer.valueOf(pQuantityView.getText().toString());
-        mProduct.purchase_rate = Integer.valueOf(pPurchaseView.getText().toString());
-        mProduct.tsp = Integer.valueOf(pTSPView.getText().toString());
-        mProduct.mrp = Integer.valueOf(pMRPView.getText().toString());
+        mProduct.purchase_rate = Double.valueOf(pPurchaseView.getText().toString());
+        mProduct.tsp = Double.valueOf(pTSPView.getText().toString());
+        mProduct.mrp = Double.valueOf(pMRPView.getText().toString());
 
-        mProduct.disc_type = 0;
-        mProduct.disc = 0;
-        mProduct.disc_type2 = 0;
-        mProduct.disc_2 = 0;
+        if (discount1Text == "Discount -1: No Discount"){
+            mProduct.disc_type = 0;
+            mProduct.disc = 0;
+        }else{
+            try {
+                mProduct.disc = Double.parseDouble(discount1Value.getText().toString());
+            }catch (Exception e){
+                mProduct.disc = 0;
+            }
+            if (discount1Text == "Discount -1: Percent"){
+                mProduct.disc_type = 1;
+            }else{
+                mProduct.disc_type = 2;
+            }
+        }
+        Log.i(TAG, "Discout 2 Type Text: " + discount2Text);
+        if (discount2Text == "Discount -2: No Discount"){
+            mProduct.disc_type_2 = 0;
+            mProduct.disc_2 = 0;
+        }else{
+            try {
+                mProduct.disc_2 = Double.parseDouble(discount2Value.getText().toString());
+            }catch (Exception e){
+                mProduct.disc_2 = 0;
+            }
+            if (discount2Text == "Discount -2: Percent"){
+                mProduct.disc_type_2 = 1;
+            }else{
+                mProduct.disc_type_2 = 2;
+            }
+        }
+        Log.i(TAG, "Discout 2 Type: " + mProduct.disc_type_2);
 
-//        if (!mCustomRateChkbox.isChecked()) {
-//            // Show error msg if no Rates are available.
-////            if (mProduct.rate.size() == 0) {
-////                Toast.makeText(getApplicationContext(), "No rates found!! Add a custom rate", Toast.LENGTH_LONG).show();
-////                return;
-////            }
-//
-////            mProduct.selectedRate = Double.valueOf(mProduct.rate.get(0).tentative_sales_rate);
-////            mProduct.selectedIsTaxIncluded =  mProduct.rate.get(0).is_tax_included;
-//        } else {
-//            if ((mCustomRate.getText().toString().length() == 0) ||
-//                    (Double.valueOf(mCustomRate.getText().toString()) == 0)) {
-//                mCustomRate.setError("Add proper custom rate!");
-//                mCustomRate.requestFocus();
-//                return;
-//            }
-//            mProduct.selectedRate = Double.valueOf(mCustomRate.getText().toString());
-////            mProduct.selectedIsTaxIncluded = mCustomIsTaxInclChkbox.isSelected() ? true : false;
-//        }
 
         // Send the added product
+        Log.i(TAG, "Add Product : " + mProduct);
         String product = (new Gson().toJson(mProduct));
         Intent returnIntent = new Intent();
         returnIntent.putExtra("product", product);

@@ -32,4 +32,9 @@ dependencies {
     testCompile 'junit:junit:4.12'
     // To add a graph
     compile 'com.jjoe64:graphview:4.2.1'
+
+    compile 'com.android.support:support-v4:25.0.2'
+    // Important - the CameraSource implementation in this project requires version 8.1 or higher.
+    compile 'com.google.android.gms:play-services-vision:9.4.0+'
+    compile 'com.android.support:design:25.0.2'
 }

@@ -42,6 +42,12 @@ public class ReceiptProductListAdapter extends ArrayAdapter<ReceiptProductListMo
         protected TextView name;
         protected TextView quantity;
         protected TextView price;
+        protected TextView tsp;
+        protected TextView mrp;
+        protected TextView discount1_type;
+        protected TextView discount2_type;
+        protected TextView discount1_value;
+        protected TextView discount2_value;
         protected Button delete;
     }
 
@@ -51,11 +57,17 @@ public class ReceiptProductListAdapter extends ArrayAdapter<ReceiptProductListMo
         View view = null;
         if (convertView == null) {
             LayoutInflater inflater = context.getLayoutInflater();
-            view = inflater.inflate(R.layout.invoicelistrow, null);
+            view = inflater.inflate(R.layout.purchaseproductreceiptlistrow, null);
             final ViewHolder viewHolder = new ViewHolder();
             viewHolder.name = (TextView) view.findViewById(R.id.product_name);
             viewHolder.quantity = (TextView) view.findViewById(R.id.product_quantity);
             viewHolder.price = (TextView) view.findViewById(R.id.product_price);
+            viewHolder.tsp = (TextView) view.findViewById(R.id.product_tsp);
+            viewHolder.mrp = (TextView) view.findViewById(R.id.product_mrp);
+            viewHolder.discount1_type = (TextView) view.findViewById(R.id.disc_1_type);
+            viewHolder.discount2_type = (TextView) view.findViewById(R.id.disc_2_type);
+            viewHolder.discount1_value = (TextView) view.findViewById(R.id.disc_1_value);
+            viewHolder.discount2_value = (TextView) view.findViewById(R.id.disc_2_value);
 
             viewHolder.delete = (Button) view.findViewById(R.id.product_delete);
             viewHolder.delete.setOnClickListener(new View.OnClickListener() {
@@ -85,6 +97,12 @@ public class ReceiptProductListAdapter extends ArrayAdapter<ReceiptProductListMo
         holder.name.setText(list.get(position).getName());
         holder.quantity.setText(String.valueOf(list.get(position).getQuantity()));
         holder.price.setText(String.valueOf(list.get(position).getPurchasePrice()));
+        holder.tsp.setText(String.valueOf(list.get(position).getTsp()));
+        holder.mrp.setText(String.valueOf(list.get(position).getMrp()));
+        holder.discount1_value.setText(String.valueOf(list.get(position).getDisc()));
+        holder.discount1_type.setText(String.valueOf(list.get(position).getDisc_type()));
+        holder.discount2_value.setText(String.valueOf(list.get(position).getDisc_2()));
+        holder.discount2_type.setText(String.valueOf(list.get(position).getDisc_type2()));
 
         return view;
     }

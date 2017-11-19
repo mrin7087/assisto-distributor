@@ -17,6 +17,7 @@ public class RetailInvoiceDetails {
     public String cgsttotal;
     public String sgsttotal;
     public String total;
+    public String roundoff;
     public List<RetailInvoiceLineDetails> line_items;
 
     public List<RetailInvoiceLineDetails> getLine_items() {
@@ -58,5 +59,13 @@ public class RetailInvoiceDetails {
 
     public String getTotal() {
         return total;
+    }
+
+    public String getRoundoff() {
+        return roundoff;
+    }
+
+    public String getId() {
+        return id;
     }
 }

@@ -10,12 +10,14 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -116,6 +118,13 @@
         <activity
             android:name=".purchase.newInventoryReceipt.AddPurchaseProduct"
             android:label="Add Product"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar.Transparent" />
+
+        <activity android:name=".BarcodeFiles.ScanActivity"
+            android:label="Read Barcode"/>
+
+        <activity android:name=".retailSales.retailInvoiceDetails.EditProduct"
+            android:label="Edit Invoice"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar.Transparent" />
 
     </application>

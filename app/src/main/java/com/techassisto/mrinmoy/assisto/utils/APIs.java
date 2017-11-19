@@ -30,12 +30,14 @@ public class APIs {
     public static final String retail_invoice_no_details   = "retailsales/invoice/invoicenodetails/";
 
     public static final String retail_invoice_delete       = "retailsales/invoice/delete/";
+    public static final String retail_invoice_edit         = "retailsales/invoiceedit/save/";
 
     public static final String retail_sales_summary_graph  = "retailsales/salessummarygraph/";
 
     // Purchase Receipt APIs
     public static final String purchase_product_autocomplete_get  = "purchase/receipt/api/getproduct";
     public static final String purchase_product_id_get       = "purchase/receipt/api/getproduct/details";
-    public static final String purchase_receipt_save         = "purchase/receipt/trysave/";
+    public static final String purchase_product_barcode_get  = "purchase/receipt/api/getproduct/barcode";
+    public static final String purchase_receipt_save         = "purchase/receipt/save/";
     public static final String vendor_autocomplete_get       = "master/vendor/autocomplete";
 }

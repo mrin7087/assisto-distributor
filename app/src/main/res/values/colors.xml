@@ -7,6 +7,10 @@
     <color name="textColorDark">#004060</color>
     <color name="buttonColor">#0381ad</color>
     <color name="textNearWhite">#f0ffff</color>
-    <color name="semiTransparentButton">#1E00D1FF</color>
+    <color name="semiTransparentButton">#AA034a63</color>
+    <color name="lightBlueSemiTransparentButton">#8800D1FF</color>
     <color name="semiTransparentBlack">#00000000</color>
+    <color name="semiTransparentWhiteText">#44f0ffff</color>
+    <color name="TransparentBlackBackground">#4404a5e0</color>
+    <color name="TransparentDropdownBackground">#00000000</color>
 </resources>

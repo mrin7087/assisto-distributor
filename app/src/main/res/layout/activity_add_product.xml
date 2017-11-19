@@ -70,8 +70,9 @@
                         android:layout_marginTop="16dp"
                         android:drawableStart="@drawable/ic_barcode_scan"
                         android:backgroundTint="@color/semiTransparentButton"
-                        android:text="@string/scan_button"
-                        android:textStyle="italic" />
+                        android:textColor="@color/textNearWhite"
+                        android:text="@string/scan_product_button"
+                        android:textStyle="italic|bold"/>
 
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
@@ -107,6 +108,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textColor="@color/textNearWhite"
+                            android:hint="@string/prompt_add_product"
+                            android:textColorHint="@color/textNearWhite"
                             android:imeOptions="flagNoExtractUi|actionSearch"/>
 
                         <ProgressBar
@@ -132,7 +135,8 @@
                             android:inputType="number"
                             android:textColorHint="@color/textNearWhite"
                             android:textColor="@color/textNearWhite"
-                            android:maxLines="1"/>
+                            android:maxLines="1"
+                            android:visibility="gone"/>
 
                     </android.support.design.widget.TextInputLayout>
 
@@ -149,7 +153,8 @@
                             android:inputType="text"
                             android:textColorHint="@color/textNearWhite"
                             android:textColor="@color/textNearWhite"
-                            android:maxLines="1" />
+                            android:maxLines="1"
+                            android:visibility="gone"/>
 
                     </android.support.design.widget.TextInputLayout>
 
@@ -166,7 +171,8 @@
                             android:inputType="text"
                             android:textColorHint="@color/textNearWhite"
                             android:textColor="@color/textNearWhite"
-                            android:maxLines="1" />
+                            android:maxLines="1"
+                            android:visibility="gone"/>
 
                     </android.support.design.widget.TextInputLayout>
 
@@ -183,7 +189,8 @@
                             android:inputType="text"
                             android:textColorHint="@color/textNearWhite"
                             android:textColor="@color/textNearWhite"
-                            android:maxLines="1"/>
+                            android:maxLines="1"
+                            android:visibility="gone"/>
 
                     </android.support.design.widget.TextInputLayout>
 

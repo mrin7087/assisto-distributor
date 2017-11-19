@@ -9,8 +9,9 @@ public class Constants {
     // TEMPORARY CODE
 //    public static final String SERVER_ADDR = "http://192.168.1.2:7087/";
     //public static final String SERVER_ADDR = "http://139.59.69.91/";
-    public static final String SERVER_ADDR = "http://192.168.0.105:8000/";
-//    public static final String SERVER_ADDR = "https://www.techassisto.com/";
+//        public static final String SERVER_ADDR = "http://192.168.43.18:8000/";
+//    public static final String SERVER_ADDR = "http://192.168.0.105:8000/";
+    public static final String SERVER_ADDR = "https://www.techassisto.com/";
 
     //NETWORK STATUS
     public class Status {

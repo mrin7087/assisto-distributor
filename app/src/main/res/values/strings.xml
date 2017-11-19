@@ -26,23 +26,16 @@
     <string name="action_settings">Settings</string>
 
     <string name="action_save">Save</string>
+    <string name="action_update">Update</string>
+    <string name="action_update_and_print">Update and Print</string>
     <string name="action_save_and_print">Save and Print</string>
     <string name="action_add_printer">Add Printer</string>
 
     <string name="action_delete">Delete</string>
+    <string name="action_edit">Edit</string>
 
-    <string name="scan_button">Scan</string>
+    <string name="scan_product_button">Scan Barcode</string>
     <string name="scan_button_invoice">Scan Invoice Barcode</string>
-
-    <!-- ++ Purchase ++ -->
-
-    <string name="prompt_purchase_price">Purchase Rate</string>
-    <string name="prompt_tsp">Tentative Sales Rate</string>
-    <string name="prompt_mrp">MRP</string>
-    <string name="prompt_receipt_details">Add Receipt Details</string>
-    <string name="prompt_receipt_date">Select Date</string>
-    <string name="prompt_receipt_vendor_invoice">Vendor Invoice No</string>
-
 
     <!--++ Vendor ++-->
     <!--++ form ++-->
@@ -62,6 +55,15 @@
     <!--++ form ++ -->
     <!--++ Vendor ++-->
 
+    <!-- ++ Purchase ++ -->
+
+    <string name="prompt_purchase_price">Purchase Rate</string>
+    <string name="prompt_tsp">Tentative Sales Rate</string>
+    <string name="prompt_mrp">MRP</string>
+    <string name="prompt_receipt_details">Add Receipt Details</string>
+    <string name="prompt_receipt_date">Select Date</string>
+    <string name="prompt_receipt_vendor_invoice">Vendor Invoice No</string>
+
     <!--++ Retail Sales ++-->
     <string name="retail_dashboard">Retail Dashboard</string>
     <string name="create_sales_invoice_button">Create Sales Invoice</string>
@@ -69,6 +71,19 @@
     <string name="view_latest_invoices">View Latest Invoices</string>
     <string name="product_rates">Rates</string>
     <string name="total_sales_graph">Total Sales in the last 5 Days</string>
+
+    <!--++ Retail Sales Invoice View++-->
+    <string name="search_invoice">Enter Invoice No</string>
+    <string name="search_button">Search</string>
+    <string name="view_invoice_no">Invoice No</string>
+    <string name="view_invoice_date">Date</string>
+    <string name="view_invoice_cgst">CGST</string>
+    <string name="view_invoice_sgst">SGST</string>
+    <string name="view_invoice_round">Round Off</string>
+    <string name="view_invoice_total">Total</string>
+
+    <!-- ++ Common Values ++-->
+    <string name="prompt_add_product">Enter Product Name</string>
 
     <!--++ Add Vendor Form ++-->
     <string name="retail_payment_mode">Payment Mode</string>
@@ -83,15 +98,6 @@
     <string name="prompt_custom_istax">Is Tax included ?</string>
     <string name="prompt_product_quantity">Quantity</string>
     <!--++ Add Vendor Form ++-->
-
-    <!--++ Retail Sales Invoice View++-->
-    <string name="search_invoice">Enter Invoice No</string>
-    <string name="search_button">Search</string>
-    <string name="view_invoice_no">Invoice No</string>
-    <string name="view_invoice_date">Date</string>
-    <string name="view_invoice_cgst">CGST</string>
-    <string name="view_invoice_sgst">SGST</string>
-    <string name="view_invoice_total">Total</string>
 
     <!--EPSON-->
     <string name="title_err_code">Error Code</string>
