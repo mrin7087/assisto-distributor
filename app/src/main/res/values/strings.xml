@@ -71,6 +71,8 @@
     <string name="view_latest_invoices">View Latest Invoices</string>
     <string name="product_rates">Rates</string>
     <string name="total_sales_graph">Total Sales in the last 5 Days</string>
+    <string name="download_reports">Download Reports</string>
+    <string name="download_eod_productwise_report">Download EOD Productwise Reports</string>
 
     <!--++ Retail Sales Invoice View++-->
     <string name="search_invoice">Enter Invoice No</string>

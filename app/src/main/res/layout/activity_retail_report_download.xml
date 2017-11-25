@@ -39,88 +39,69 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/create_invoice_layout"
+            android:id="@+id/button_list_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:paddingTop="80dp">
+            android:paddingTop="40dp">
 
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <LinearLayout
-                    android:id="@+id/add_product_form"
+                    android:id="@+id/download_options"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <android.support.design.widget.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Select Warehouse :"
-                            android:textSize="18sp"/>
-
-                    </android.support.design.widget.TextInputLayout>
-
-                    <android.support.v7.widget.AppCompatSpinner
-                        android:id="@+id/warehouse_spinner"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent">
-                    </android.support.v7.widget.AppCompatSpinner>
-
                     <Button
-                        android:id="@+id/viewRetailDashboardBtn"
+                        android:id="@+id/dateEODReportBtn"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:textSize="12dp"
+                        android:drawableStart="@drawable/ic_eod_black"
                         android:backgroundTint="@color/buttonColor"
-                        android:text="@string/retail_dashboard" />
-
-                    <Button
-                        android:id="@+id/createInvoiceBtn"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:textSize="12dp"
-                        android:backgroundTint="@color/buttonColor"
-                        android:text="@string/create_sales_invoice_button" />
-
-                    <Button
-                        android:id="@+id/createReturnBtn"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:textSize="12dp"
-                        android:backgroundTint="@color/buttonColor"
-                        android:text="@string/create_sales_return_button" />
-
-                    <Button
-                        android:id="@+id/viewInvoiceBtn"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:textSize="12dp"
-                        android:backgroundTint="@color/buttonColor"
-                        android:text="@string/view_latest_invoices" />
-
-                    <Button
-                        android:id="@+id/downloadReportsBtn"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:textSize="12dp"
-                        android:backgroundTint="@color/buttonColor"
-                        android:text="@string/download_reports" />
+                        android:text="@string/download_eod_productwise_report"
+                        android:drawableTint="@color/semiTransparentWhiteText"/>
 
                 </LinearLayout>
 
             </ScrollView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/eod_download"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingTop="60dp"
+            android:visibility="invisible">
+
+            <EditText
+                android:id="@+id/eodDownloadDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:hint="@string/prompt_receipt_date"
+                android:inputType="date"
+                android:textAlignment="center"
+                android:textColor="@color/colorPrimaryDark"
+                android:textColorHint="@color/colorPrimaryDark"
+                android:textSize="16sp"/>
+
+            <Button
+                android:id="@+id/downloadEODReportBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textSize="12dp"
+                android:drawableStart="@drawable/ic_eod_black"
+                android:backgroundTint="@color/buttonColor"
+                android:text="@string/download_eod_productwise_report"
+                android:drawableTint="@color/semiTransparentWhiteText"/>
+
         </LinearLayout>
 
     </RelativeLayout>

@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -126,6 +127,10 @@
         <activity android:name=".retailSales.retailInvoiceDetails.EditProduct"
             android:label="Edit Invoice"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar.Transparent" />
+
+        <activity android:name=".retailSales.retailReportDownload.RetailReportDownload"
+            android:label="Retail Reports"
+            android:theme="@style/AppTheme.NoActionBar" />
 
     </application>
 

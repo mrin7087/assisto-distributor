@@ -6,9 +6,12 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.View;
@@ -26,6 +29,7 @@ import com.techassisto.mrinmoy.assisto.retailSales.retailDashboard.RetailDashboa
 import com.techassisto.mrinmoy.assisto.retailSales.retailInvoiceList.InvoiceActivity;
 import com.techassisto.mrinmoy.assisto.retailSales.retailNewInvoice.NewSalesInvoice;
 import com.techassisto.mrinmoy.assisto.retailSales.retailNewInvoice.WarehouseAdapter;
+import com.techassisto.mrinmoy.assisto.retailSales.retailReportDownload.RetailReportDownload;
 import com.techassisto.mrinmoy.assisto.utils.APIs;
 import com.techassisto.mrinmoy.assisto.utils.Constants;
 import com.techassisto.mrinmoy.assisto.utils.TenantInfo;
@@ -33,7 +37,10 @@ import com.techassisto.mrinmoy.assisto.utils.TenantInfo;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -41,8 +48,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class RetailSalesLanding extends DashBoardActivity {
     private static final String TAG = "Assisto.RetailLanding";
@@ -55,6 +64,8 @@ public class RetailSalesLanding extends DashBoardActivity {
     private Spinner mWarehousesSpnr = null;
 
     private JSONArray mWarehouseList = null;
+
+    private DownloadAPITask mDownloadAPITask = null;
 
     private int mWareHouseId = -1;
     private String mWarehouseAddress;
@@ -119,7 +130,27 @@ public class RetailSalesLanding extends DashBoardActivity {
             }
         });
 
+        Button downloadReportsBtn = (Button) findViewById(R.id.downloadReportsBtn);
+        downloadReportsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mWareHouseId == - 1) {
+                    Toast.makeText(getApplicationContext(),
+                            "Select a warehouse to generate report!!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.i(TAG, "Warehouse Address in intent: "+mWarehouseAddress);
+                    Intent intent = new Intent();
+                    intent.putExtra("warehouseId", mWareHouseId);
+                    intent.putExtra("warehouseAddress", mWarehouseAddress);
+                    intent.putExtra("warehouseState", mWarehouseState);
+                    intent.setClass(RetailSalesLanding.this, RetailReportDownload.class);
+                    startActivity(intent);
+                }
+            }
+        });
+
         getWarehouses();
+//        getDownload();
     }
 
     public int getLayoutResId() {
@@ -355,4 +386,199 @@ public class RetailSalesLanding extends DashBoardActivity {
             mWarehousesSpnr.setAdapter(dataAdapter);
         }
     }
+
+    private void getDownload() {
+        if (mDownloadAPITask != null) {
+            return;
+        }
+
+        showProgress(true);
+
+        Log.i(TAG, "get Downloads...");
+
+        //Get the auth token
+        SharedPreferences userPref = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE);
+        String authToken = userPref.getString(Constants.UserPref.SP_UTOKEN, null);
+        if (authToken != null) {
+            mDownloadAPITask = new DownloadAPITask(authToken);
+            mDownloadAPITask.execute((Void) null);
+        } else {
+            showProgress(false);
+            Toast.makeText(getApplicationContext(), "Oops!! Something went wrong. Try Again", Toast.LENGTH_SHORT).show();
+
+            // REDIRECT TO LOGIN PAGE
+        }
+    }
+
+    // AsyncTask to send WAREHOUSE GET REQUEST
+    public class DownloadAPITask extends AsyncTask<Void, Void, Integer> {
+        private static final String TAG = "Assisto.DownloadTask";
+        private String targetURL = Constants.SERVER_ADDR + APIs.retail_sales_eod_product;
+        private final String mToken;
+
+        DownloadAPITask(String token) {
+            mToken = token;
+        }
+
+        @Override
+        protected Integer doInBackground(Void... uInfo) {
+            Log.i(TAG, "doInBackground");
+
+            //Compose the get Request
+            String authHeader = "{\"authorization\": \"jwt " + mToken + "\"}";
+            JSONObject authJson;
+            try {
+                authJson = new JSONObject(authHeader);
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to make json ex:" + e);
+                return Constants.Status.ERR_UNKNOWN;
+            }
+
+            StringBuffer response = new StringBuffer();
+            Log.i(TAG, "auth header:" + authJson);
+
+            Log.i(TAG, "try to GET HTTP request");
+            HttpURLConnection httpConnection = null;
+
+//            String extStorageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+//                    .toString();
+
+            File folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            File file = new File(folder, "EODReport.csv");
+            try {
+                file.createNewFile();
+            } catch (IOException e1) {
+                Log.i(TAG, "Error in creating pdf file: "+e1);
+                e1.printStackTrace();
+            }
+
+            try{
+                targetURL += ("?calltype=download_current");
+                URL tagetUrl = new URL(targetURL);
+                httpConnection = (HttpURLConnection) tagetUrl.openConnection();
+                httpConnection.setRequestMethod("GET");
+                httpConnection.setRequestProperty("Authorization", "jwt " + mToken);
+                httpConnection.setConnectTimeout(10000); //10secs
+                httpConnection.connect();
+
+//                httpConnection = (HttpURLConnection) tagetUrl.openConnection();
+//                httpConnection.setRequestMethod("GET");
+//                httpConnection.setRequestProperty("Authorization", "jwt " + mToken);
+//
+//                httpConnection.setConnectTimeout(10000); //10secs
+//                httpConnection.connect();
+
+                Log.i(TAG, "response code:" + httpConnection.getResponseCode());
+                if (httpConnection.getResponseCode() != 200){
+                    Log.e(TAG, "Failed : HTTP error code : " + httpConnection.getResponseCode());
+                    return Constants.Status.ERR_INVALID;
+                }
+
+
+
+                FileOutputStream f = new FileOutputStream(file);
+//                URL u = new URL(fileURL);
+//                HttpURLConnection c = (HttpURLConnection) u.openConnection();
+//                c.setRequestMethod("GET");
+//                c.setDoOutput(true);
+//                c.connect();
+
+                InputStream in = httpConnection.getInputStream();
+
+                byte[] buffer = new byte[1024];
+                int len1 = 0;
+                while ((len1 = in.read(buffer)) > 0) {
+                    f.write(buffer, 0, len1);
+                }
+                f.close();
+
+                return Constants.Status.OK;
+
+            }catch (MalformedURLException e) {
+                e.printStackTrace();
+                return Constants.Status.ERR_NETWORK;
+
+            } catch (SocketTimeoutException e) {
+                e.printStackTrace();
+                return Constants.Status.ERR_NETWORK;
+            }
+
+            catch (IOException e) {
+                e.printStackTrace();
+                return Constants.Status.ERR_UNKNOWN;
+            }finally {
+
+                if(httpConnection != null) {
+                    httpConnection.disconnect();
+                }
+            }
+        }
+
+        @Override
+        protected void onPostExecute(final Integer status) {
+            mDownloadAPITask = null;
+            showProgress(false);
+
+            if (status == Constants.Status.OK) {
+                Log.i(TAG, "Successfully received warehouse data");
+//                populateWarehouseInfo();
+//                Toast.makeText(getApplicationContext(), "Downloaded", Toast.LENGTH_SHORT).show();
+                showPdf();
+            } else if (status == Constants.Status.ERR_INVALID){
+                Toast.makeText(getApplicationContext(), "Oops!! Something went wrong. Try Again", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.error_network_error, Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mDownloadAPITask = null;
+            showProgress(false);
+        }
+
+
+    }
+
+    public void showPdf()
+    {
+        File folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File file = new File(folder, "EODReport.csv");
+
+//        File file = new File(Environment.getExternalStorageDirectory()+"/pdf/Read.pdf");
+        PackageManager packageManager = getPackageManager();
+        Intent testIntent = new Intent(Intent.ACTION_VIEW);
+        testIntent.setType("text/csv");
+        List list = packageManager.queryIntentActivities(testIntent, PackageManager.MATCH_DEFAULT_ONLY);
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        Uri uri = Uri.fromFile(file);
+        intent.setDataAndType(uri, "text/csv");
+        startActivity(intent);
+    }
+
+
+//    public static void DownloadFile(String fileURL, File directory) {
+//        try {
+//            FileOutputStream f = new FileOutputStream(directory);
+//            URL u = new URL(fileURL);
+//            HttpURLConnection c = (HttpURLConnection) u.openConnection();
+//            c.setRequestMethod("GET");
+//            c.setDoOutput(true);
+//            c.connect();
+//
+//            InputStream in = c.getInputStream();
+//
+//            byte[] buffer = new byte[1024];
+//            int len1 = 0;
+//            while ((len1 = in.read(buffer)) > 0) {
+//            f.write(buffer, 0, len1);
+//            }
+//            f.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
+
 }
