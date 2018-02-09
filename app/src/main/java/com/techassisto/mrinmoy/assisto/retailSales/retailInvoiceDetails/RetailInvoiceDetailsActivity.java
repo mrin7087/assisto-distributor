@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.techassisto.mrinmoy.assisto.DashBoardActivity;
 import com.techassisto.mrinmoy.assisto.R;
+import com.techassisto.mrinmoy.assisto.retailSales.RetailInvoiceDetails;
 import com.techassisto.mrinmoy.assisto.retailSales.retailInvoiceList.InvoiceActivity;
 import com.techassisto.mrinmoy.assisto.utils.APIs;
 import com.techassisto.mrinmoy.assisto.utils.Constants;
@@ -56,7 +57,7 @@ public class RetailInvoiceDetailsActivity extends DashBoardActivity {
     private ListView mListView = null;
     private JSONObject mProductDetails = null;
     private JSONObject mInvoiceDelete = null;
-    private  RetailInvoiceDetails retailInvoiceDetails;
+    private RetailInvoiceDetails retailInvoiceDetails;
     ArrayList<RetailInvoiceLineDetails> mModelList;
     RetailInvoiceAdapter mAdapter = null;
     String invoice_no;
@@ -92,10 +93,10 @@ public class RetailInvoiceDetailsActivity extends DashBoardActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (STATUS == "EDIT") {
                     RetailInvoiceLineDetails lineItem = mModelList.get(position);
-//                    Toast.makeText(getApplicationContext(), "Product HSN: " + lineItem.getProduct_hsn(), Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(), "Service HSN: " + lineItem.getProduct_hsn(), Toast.LENGTH_LONG).show();
                     Intent intent = new Intent();
                     intent.setClass(RetailInvoiceDetailsActivity.this, EditProduct.class);
-                    intent.putExtra("Product Name", lineItem.getProduct_name());
+                    intent.putExtra("Service Name", lineItem.getProduct_name());
                     intent.putExtra("Original Qty", lineItem.getOriginal_qty());
                     intent.putExtra("Revised Qty", lineItem.getQuantity());
                     intent.putExtra("Line Position", String.valueOf(position));

@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -33,6 +34,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 
 public class HomeActivity extends DashBoardActivity {
+
     private static final String TAG = "Assisto.Home";
 
     private TenantAPITask mTenantAPITask = null;
@@ -117,30 +119,50 @@ public class HomeActivity extends DashBoardActivity {
         }
     }
 
-//    @Override
-//    public void onBackPressed() {
-//        if (doubleBackToExitPressedOnce) {
-////            super.onBackPressed();
-////            return;
-//            finish();
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+//            super.onBackPressed();
+//            return;
+//            SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
+//            SharedPreferences.Editor editor = userPref.edit();
+            SharedPreferences.Editor editor = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE).edit();
+            editor.remove(Constants.UserPref.SP_TENANT);
+//            editor.remove(Constants.UserPref.SP_USERNAME);
+//            editor.remove(Constants.UserPref.SP_PASSWORD);
+//            editor.remove(Constants.UserPref.SP_UTOKEN);
+            editor.apply();
+//            editor.commit();
+
+//            editor.putString(Constants.UserPref.SP_TENANT, null);
+//            editor.commit();
+
+            Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
 //            Intent intent = new Intent(Intent.ACTION_MAIN);
 //            intent.addCategory(Intent.CATEGORY_HOME);
 //            startActivity(intent);
-//        }
-//        else {
-//
-//            this.doubleBackToExitPressedOnce = true;
-//            Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
-//
-//            new Handler().postDelayed(new Runnable() {
-//
-//                @Override
-//                public void run() {
-//                    doubleBackToExitPressedOnce = false;
-//                }
-//            }, 2000);
-//        }
-//    }
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+//            finish();
+            startActivity(intent);
+
+
+        }
+        else {
+
+            this.doubleBackToExitPressedOnce = true;
+            Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    doubleBackToExitPressedOnce = false;
+                }
+            }, 2000);
+        }
+    }
 
     /**
      * Shows the progress UI and hides the login form.

@@ -23,9 +23,15 @@
             android:title="Product"
             android:visible="false"/>
         <item
-            android:id="@+id/nav_distributor_sales"
+            android:id="@+id/nav_retail_sales"
             android:icon="@drawable/ic_retail_sales"
             android:title="Retail Sales" />
+
+        <item
+            android:id="@+id/nav_service_sales"
+            android:icon="@drawable/ic_retail_sales"
+            android:title="Service Sales" />
+
         <item
             android:id="@+id/nav_purchase"
             android:icon="@drawable/ic_retail_sales"

@@ -3,6 +3,7 @@ package com.techassisto.mrinmoy.assisto;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -24,6 +25,7 @@ import com.google.gson.GsonBuilder;
 import com.techassisto.mrinmoy.assisto.customer.CustomerLanding;
 import com.techassisto.mrinmoy.assisto.purchase.PurchaseLanding;
 import com.techassisto.mrinmoy.assisto.retailSales.RetailSalesLanding;
+import com.techassisto.mrinmoy.assisto.serviceSales.ServiceSalesLanding;
 import com.techassisto.mrinmoy.assisto.utils.Constants;
 import com.techassisto.mrinmoy.assisto.utils.TenantInfo;
 import com.techassisto.mrinmoy.assisto.vendor.VendorLanding;
@@ -32,6 +34,8 @@ public abstract class DashBoardActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "Assisto.NavDrawer";
+    private int cnt = 0;
+    private Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +94,10 @@ public abstract class DashBoardActivity extends AppCompatActivity
             TextView nav_header_tenantName = (TextView) nav_header.findViewById(R.id.nav_header_tenantname);
             nav_header_tenantName.append(" " + tenantInfo.tenant_name);
         }
+        else{
+            handler.post(timedTask);
+        }
+
 
         //Set the Nav Header image to redirect to Home Activiity
         ImageView imgView = (ImageView) nav_header.findViewById(R.id.nav_header_image);
@@ -102,6 +110,37 @@ public abstract class DashBoardActivity extends AppCompatActivity
             }
         });
     }
+
+    private Runnable timedTask = new Runnable(){
+
+        @Override
+        public void run() {
+            // TODO Auto-generated method stub
+            if (cnt >= 3){
+                handler.removeCallbacks(this);
+            }else {
+                cnt++;
+                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                View nav_header = navigationView.getHeaderView(0);
+                TenantInfo tenantInfo = null;
+                SharedPreferences userPref = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE);
+                String tenant = userPref.getString(Constants.UserPref.SP_TENANT, null);
+                if (tenant != null) {
+                    Gson gson = new GsonBuilder().serializeNulls().create();
+                    tenantInfo = gson.fromJson(tenant, TenantInfo.class);
+//            Log.i(TAG, "Tenant:" + tenantInfo.tenant_name + " First Name:" + tenantInfo.first_name);
+                    TextView nav_header_profileName = (TextView) nav_header.findViewById(R.id.nav_header_profilename);
+                    nav_header_profileName.append(" " + tenantInfo.first_name);
+
+                    TextView nav_header_tenantName = (TextView) nav_header.findViewById(R.id.nav_header_tenantname);
+                    nav_header_tenantName.append(" " + tenantInfo.tenant_name);
+                    handler.removeCallbacks(this);
+                }else {
+                    handler.postDelayed(timedTask, 500);
+                }
+            }
+        }
+    };
 
     @Override
     public void onBackPressed() {
@@ -156,14 +195,22 @@ public abstract class DashBoardActivity extends AppCompatActivity
             intent.setClass(DashBoardActivity.this, VendorLanding.class);
             startActivity(intent);
 
-        } else if (id == R.id.nav_distributor_sales) {
+        } else if (id == R.id.nav_retail_sales) {
             //Toast.makeText(this, "Selected Logout", Toast.LENGTH_SHORT).show();
 
             Intent intent = new Intent();
             intent.setClass(DashBoardActivity.this, RetailSalesLanding.class);
             startActivity(intent);
 
-        } else if (id == R.id.nav_purchase) {
+        } else if (id == R.id.nav_service_sales) {
+            //Toast.makeText(this, "Selected Logout", Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent();
+            intent.setClass(DashBoardActivity.this, ServiceSalesLanding.class);
+            startActivity(intent);
+
+        }
+        else if (id == R.id.nav_purchase) {
             //Toast.makeText(this, "Selected Logout", Toast.LENGTH_SHORT).show();
 
             Intent intent = new Intent();

@@ -152,7 +152,7 @@ public class AddPurchaseProduct extends AppCompatActivity implements AdapterView
 //                statusMessage.setText(R.string.barcode_success);
 //                barcodeValue.setText(barcode.displayValue);
 
-                Toast.makeText(getApplicationContext(), "Fetching Product Details: " + barcode, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Fetching Service Details: " + barcode, Toast.LENGTH_LONG).show();
                 getProduct(barcode, true);
             }
         }
@@ -353,7 +353,7 @@ public class AddPurchaseProduct extends AppCompatActivity implements AdapterView
                 Log.i(TAG, "Successfully received product data");
                 populateProductInfo();
             } else if (status == Constants.Status.ERR_INVALID) {
-                Toast.makeText(getApplicationContext(), "Sorry! Product does not exist.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Sorry! Service does not exist.", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getApplicationContext(), R.string.error_network_error, Toast.LENGTH_SHORT).show();
             }
@@ -366,12 +366,12 @@ public class AddPurchaseProduct extends AppCompatActivity implements AdapterView
         }
 
         private int parseProductInfo(String product) {
-            if (product.contentEquals("{\"error\": \"Product Does not exist\"}")) {
-                Log.i(TAG, "Product doesn't exist");
+            if (product.contentEquals("{\"error\": \"Service Does not exist\"}")) {
+                Log.i(TAG, "Service doesn't exist");
                 return Constants.Status.ERR_INVALID;
             }
 
-            Log.i(TAG, "parse Product Info: " + product);
+            Log.i(TAG, "parse Service Info: " + product);
             Gson gson = new GsonBuilder().serializeNulls().create();
             PurchaseProductInfo productInfo = gson.fromJson(product, PurchaseProductInfo.class);
             Log.i(TAG, "ProductInfo :" + productInfo);
@@ -382,7 +382,7 @@ public class AddPurchaseProduct extends AppCompatActivity implements AdapterView
         }
 
         private void populateProductInfo() {
-            Log.i(TAG, "populate Product info" + mProduct);
+            Log.i(TAG, "populate Service info" + mProduct);
 
             mSubmitBtn.setVisibility(View.VISIBLE);
 
@@ -487,7 +487,7 @@ public class AddPurchaseProduct extends AppCompatActivity implements AdapterView
 
 
         // Send the added product
-        Log.i(TAG, "Add Product : " + mProduct);
+        Log.i(TAG, "Add Service : " + mProduct);
         String product = (new Gson().toJson(mProduct));
         Intent returnIntent = new Intent();
         returnIntent.putExtra("product", product);

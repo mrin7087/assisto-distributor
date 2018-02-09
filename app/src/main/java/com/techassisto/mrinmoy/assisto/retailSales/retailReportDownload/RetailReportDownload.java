@@ -19,6 +19,7 @@ import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -385,6 +386,8 @@ public class RetailReportDownload extends DashBoardActivity {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_VIEW);
         Uri uri = Uri.fromFile(file);
+//        Uri uri = FileProvider.getUriForFile(RetailReportDownload.this, BuildConfig.APPLICATION_ID + ".provider",fileImagePath);
+//        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.setDataAndType(uri, "text/csv");
         startActivity(intent);
     }

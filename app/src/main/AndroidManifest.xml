@@ -132,6 +132,26 @@
             android:label="Retail Reports"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <!-- ++ Service Sales ++ -->
+
+        <activity android:name=".serviceSales.ServiceSalesLanding"
+            android:label="Services Landing"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name=".serviceSales.serviceNewInvoice.NewSalesInvoice"
+            android:label="New Sales Invoice"
+            android:parentActivityName=".serviceSales.ServiceSalesLanding"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".serviceSales.serviceNewInvoice.AddService"
+            android:label="Add Service"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar.Transparent" />
+
+        <activity android:name=".serviceSales.ServiceReportDownload.ServiceReportDownload"
+            android:label="Service Reports"
+            android:theme="@style/AppTheme.NoActionBar" />
+
     </application>
 
 </manifest>

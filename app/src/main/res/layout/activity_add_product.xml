@@ -221,7 +221,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/textNearWhite"
-                        android:text="@string/prompt_add_custom_rate"/>
+                        android:text="@string/prompt_add_custom_rate"
+                        android:imeOptions="actionNext"/>
 
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
@@ -237,7 +238,8 @@
                             android:inputType="numberDecimal"
                             android:textColorHint="@color/textNearWhite"
                             android:textColor="@color/textNearWhite"
-                            android:maxLines="1" />
+                            android:maxLines="1"
+                            android:imeOptions="actionNext"/>
 
                     </android.support.design.widget.TextInputLayout>
 
@@ -247,7 +249,26 @@
                         android:layout_height="wrap_content"
                         android:visibility="gone"
                         android:textColor="@color/textNearWhite"
-                        android:text="@string/prompt_custom_istax"/>
+                        android:text="@string/prompt_custom_istax"
+                        android:imeOptions="actionNext"/>
+
+                    <android.support.v7.widget.AppCompatSpinner
+                        android:id="@+id/disc_type"
+                        android:layout_width="wrap_content"
+                        android:textColor="@color/textNearWhite"
+                        android:layout_height="match_parent">
+                    </android.support.v7.widget.AppCompatSpinner>
+
+                    <EditText
+                        android:id="@+id/disc_value"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:textColorHint="@color/textNearWhite"
+                        android:textColor="@color/textNearWhite"
+                        android:visibility="gone"
+                        android:maxLines="1"
+                        android:imeOptions="actionNext"/>
 
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
@@ -259,10 +280,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_product_quantity"
-                            android:inputType="number"
+                            android:inputType="numberDecimal"
                             android:textColorHint="@color/textNearWhite"
                             android:textColor="@color/textNearWhite"
-                            android:maxLines="1" />
+                            android:maxLines="1"/>
 
                     </android.support.design.widget.TextInputLayout>
 

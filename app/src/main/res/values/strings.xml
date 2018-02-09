@@ -86,6 +86,7 @@
 
     <!-- ++ Common Values ++-->
     <string name="prompt_add_product">Enter Product Name</string>
+    <string name="amount_paid_customer">Amount Paid by Customer</string>
 
     <!--++ Add Vendor Form ++-->
     <string name="retail_payment_mode">Payment Mode</string>

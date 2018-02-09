@@ -20,13 +20,16 @@ public class ProductInfo {
     public String unit;
     public double sgst;
     public double cgst;
-    public int quantity;
+    public double quantity;
     public List<ProductRate> rate;
     public boolean inventory;
 
+    public int disc_type;
+    public double disc;
+
     public double selectedRate;
     public boolean selectedIsTaxIncluded;
-    public int selectedQuantity;
+    public double selectedQuantity;
 
     @Override
     public String toString() {

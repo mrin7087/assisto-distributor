@@ -37,7 +37,7 @@ public class APIs {
 
     public static final String retail_sales_summary_graph  = "retailsales/salessummarygraph/";
 
-    public static final String retail_sales_eod_product  = "retailsales/eodsales/data/";
+    public static final String retail_sales_eod_product    = "retailsales/eodsales/data/";
 
     // Purchase Receipt APIs
     public static final String purchase_product_autocomplete_get  = "purchase/receipt/api/getproduct";
@@ -45,4 +45,13 @@ public class APIs {
     public static final String purchase_product_barcode_get  = "purchase/receipt/api/getproduct/barcode";
     public static final String purchase_receipt_save         = "purchase/receipt/save/";
     public static final String vendor_autocomplete_get       = "master/vendor/autocomplete";
+
+
+//    public static final String service_barcode_get         = "retailsales/invoice/api/getproductbarcode";
+    public static final String service_autocomplete_get      = "servicesales/invoice/api/getproduct";
+    public static final String service_id_get                = "servicesales/invoice/api/getservice/details";
+    public static final String service_invoice_save          = "servicesales/invoice/save/";
+    public static final String service_salespersons_get      = "servicesales/getsalesusers/";
+
+    public static final String service_userreport_download   = "servicesales/user-wise-service/data/";
 }

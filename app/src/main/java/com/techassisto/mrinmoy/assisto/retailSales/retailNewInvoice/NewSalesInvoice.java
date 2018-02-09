@@ -2,6 +2,7 @@ package com.techassisto.mrinmoy.assisto.retailSales.retailNewInvoice;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -11,18 +12,20 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.GravityCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -99,6 +102,12 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
     private int mPaymentModeId = -1;
     private String mPaymentModeName = null;
 
+    //Amount paid by customer and return
+
+    Double amountPaid = 0.0;
+    Double returnAmount = 0.0;
+    private TextView mInvoiceCustomerPaidView = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,6 +142,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         mInvoiceView = findViewById(R.id.invoiceView);
         mProgressView = findViewById(R.id.apisubmit_progress);
         mInvoiceTotalView = (TextView) findViewById(R.id.invoicetotalview);
+        mInvoiceCustomerPaidView = (TextView) findViewById(R.id.invoiceCustomerPaidView);
 
         mListView = (ListView) findViewById(R.id.invoicelistview);
         mModelList = new ArrayList<InvoiceProductListModel>();
@@ -158,6 +168,9 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                amountPaid = 0.0;
+                returnAmount = 0.0;
+                mInvoiceCustomerPaidView.setVisibility(View.GONE);
                 Intent intent = new Intent();
                 intent.setClass(NewSalesInvoice.this, AddProduct.class);
                 intent.putExtra("warehouseId", mWarehouseId);
@@ -180,6 +193,8 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         return true;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @SuppressLint("ResourceType")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -200,12 +215,24 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             double billTotal = calculateBillTotal();
             double rounded_total = round(billTotal,0);
             double round_value = rounded_total - billTotal;
-            builder.setTitle("Save Invoice")
+
+            LayoutInflater inflater = this.getLayoutInflater();
+            final View dialogView = inflater.inflate(R.layout.save_invoice_dialog, null);
+
+            final EditText pAmountPaid = (EditText) dialogView.findViewById(R.id.amount_paid);
+
+            builder.setView(dialogView)
+                    .setTitle("Save Invoice")
                     .setMessage("Save current invoice ?" +
                             "\nPayment Mode: "+mPaymentModeName+ "\nTotal: "+String.format("%.02f", rounded_total))
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            // continue with delete
+                            // continue with save
+                            try {
+                                amountPaid = Double.parseDouble(pAmountPaid.getText().toString());
+                            }catch (Exception e){
+                                amountPaid = 0.0;
+                            }
                             saveInvoice(false);
                         }
                     })
@@ -214,16 +241,15 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
                             // do nothing
                         }
                     })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setIcon(R.drawable.ic_action_alert)
+                    .create()
                     .show();
 
             return true;
         }
 
         else if (id == R.id.action_save_and_print) {
-            //Toast.makeText(getApplicationContext(), "Save", Toast.LENGTH_SHORT).show();
-
-            AlertDialog.Builder builder;
+           AlertDialog.Builder builder;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
             } else {
@@ -232,11 +258,24 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             double billTotal = calculateBillTotal();
             double rounded_total = round(billTotal,0);
             double round_value = rounded_total - billTotal;
-            builder.setTitle("Save Invoice and Print")
+
+            LayoutInflater inflater = this.getLayoutInflater();
+            final View dialogView = inflater.inflate(R.layout.save_invoice_dialog, null);
+
+            final EditText pAmountPaid = (EditText) dialogView.findViewById(R.id.amount_paid);
+
+
+            builder.setView(dialogView)
+                    .setTitle("Save Invoice and Print")
                     .setMessage("Save current invoice and Print?"+
                             "\nPayment Mode: "+mPaymentModeName+ "\nTotal: "+String.format("%.02f", rounded_total))
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
+                            try {
+                                amountPaid = Double.parseDouble(pAmountPaid.getText().toString());
+                            }catch (Exception e){
+                                amountPaid = 0.0;
+                            }
                             saveInvoice(true);
                         }
                     })
@@ -245,7 +284,8 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
                             // do nothing
                         }
                     })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setIcon(R.drawable.ic_action_alert)
+                    .create()
                     .show();
 
             return true;
@@ -314,7 +354,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             productArr[i].unit = pInfo.unit;
             productArr[i].sales = pInfo.selectedRate;
             productArr[i].is_tax = pInfo.selectedIsTaxIncluded;
-            productArr[i].discount_amount = 0.0;
+            productArr[i].discount_amount = pInfo.disc;
             productArr[i].cgst_p = pInfo.cgst;
             productArr[i].sgst_p = pInfo.sgst;
             double thisTotal = pInfo.selectedRate * pInfo.selectedQuantity; //to store line total with tax
@@ -373,6 +413,18 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         newInvoice.calltype = "mobilesave";
 
         showProgress(true);
+
+        //Display amount paid by customer and amount to return
+
+        mInvoiceCustomerPaidView = (TextView) findViewById(R.id.invoiceCustomerPaidView);
+
+        returnAmount = amountPaid - newInvoice.total;
+
+        if (amountPaid != 0.0){
+            mInvoiceCustomerPaidView.setVisibility(View.VISIBLE);
+            mInvoiceCustomerPaidView.setText("Amount Paid: " + String.format("%.02f", amountPaid) + " ,Change Due: " + String.format("%.02f", returnAmount));
+        }
+
         //Get the auth token
         SharedPreferences userPref = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE);
         String authToken = userPref.getString(Constants.UserPref.SP_UTOKEN, null);
@@ -382,7 +434,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             mSubmitTask.execute((Void) null);
         } else {
             showProgress(false);
-            Toast.makeText(getApplicationContext(), "Oops!! Something went wrong. Try Again", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Oops!! Something went wrong. Try Again. Please check if sufficient quantity is available.", Toast.LENGTH_LONG).show();
 
             // REDIRECT TO LOGIN PAGE
         }
@@ -476,7 +528,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             mInvoiceTotalView.setText("Total: " + String.format("%.02f", rounded_total));
         }
         else{
-            mInvoiceTotalView.setText("Round-off: " + String.format("%.02f", round_value) + " ,Total: " + String.format("%.02f", rounded_total)  );
+            mInvoiceTotalView.setText("Round-off: " + String.format("%.02f", round_value) + " ,Total: " + String.format("%.02f", rounded_total));
         }
     }
 
@@ -588,7 +640,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         String product_hsn;
         String unit;
         boolean inventory;
-        int quantity;
+        double quantity;
         int unit_id;
         double sales;
         double sales_after_tax;
@@ -935,11 +987,6 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             method = "addFeedLine";
             mPrinter.addFeedLine(1);
 
-            //TODO : INVOICE Header - Tax Invoice No., Date, GSTIN, Tenant Name, Warehouse Address
-            // INVOICE ID - mSavedInvoiceId
-            // Date - mCurrentInvoice.date
-
-            //TODO : HSN Code
             TenantInfo tenantInfo = null;
             SharedPreferences userPref = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE);
             String tenant = userPref.getString(Constants.UserPref.SP_TENANT, null);
@@ -948,21 +995,33 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
                 tenantInfo = gson.fromJson(tenant, TenantInfo.class);
                 Log.i(TAG, "Tenant:" + tenantInfo.tenant_name + " First Name:" + tenantInfo.first_name);
             }
-
+            Double totalDiscount = 0.0;
+            String invoiceDateString = mCurrentInvoice.date;
+            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(invoiceDateString);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            String printDate = dateFormat.format(date);
 
             // PRODUCT DETAILS
             textData.append("---------------------------------------\n");
             textData.append("Tax Invoice                         Date\n");
 //            textData.append("1707090001                     21-07-2017\n");
-            textData.append(mSavedInvoiceId+"                     "+mCurrentInvoice.date+"\n");
+            textData.append(mSavedInvoiceId+"                     "+printDate+"\n");
             textData.append(tenantInfo.tenant_name+"\n"); //Tenant Name
             textData.append(mWarehouseAddress+ "\n");   //Warehouse Address
             textData.append(mWarehouseStateName+"\n");  //Warehouse State
 //            textData.append("         GSTIN:19AWPKJ14741017B78Z     \n");
-            textData.append("         GSTIN:"+tenantInfo.tenant_gst+"\n");
+            if (TextUtils.isEmpty(tenantInfo.tenant_gst)){
+
+            }
+            else {
+                textData.append("         GSTIN:" + tenantInfo.tenant_gst + "\n");
+            }
             textData.append("Item\n");
-            textData.append("HSN   Qty   Unit   Dcnt   Rate\n");
-            textData.append("CGST%  CGST AMT   SGST%  SGST AMT  Total\n");
+            //Original Text
+//            textData.append("HSN   Qty   Unit   Dcnt   Rate\n");
+//            textData.append("CGST%  CGST AMT   SGST%  SGST AMT  Total\n");
+            //Revised Text
+            textData.append("HSN   Qty   Unit   Dcnt   GST   Total\n");
             textData.append("---------------------------------------\n");
             method = "addText";
             mPrinter.addTextStyle(Printer.PARAM_DEFAULT, Printer.PARAM_DEFAULT, Printer.TRUE, Printer.PARAM_DEFAULT);
@@ -982,19 +1041,14 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
                 }
                 textData.append(product.quantity + "  ");
                 textData.append(product.unit + "  ");
-                textData.append(String.format("%.2f",product.discount_amount )+ "  ");
-//                double item_rate=(product.taxable_total)/(product.quantity);
-                textData.append(String.format("%.2f",product.sales_after_tax) );  //This should br the total before tax is added
+                //Original Text
+//                textData.append(String.format("%.2f",product.discount_amount )+ "  ");
+//                textData.append(String.format("%.2f",product.sales_after_tax) );
+                textData.append(String.format("%.2f",product.discount_amount * product.quantity)+ "  ");
+                textData.append(product.cgst_p*2  + "  ");
+                textData.append(String.format("%.2f",product.line_total) );
                 textData.append("\n");
-
-                //Line 2
-                textData.append("  " );
-                textData.append(product.cgst_p  + "  ");
-                textData.append(String.format("%.2f",product.cgst_v) + "  ");
-                textData.append(product.sgst_p  + "  ");
-                textData.append(String.format("%.2f",product.sgst_v) + "  ");
-                textData.append(String.format("%.2f",product.line_total) ); //This is the line total
-                textData.append("\n");
+                totalDiscount+= product.discount_amount * product.quantity;
             }
 
             textData.append("---------------------------------------\n");
@@ -1014,26 +1068,30 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             textData.delete(0, textData.length());
 
             // CGST TOTAL
-            mPrinter.addTextAlign(Printer.ALIGN_CENTER);
-            textData.append("CGST: ");
-            mPrinter.addText(textData.toString());
-            textData.delete(0, textData.length());
+            if (mCurrentInvoice.cgsttotal > 0) {
+                mPrinter.addTextAlign(Printer.ALIGN_CENTER);
+                textData.append("CGST: ");
+                mPrinter.addText(textData.toString());
+                textData.delete(0, textData.length());
 
-            mPrinter.addTextAlign(Printer.ALIGN_RIGHT);
-            textData.append(String.format("%.2f",mCurrentInvoice.cgsttotal )+ "\n");
-            mPrinter.addText(textData.toString());
-            textData.delete(0, textData.length());
+                mPrinter.addTextAlign(Printer.ALIGN_RIGHT);
+                textData.append(String.format("%.2f", mCurrentInvoice.cgsttotal) + "\n");
+                mPrinter.addText(textData.toString());
+                textData.delete(0, textData.length());
+            }
 
             // SGST TOTAL
-            mPrinter.addTextAlign(Printer.ALIGN_CENTER);
-            textData.append("SGST: ");
-            mPrinter.addText(textData.toString());
-            textData.delete(0, textData.length());
+            if (mCurrentInvoice.sgsttotal > 0) {
+                mPrinter.addTextAlign(Printer.ALIGN_CENTER);
+                textData.append("SGST: ");
+                mPrinter.addText(textData.toString());
+                textData.delete(0, textData.length());
 
-            mPrinter.addTextAlign(Printer.ALIGN_RIGHT);
-            textData.append(String.format("%.2f",mCurrentInvoice.sgsttotal )+ "\n");
-            mPrinter.addText(textData.toString());
-            textData.delete(0, textData.length());
+                mPrinter.addTextAlign(Printer.ALIGN_RIGHT);
+                textData.append(String.format("%.2f", mCurrentInvoice.sgsttotal) + "\n");
+                mPrinter.addText(textData.toString());
+                textData.delete(0, textData.length());
+            }
 
             // ROUND OFF
             mPrinter.addTextAlign(Printer.ALIGN_CENTER);
@@ -1045,6 +1103,22 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             textData.append(String.format("%.2f",mCurrentInvoice.roundoff )+ "\n");
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
+
+            // CUSTOMER PAYMENT
+            if (amountPaid > 0.0) {
+                mPrinter.addTextStyle(Printer.PARAM_DEFAULT, Printer.PARAM_DEFAULT, Printer.PARAM_DEFAULT, Printer.PARAM_DEFAULT);
+                mPrinter.addText(textData.toString());
+                textData.delete(0, textData.length());
+
+                textData.append("CHANGE DUE: ");
+                mPrinter.addText(textData.toString());
+                textData.delete(0, textData.length());
+
+                mPrinter.addTextAlign(Printer.ALIGN_RIGHT);
+                textData.append(String.format("%.2f",returnAmount)+ "\n");
+                mPrinter.addText(textData.toString());
+                textData.delete(0, textData.length());
+            }
 
             // TOTAL
             mPrinter.addTextAlign(Printer.ALIGN_CENTER);
@@ -1059,6 +1133,27 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             textData.append(String.format("%.2f",mCurrentInvoice.total)+ "\n");
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
+
+            // TOTAL DISCOUNT
+            if (totalDiscount > 0.0) {
+                textData.append("\n");
+                mPrinter.addTextAlign(Printer.ALIGN_CENTER);
+                method = "addTextSize";
+                mPrinter.addTextSize(1, 1);
+                mPrinter.addTextFont(Printer.FONT_B);
+                mPrinter.addTextStyle(0, 0, 1, 4);
+                method = "addText";
+                textData.append("YOUR TOTAL SAVINGS: ");
+                mPrinter.addText(textData.toString());
+                textData.delete(0, textData.length());
+
+                mPrinter.addTextAlign(Printer.ALIGN_RIGHT);
+                textData.append(String.format("%.2f",totalDiscount)+ "\n");
+                mPrinter.addText(textData.toString());
+                textData.delete(0, textData.length());
+            }
+
+
 
             method = "addTextSize";
             mPrinter.addTextSize(1, 1);
@@ -1336,7 +1431,6 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
 
         private void  populatePaymentModeInfo(){
 
-            // Populate the rates spinner
             mPaymentModeSpnr = (Spinner) findViewById(R.id.paymentMode_spinner);
             mPaymentModeSpnr.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override

@@ -9,7 +9,7 @@ import com.techassisto.mrinmoy.assisto.ProductInfo;
 public class InvoiceProductListModel {
     private ProductInfo mProduct;
     private String product_name;
-    private int product_quantity;
+    private double product_quantity;
     private double product_price;
     private boolean is_tax_included;
 
@@ -34,7 +34,7 @@ public class InvoiceProductListModel {
     public String getName() {
         return product_name;
     }
-    public int getQuantity() {
+    public double getQuantity() {
         return product_quantity;
     }
     public double getPrice() {

@@ -1,0 +1,449 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    tools:context="com.techassisto.mrinmoy.assisto.serviceSales.serviceNewInvoice.AddService">
+
+    <!--android:paddingBottom="@dimen/activity_vertical_margin"-->
+    <!--android:paddingLeft="@dimen/activity_horizontal_margin"-->
+    <!--android:paddingRight="@dimen/activity_horizontal_margin"-->
+    <!--android:paddingTop="@dimen/activity_vertical_margin"-->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_horizontal_margin">
+
+        <!-- API SUBMIT request progress -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:paddingTop="30dp"
+            android:orientation="vertical">
+
+            <ProgressBar
+                android:id="@+id/apigetservice_progress"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <!-- FORM VIEW -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin">
+
+            <ScrollView
+                android:id="@+id/vendor_create_form"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/add_service_form"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/scan_button"
+                        style="?android:textAppearanceSmall"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:drawableStart="@drawable/ic_barcode_scan"
+                        android:backgroundTint="@color/semiTransparentButton"
+                        android:textColor="@color/textNearWhite"
+                        android:text="@string/scan_product_button"
+                        android:textStyle="italic|bold"/>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColorHint="@color/textNearWhite"/>
+
+                    <!--<EditText-->
+                    <!--android:id="@+id/product_name"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:hint="@string/prompt_product_name"-->
+                    <!--android:inputType="text"-->
+                    <!--android:maxLines="1"/>-->
+
+                    <!--<ProgressBar-->
+                    <!--android:id="@+id/product_loading_indicator"-->
+                    <!--style="?android:attr/progressBarStyleSmall"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_gravity="center_vertical|right"-->
+                    <!--android:layout_marginRight="@dimen/activity_horizontal_margin"-->
+                    <!--android:visibility="gone"/>-->
+
+                    <!--</android.support.design.widget.TextInputLayout>-->
+
+                    <FrameLayout android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/activity_horizontal_margin">
+
+                        <com.techassisto.mrinmoy.assisto.serviceSales.serviceNewInvoice.ServiceAutoCompleteTextView
+                            android:id="@+id/service_name"
+                            android:inputType="textCapSentences"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/textNearWhite"
+                            android:hint="@string/prompt_add_product"
+                            android:textColorHint="@color/textNearWhite"
+                            android:imeOptions="flagNoExtractUi|actionSearch"/>
+
+                        <ProgressBar
+                            android:id="@+id/service_loading_indicator"
+                            style="?android:attr/progressBarStyleSmall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical|right"
+                            android:layout_marginRight="@dimen/activity_horizontal_margin"
+                            android:visibility="gone"/>
+                    </FrameLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColorHint="@color/textNearWhite">
+
+                        <EditText
+                            android:id="@+id/service_id"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/prompt_product_id"
+                            android:inputType="number"
+                            android:textColorHint="@color/textNearWhite"
+                            android:textColor="@color/textNearWhite"
+                            android:maxLines="1"
+                            android:visibility="gone"/>
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColorHint="@color/textNearWhite">
+
+                        <EditText
+                            android:id="@+id/service_unit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/prompt_product_unit"
+                            android:inputType="text"
+                            android:textColorHint="@color/textNearWhite"
+                            android:textColor="@color/textNearWhite"
+                            android:maxLines="1"
+                            android:visibility="gone"/>
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColorHint="@color/textNearWhite">
+
+                        <EditText
+                            android:id="@+id/service_cgst"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/prompt_product_cgst"
+                            android:inputType="text"
+                            android:textColorHint="@color/textNearWhite"
+                            android:textColor="@color/textNearWhite"
+                            android:maxLines="1"
+                            android:visibility="gone"/>
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColorHint="@color/textNearWhite">
+
+                        <EditText
+                            android:id="@+id/service_sgst"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/prompt_product_sgst"
+                            android:inputType="text"
+                            android:textColorHint="@color/textNearWhite"
+                            android:textColor="@color/textNearWhite"
+                            android:maxLines="1"
+                            android:visibility="gone"/>
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColorHint="@color/textNearWhite">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/product_rates"
+                            android:textColorHint="@color/textNearWhite"
+                            android:textColor="@color/textNearWhite"
+                            android:textSize="18sp"/>
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.v7.widget.AppCompatSpinner
+                        android:id="@+id/service_rate_spinner"
+                        android:layout_width="wrap_content"
+                        android:textColor="@color/textNearWhite"
+                        android:layout_height="match_parent">
+                    </android.support.v7.widget.AppCompatSpinner>
+
+                    <CheckBox
+                        android:id="@+id/service_custom_rate_chkbox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/textNearWhite"
+                        android:text="@string/prompt_add_custom_rate"/>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColorHint="@color/textNearWhite">
+
+                        <EditText
+                            android:id="@+id/service_custom_rate"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            android:inputType="numberDecimal"
+                            android:textColorHint="@color/textNearWhite"
+                            android:textColor="@color/textNearWhite"
+                            android:maxLines="1" />
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <CheckBox
+                        android:id="@+id/service_custom_istax_chkbox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:textColor="@color/textNearWhite"
+                        android:text="@string/prompt_custom_istax"/>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColorHint="@color/textNearWhite">
+
+                        <EditText
+                            android:id="@+id/service_quantity"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/prompt_product_quantity"
+                            android:inputType="number"
+                            android:textColorHint="@color/textNearWhite"
+                            android:textColor="@color/textNearWhite"
+                            android:maxLines="1" />
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <CheckBox
+                        android:id="@+id/salesperson1_checkbox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/textNearWhite"
+                        android:text="Add Salesperson"/>
+
+                    <LinearLayout
+                        android:id="@+id/salesperson1_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Select 1st Salesperson"
+                            android:textColor="@color/textNearWhite"
+                            android:textSize="15sp"/>
+
+                        <Spinner
+                            android:id="@+id/salesperson1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:spinnerMode="dropdown">
+                        </Spinner>
+
+                        <android.support.design.widget.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColorHint="@color/textNearWhite">
+
+                            <EditText
+                                android:id="@+id/salesperson1_contrib"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Contribution"
+                                android:inputType="numberDecimal"
+                                android:textColorHint="@color/textNearWhite"
+                                android:textColor="@color/textNearWhite"
+                                android:maxLines="1" />
+
+                        </android.support.design.widget.TextInputLayout>
+
+                        <CheckBox
+                            android:id="@+id/salesperson1_remove_checkbox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/textNearWhite"
+                            android:text="Remove 1st Salesperson"/>
+
+                        <CheckBox
+                            android:id="@+id/salesperson2_checkbox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/textNearWhite"
+                            android:text="Add 2nd Salesperson"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/salesperson2_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Select 2nd Salesperson"
+                            android:textColor="@color/textNearWhite"
+                            android:textSize="15sp"/>
+
+                        <Spinner
+                            android:id="@+id/salesperson2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:spinnerMode="dropdown">
+                        </Spinner>
+
+                        <android.support.design.widget.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColorHint="@color/textNearWhite">
+
+                            <EditText
+                                android:id="@+id/salesperson2_contrib"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Contribution"
+                                android:inputType="numberDecimal"
+                                android:textColorHint="@color/textNearWhite"
+                                android:textColor="@color/textNearWhite"
+                                android:maxLines="1" />
+
+                        </android.support.design.widget.TextInputLayout>
+                        <CheckBox
+                            android:id="@+id/salesperson2_remove_checkbox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/textNearWhite"
+                            android:text="Remove 2nd Salesperson"/>
+
+
+                        <CheckBox
+                            android:id="@+id/salesperson3_checkbox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/textNearWhite"
+                            android:text="Add 3rd Salesperson"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/salesperson3_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Select 3rd Salesperson"
+                            android:textColor="@color/textNearWhite"
+                            android:textSize="15sp"/>
+
+                        <Spinner
+                            android:id="@+id/salesperson3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:spinnerMode="dropdown">
+                        </Spinner>
+
+                        <android.support.design.widget.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColorHint="@color/textNearWhite">
+
+                            <EditText
+                                android:id="@+id/salesperson3_contrib"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Contribution"
+                                android:inputType="numberDecimal"
+                                android:textColorHint="@color/textNearWhite"
+                                android:textColor="@color/textNearWhite"
+                                android:maxLines="1" />
+
+                        </android.support.design.widget.TextInputLayout>
+
+                        <CheckBox
+                            android:id="@+id/salesperson3_remove_checkbox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/textNearWhite"
+                            android:text="Remove 3rd Salesperson"/>
+
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/submit_button"
+                        style="?android:textAppearanceSmall"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/submit"
+                        android:visibility="invisible"
+                        android:textStyle="bold"
+                        android:backgroundTint="@color/semiTransparentButton"
+                        android:onClick="submitService"/>
+
+                </LinearLayout>
+            </ScrollView>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>

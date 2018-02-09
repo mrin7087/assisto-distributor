@@ -1,4 +1,6 @@
-package com.techassisto.mrinmoy.assisto.retailSales.retailInvoiceDetails;
+package com.techassisto.mrinmoy.assisto.retailSales;
+
+import com.techassisto.mrinmoy.assisto.retailSales.retailInvoiceDetails.RetailInvoiceLineDetails;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

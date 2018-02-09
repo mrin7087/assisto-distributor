@@ -44,7 +44,7 @@ public class EditProduct extends AppCompatActivity {
         setContentView(R.layout.activity_edit_product);
 
         Intent intent = this.getIntent();
-        productName=intent.getStringExtra("Product Name");
+        productName=intent.getStringExtra("Service Name");
         originalQty=Float.parseFloat(intent.getStringExtra("Original Qty"));
         position=intent.getStringExtra("Line Position");
         Log.i(TAG, "Position: "+position);

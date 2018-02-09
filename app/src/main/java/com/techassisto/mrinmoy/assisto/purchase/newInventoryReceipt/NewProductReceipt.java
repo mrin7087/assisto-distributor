@@ -479,7 +479,7 @@ public class NewProductReceipt extends DashBoardActivity {
         Log.i(TAG, "Save Invoice");
 
         if (mModelList.size() == 0) {
-            Toast.makeText(getApplicationContext(), "Product list is empty!!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Service list is empty!!", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -691,7 +691,7 @@ public class NewProductReceipt extends DashBoardActivity {
     }
 
     private void addProduct(String product) {
-        Log.i(TAG, "Product: " + product);
+        Log.i(TAG, "Service: " + product);
         PurchaseProductInfo productInfo = new Gson().fromJson(product, PurchaseProductInfo.class);
         Log.i(TAG, "ProductInfo: " + productInfo);
 

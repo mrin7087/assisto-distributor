@@ -103,10 +103,11 @@ public class AddProduct extends AppCompatActivity {
         mCustomRateChkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mCustomIsTaxInclChkbox.setChecked(false);
+                mCustomIsTaxInclChkbox.setChecked(true);
                 if(isChecked) {
                     mCustomRate.setVisibility(View.VISIBLE);
                     mCustomIsTaxInclChkbox.setVisibility(View.VISIBLE);
+                    mCustomRate.requestFocus();
                 } else {
                     mCustomRate.setVisibility(View.INVISIBLE);
                     mCustomIsTaxInclChkbox.setVisibility(View.GONE);
@@ -127,6 +128,48 @@ public class AddProduct extends AppCompatActivity {
                 startActivityForResult(intent, SCAN_PRODUCT_REQUEST);
             }
         });
+
+        EditText discountValueView = (EditText) findViewById(R.id.disc_value);
+        discountValueView.setVisibility(View.GONE);
+
+        List<String> discountType = new ArrayList<String>();
+        discountType.add("Discount: No Discount");
+        discountType.add("Discount: Percent");
+        discountType.add("Discount: Value");
+
+        Spinner discSpinner = (Spinner) findViewById(R.id.disc_type);
+        ArrayAdapter<String> disc1Adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, discountType);
+        disc1Adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        discSpinner.setAdapter(disc1Adapter);
+//        disc1Spinner.setOnItemSelectedListener(this);
+
+        discSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String item = parent.getItemAtPosition(position).toString();
+                EditText discountValueView = (EditText) findViewById(R.id.disc_value);
+                Log.i(TAG, "Discount selected item: "+item );
+                if (item == "Discount: No Discount"){
+                    discountValueView.setText("0.00");
+                    discountValueView.setHint("");
+                    discountValueView.setVisibility(View.GONE);
+                    Log.i(TAG, "Discount: No discount" );
+                }
+                else{
+                    discountValueView.setVisibility(View.VISIBLE);
+                    Log.i(TAG, "Discount: Some discount" );
+                    discountValueView.setText("");
+                    discountValueView.setHint("Discount");
+                    discountValueView.requestFocus();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                //Another interface callback
+            }
+        });
+
     }
 
     @Override
@@ -368,16 +411,22 @@ public class AddProduct extends AppCompatActivity {
         }
 
         //Error Handling
+        // Check if quantity is blank
         // Check if quantity is 0
         EditText pQuantityView = (EditText) findViewById(R.id.product_quantity);
-        if (Integer.valueOf(pQuantityView.getText().toString()) == 0) {
-            pQuantityView.setError("Quantity cannot be 0");
+        // Set the selected quantity
+        try {
+            if (Float.parseFloat(pQuantityView.getText().toString()) == 0f) {
+                pQuantityView.setError("Quantity cannot be 0");
+                pQuantityView.requestFocus();
+                return;
+            }
+            mProduct.selectedQuantity = Double.parseDouble(pQuantityView.getText().toString());
+        }catch (Exception e){
+            pQuantityView.setError("Quantity cannot be blank");
             pQuantityView.requestFocus();
             return;
         }
-
-        // Set the selected quantity
-        mProduct.selectedQuantity = Integer.valueOf(pQuantityView.getText().toString());
 
         if(!mCustomRateChkbox.isChecked()) {
             // Show error msg if no Rates are available.
@@ -400,6 +449,32 @@ public class AddProduct extends AppCompatActivity {
             mProduct.selectedRate = Double.valueOf(mCustomRate.getText().toString());
             mProduct.selectedIsTaxIncluded = mCustomIsTaxInclChkbox.isChecked();
         }
+
+        Spinner pDscntTypeView = (Spinner) findViewById(R.id.disc_type);
+        String discountText = pDscntTypeView.getSelectedItem().toString();
+        EditText pDscntValueView = (EditText) findViewById(R.id.disc_value);
+
+        if (discountText == "Discount: No Discount"){
+            mProduct.disc_type = 0;
+            mProduct.disc = 0;
+        }else{
+            try {
+                mProduct.disc = Double.parseDouble(pDscntValueView.getText().toString());
+                if (discountText == "Discount: Percent"){
+                    mProduct.disc_type = 1;
+                    mProduct.disc = (mProduct.selectedRate * mProduct.disc/100);
+                    mProduct.selectedRate = mProduct.selectedRate - mProduct.disc;
+                }else{
+                    mProduct.disc_type = 2;
+                    mProduct.selectedRate = mProduct.selectedRate - mProduct.disc;
+                }
+            }catch (Exception e){
+                mProduct.disc = 0;
+                mProduct.disc_type = 0;
+            }
+        }
+
+
 
         // Send the added product
         String product = (new Gson().toJson(mProduct));
