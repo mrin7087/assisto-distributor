@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.techassisto.mrinmoy.assisto.PaymentModeInfo;
+import com.techassisto.mrinmoy.assisto.PaymentModeOption;
 import com.techassisto.mrinmoy.assisto.R;
 
 import java.util.List;
@@ -18,11 +19,12 @@ import java.util.List;
  * Created by sayantan on 8/9/17.
  */
 
-public class PaymentModeAdapter extends ArrayAdapter<PaymentModeInfo> {
+
+public class PaymentModeAdapter extends ArrayAdapter<PaymentModeOption> {
 
     LayoutInflater inflater;
 
-    public PaymentModeAdapter(Activity context, int resouceId, List<PaymentModeInfo> list){
+    public PaymentModeAdapter(Activity context, int resouceId, List<PaymentModeOption> list){
         super(context, resouceId, list);
         inflater = context.getLayoutInflater();
     }
@@ -30,11 +32,11 @@ public class PaymentModeAdapter extends ArrayAdapter<PaymentModeInfo> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        PaymentModeInfo rowItem = getItem(position);
+        PaymentModeOption rowItem = getItem(position);
         View rowView = inflater.inflate(android.R.layout.simple_spinner_item,null,true);
 
         TextView nameView = (TextView) rowView.findViewById(android.R.id.text1);
-        nameView.setText(rowItem.name);
+        nameView.setText(rowItem.getName());
 
         return rowView;
     }
@@ -46,10 +48,10 @@ public class PaymentModeAdapter extends ArrayAdapter<PaymentModeInfo> {
             convertView = inflater.inflate(R.layout.spinner_dropdown_item, parent, false);
         }
 
-        PaymentModeInfo rowItem = getItem(position);
+        PaymentModeOption rowItem = getItem(position);
 
         TextView name = (TextView) convertView.findViewById(android.R.id.text1);
-        name.setText(rowItem.name);
+        name.setText(rowItem.getName());
 
         return convertView;
     }

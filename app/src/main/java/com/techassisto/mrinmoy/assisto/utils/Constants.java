@@ -28,6 +28,7 @@ public class Constants {
         public static final String SP_PASSWORD    = "Password";
         public static final String SP_UTOKEN      = "JWTToken";
         public static final String SP_TENANT      = "TenantInfo";
+        public static final String SP_PRINTER      = "Printer";
     }
 
     // STATES

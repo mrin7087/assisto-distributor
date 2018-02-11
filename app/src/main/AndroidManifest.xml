@@ -105,6 +105,15 @@
             android:parentActivityName=".retailSales.RetailSalesLanding"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <activity
+            android:name=".retailSales.retailSalesReturn.RetailSalesReturn"
+            android:label="Sales Return"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity android:name=".retailSales.retailDailyReport.DailySalesReportActivity"
+            android:label="Daily Sales Reports"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <!-- ++ Purchase ++ -->
         <activity
             android:name=".purchase.PurchaseLanding"

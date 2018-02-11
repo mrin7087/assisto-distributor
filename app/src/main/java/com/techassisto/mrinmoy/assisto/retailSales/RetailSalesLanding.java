@@ -25,11 +25,13 @@ import com.google.gson.GsonBuilder;
 import com.techassisto.mrinmoy.assisto.DashBoardActivity;
 import com.techassisto.mrinmoy.assisto.R;
 import com.techassisto.mrinmoy.assisto.WarehouseInfo;
+import com.techassisto.mrinmoy.assisto.retailSales.retailDailyReport.DailySalesReportActivity;
 import com.techassisto.mrinmoy.assisto.retailSales.retailDashboard.RetailDashboardActivity;
 import com.techassisto.mrinmoy.assisto.retailSales.retailInvoiceList.InvoiceActivity;
 import com.techassisto.mrinmoy.assisto.retailSales.retailNewInvoice.NewSalesInvoice;
 import com.techassisto.mrinmoy.assisto.retailSales.retailNewInvoice.WarehouseAdapter;
 import com.techassisto.mrinmoy.assisto.retailSales.retailReportDownload.RetailReportDownload;
+import com.techassisto.mrinmoy.assisto.retailSales.retailSalesReturn.RetailSalesReturn;
 import com.techassisto.mrinmoy.assisto.utils.APIs;
 import com.techassisto.mrinmoy.assisto.utils.Constants;
 import com.techassisto.mrinmoy.assisto.utils.TenantInfo;
@@ -37,7 +39,6 @@ import com.techassisto.mrinmoy.assisto.utils.TenantInfo;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -48,7 +49,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -120,6 +120,16 @@ public class RetailSalesLanding extends DashBoardActivity {
             }
         });
 
+        Button retailSalesReturnBtn = (Button) findViewById(R.id.createReturnBtn);
+        retailSalesReturnBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(RetailSalesLanding.this, RetailSalesReturn.class);
+                startActivity(intent);
+            }
+        });
+
         Button retailDashboardBtn = (Button) findViewById(R.id.viewRetailDashboardBtn);
         retailDashboardBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,6 +156,16 @@ public class RetailSalesLanding extends DashBoardActivity {
                     intent.setClass(RetailSalesLanding.this, RetailReportDownload.class);
                     startActivity(intent);
                 }
+            }
+        });
+
+        Button retailDailyReportBtn = (Button) findViewById(R.id.viewDailySalesReport);
+        retailDailyReportBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(RetailSalesLanding.this, DailySalesReportActivity.class);
+                startActivity(intent);
             }
         });
 

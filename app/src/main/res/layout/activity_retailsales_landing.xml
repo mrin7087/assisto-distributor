@@ -80,7 +80,8 @@
                         android:layout_marginTop="10dp"
                         android:textSize="12dp"
                         android:backgroundTint="@color/buttonColor"
-                        android:text="@string/retail_dashboard" />
+                        android:text="@string/retail_dashboard"
+                        android:visibility="gone"/>
 
                     <Button
                         android:id="@+id/createInvoiceBtn"
@@ -108,6 +109,15 @@
                         android:textSize="12dp"
                         android:backgroundTint="@color/buttonColor"
                         android:text="@string/view_latest_invoices" />
+
+                    <Button
+                        android:id="@+id/viewDailySalesReport"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:textSize="12dp"
+                        android:backgroundTint="@color/buttonColor"
+                        android:text="View Daily Sales Report" />
 
                     <Button
                         android:id="@+id/downloadReportsBtn"

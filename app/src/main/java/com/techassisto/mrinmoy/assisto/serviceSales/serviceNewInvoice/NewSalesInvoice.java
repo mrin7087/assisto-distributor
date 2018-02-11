@@ -34,7 +34,6 @@ import com.epson.epos2.printer.ReceiveListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.techassisto.mrinmoy.assisto.DashBoardActivity;
 import com.techassisto.mrinmoy.assisto.PaymentModeInfo;
 import com.techassisto.mrinmoy.assisto.R;
@@ -46,7 +45,6 @@ import com.techassisto.mrinmoy.assisto.utils.Constants;
 import com.techassisto.mrinmoy.assisto.utils.TenantInfo;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -1266,7 +1264,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
     public class PaymentModeAPITask extends AsyncTask<Void, Void, Integer>  {
 
         private static final String TAG = "Assisto.GetPaymentMode";
-        private static final String targetURL = Constants.SERVER_ADDR + APIs.payment_mode_get;
+        private static final String targetURL = Constants.SERVER_ADDR + APIs.retail_payment_mode_get;
         private final String mToken;
 
         PaymentModeAPITask(String token) {

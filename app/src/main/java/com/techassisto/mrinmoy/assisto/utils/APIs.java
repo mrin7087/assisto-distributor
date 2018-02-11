@@ -22,7 +22,7 @@ public class APIs {
     public static final String current_inventory           = "inventory/getcurrentdata/";
 
     // Retail Payment get
-    public static final String payment_mode_get            = "retailsales/paymentmode/";
+    public static final String retail_payment_mode_get = "retailsales/paymentmode/";
 
     // Invoice Retail Sales APIs
     public static final String product_barcode_get         = "retailsales/invoice/api/getproductbarcode";
@@ -38,6 +38,8 @@ public class APIs {
     public static final String retail_sales_summary_graph  = "retailsales/salessummarygraph/";
 
     public static final String retail_sales_eod_product    = "retailsales/eodsales/data/";
+
+    public static final String retail_daily_sales_report   = "retailsales/retail-daily-sales/data/";
 
     // Purchase Receipt APIs
     public static final String purchase_product_autocomplete_get  = "purchase/receipt/api/getproduct";

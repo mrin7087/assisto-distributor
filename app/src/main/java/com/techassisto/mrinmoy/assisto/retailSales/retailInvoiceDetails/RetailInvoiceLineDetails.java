@@ -18,6 +18,8 @@ public class RetailInvoiceLineDetails {
     private String sgst_percent;
     private String line_total;
     private String original_qty;
+    private String quantity_returned;
+    private String current_return;
     private Boolean is_tax_included;
     private String product_id;
     private String unit_multi;
