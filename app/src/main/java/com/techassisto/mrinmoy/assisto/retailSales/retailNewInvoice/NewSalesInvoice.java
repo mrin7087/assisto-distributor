@@ -92,7 +92,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
     private String mWarehouseStateName;
 
     private InvoiceDetails mCurrentInvoice = null;
-    private int mSavedInvoiceId = -1;
+    private String mSavedInvoiceId = "-1";
 
     //Printer related
     private String mTarget = null;
@@ -184,7 +184,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             }
         });
 
-        //Get the auth token
+        //Get the printer address
         SharedPreferences userPref = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE);
         mTarget = userPref.getString(Constants.UserPref.SP_PRINTER, null);
 
@@ -353,10 +353,6 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
                         .setAction("Action", null).show();
                 return;
             }
-        }
-
-        for (int i=0; i<mModelList.size(); i++) {
-            Log.i(TAG, mModelList.get(i).getProduct().toString() + " qty: " + mModelList.get(i).getProduct().selectedQuantity);
         }
 
         // Create the data to be submitted in API format
@@ -537,7 +533,9 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         Log.i(TAG, "runPrintReceiptSequence, res: " + success);
 
         if (success == false) {
-            Toast.makeText(getApplicationContext(), "Data saved, but failed to print", Toast.LENGTH_LONG).show();
+//            Toast.makeText(getApplicationContext(), "Data saved, but failed to print", Toast.LENGTH_LONG).show();
+            Snackbar.make(findViewById(R.id.fab), "Add a Printer first to print!", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
         }
 
         mCurrentInvoice = null;
@@ -714,7 +712,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
      * a new Sales Invoice.
      */
     public class InvoiceSaveTask extends AsyncTask<Void, Void, Integer> {
-        private static final String TAG = "Assisto.InvoiceSaveTask";
+        private static final String TAG = "Assisto.ReturnSaveTask";
         private static final String targetURL = Constants.SERVER_ADDR + APIs.retail_invoice_save;
 
         private final InvoiceDetails mInvoice;
@@ -775,7 +773,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
                 Log.i(TAG, response.toString());
                 try {
                     JSONObject jsonObj = new JSONObject(response.toString());
-                    mSavedInvoiceId = jsonObj.getInt("id");
+                    mSavedInvoiceId = jsonObj.getString("id");
                     Log.i(TAG, "Saved Invoice id:" + mSavedInvoiceId);
                 } catch (Exception e) {
                     return Constants.Status.ERR_INVALID;
@@ -1050,13 +1048,13 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             textData.append(mSavedInvoiceId+"                     "+printDate+"\n");
             textData.append(tenantInfo.tenant_name+"\n"); //Tenant Name
             textData.append(mWarehouseAddress+ "\n");   //Warehouse Address
-            textData.append(mWarehouseStateName+"\n");  //Warehouse State
+//            textData.append(mWarehouseStateName+"\n");  //Warehouse State
 //            textData.append("         GSTIN:19AWPKJ14741017B78Z     \n");
             if (TextUtils.isEmpty(tenantInfo.tenant_gst)){
 
             }
             else {
-                textData.append("         GSTIN:" + tenantInfo.tenant_gst + "\n");
+                textData.append(" GSTIN:" + tenantInfo.tenant_gst + "\n");
             }
             textData.append("Item\n");
             //Original Text
@@ -1210,7 +1208,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             method = "addFeedLine";
             mPrinter.addFeedLine(2);
             method = "addBarcode";
-            mPrinter.addBarcode(String.valueOf(mSavedInvoiceId),
+            mPrinter.addBarcode(mSavedInvoiceId,
                     Printer.BARCODE_CODE39,
                     Printer.HRI_BELOW,
                     Printer.FONT_A,

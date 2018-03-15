@@ -41,6 +41,8 @@ public class APIs {
 
     public static final String retail_daily_sales_report   = "retailsales/retail-daily-sales/data/";
 
+    public static final String retail_sales_return         = "retailsales/invoice/salesreturn/save/";
+
     // Purchase Receipt APIs
     public static final String purchase_product_autocomplete_get  = "purchase/receipt/api/getproduct";
     public static final String purchase_product_id_get       = "purchase/receipt/api/getproduct/details";

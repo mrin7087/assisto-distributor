@@ -78,6 +78,24 @@
 
                     </android.support.design.widget.TextInputLayout>
 
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColorHint="@color/textNearWhite">
+
+                        <EditText
+                            android:id="@+id/return_quantity"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/prompt_product_return_quantity"
+                            android:inputType="number"
+                            android:textColorHint="@color/textNearWhite"
+                            android:textColor="@color/textNearWhite"
+                            android:maxLines="1"
+                            android:visibility="gone"/>
+
+                    </android.support.design.widget.TextInputLayout>
+
                     <Button
                         android:id="@+id/submit_butto15n"
                         style="?android:textAppearanceSmall"

@@ -106,9 +106,13 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name=".retailSales.retailSalesReturn.RetailSalesReturn"
+            android:name=".retailSales.retailSalesReturn.RetailSalesReturnActivity"
             android:label="Sales Return"
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity android:name=".retailSales.retailSalesReturn.ReturnProductActivity"
+            android:label="Update Sales Return"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar.Transparent" />
 
         <activity android:name=".retailSales.retailDailyReport.DailySalesReportActivity"
             android:label="Daily Sales Reports"

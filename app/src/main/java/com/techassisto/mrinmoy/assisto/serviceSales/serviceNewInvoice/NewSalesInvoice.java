@@ -660,7 +660,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
     }
 
     public class InvoiceSaveTask extends AsyncTask<Void, Void, Integer> {
-        private static final String TAG = "Assisto.InvoiceSaveTask";
+        private static final String TAG = "Assisto.ReturnSaveTask";
         private static final String targetURL = Constants.SERVER_ADDR + APIs.service_invoice_save;
 
         private final InvoiceDetails mInvoice;

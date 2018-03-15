@@ -73,6 +73,7 @@
     <string name="total_sales_graph">Total Sales in the last 5 Days</string>
     <string name="download_reports">Download Reports</string>
     <string name="download_eod_productwise_report">Download EOD Productwise Reports</string>
+    <string name="prompt_product_return_quantity">Quantity Returned</string>
 
     <!--++ Retail Sales Invoice View++-->
     <string name="search_invoice">Enter Invoice No</string>
@@ -81,6 +82,7 @@
     <string name="view_invoice_date">Date</string>
     <string name="view_invoice_cgst">CGST</string>
     <string name="view_invoice_sgst">SGST</string>
+    <string name="view_invoice_gst">GST</string>
     <string name="view_invoice_round">Round Off</string>
     <string name="view_invoice_total">Total</string>
 
@@ -109,7 +111,7 @@
     <string name="title_msg_description">Description</string>
 
     <string name="btn_refresh">Refresh</string>
-    <string name="printer_list">Available Printers :</string>
+    <string name="printer_list">Select one of the available printers:</string>
 
     <string name="title_target">Target</string>
 

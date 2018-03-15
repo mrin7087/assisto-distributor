@@ -2,19 +2,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:layout_marginLeft="15dp"
+    android:layout_margin="5dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginLeft="5dp">
 
         <TextView
             android:id="@+id/PrinterName"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:textSize="30sp"
-            android:textColor="#000000" />
+            android:textSize="18sp"
+            android:textColor="@color/textColorDark"/>
 
         <TextView
             android:id="@+id/Target"
@@ -22,9 +24,8 @@
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/PrinterName"
             android:layout_below="@+id/PrinterName"
-            android:layout_margin="5dp"
-            android:textSize="20sp"
-            android:textColor="#000000" />
+            android:textSize="15sp"
+            android:textColor="@color/textColorDark" />
 
     </RelativeLayout>
 

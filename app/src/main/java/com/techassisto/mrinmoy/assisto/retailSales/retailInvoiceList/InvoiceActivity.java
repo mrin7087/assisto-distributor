@@ -18,6 +18,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.vision.barcode.Barcode;
+import com.techassisto.mrinmoy.assisto.BarcodeFiles.ScanActivity;
 import com.techassisto.mrinmoy.assisto.CodeScannerActivity;
 import com.techassisto.mrinmoy.assisto.DashBoardActivity;
 import com.techassisto.mrinmoy.assisto.R;
@@ -93,12 +95,24 @@ public class InvoiceActivity extends DashBoardActivity {
             }
         });
 
+//        Button scanBtn = (Button) findViewById(R.id.scan_button);
+//        scanBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent();
+//                intent.setClass(InvoiceActivity.this, CodeScannerActivity.class);
+//                startActivityForResult(intent, SCAN_PRODUCT_REQUEST);
+//            }
+//        });
+
         Button scanBtn = (Button) findViewById(R.id.scan_button);
         scanBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setClass(InvoiceActivity.this, CodeScannerActivity.class);
+//                Intent intent = new Intent();
+//                intent.setClass(AddProduct.this, CodeScannerActivity.class);
+//                startActivityForResult(intent, SCAN_PRODUCT_REQUEST);
+                Intent intent = new Intent(InvoiceActivity.this, ScanActivity.class);
                 startActivityForResult(intent, SCAN_PRODUCT_REQUEST);
             }
         });
@@ -115,8 +129,11 @@ public class InvoiceActivity extends DashBoardActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SCAN_PRODUCT_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
-                String invoice_no = data.getStringExtra("barcode");
-                Toast.makeText(getApplicationContext(), "Fetching Invoice Details: " + invoice_no, Toast.LENGTH_SHORT).show();
+//                String invoice_no = data.getStringExtra("barcode");
+//                Toast.makeText(getApplicationContext(), "Fetching Invoice Details: " + invoice_no, Toast.LENGTH_SHORT).show();
+                Barcode barcodedata = data.getParcelableExtra("barcode");
+                String invoice_no = barcodedata.displayValue;
+                Toast.makeText(getApplicationContext(), "Fetching Product Details for Invoice: " + invoice_no, Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(InvoiceActivity.this, RetailInvoiceDetailsActivity.class);
                 intent.putExtra("invoice_no", invoice_no);
                 startActivity(intent);

@@ -31,7 +31,7 @@ import com.techassisto.mrinmoy.assisto.retailSales.retailInvoiceList.InvoiceActi
 import com.techassisto.mrinmoy.assisto.retailSales.retailNewInvoice.NewSalesInvoice;
 import com.techassisto.mrinmoy.assisto.retailSales.retailNewInvoice.WarehouseAdapter;
 import com.techassisto.mrinmoy.assisto.retailSales.retailReportDownload.RetailReportDownload;
-import com.techassisto.mrinmoy.assisto.retailSales.retailSalesReturn.RetailSalesReturn;
+import com.techassisto.mrinmoy.assisto.retailSales.retailSalesReturn.RetailSalesReturnActivity;
 import com.techassisto.mrinmoy.assisto.utils.APIs;
 import com.techassisto.mrinmoy.assisto.utils.Constants;
 import com.techassisto.mrinmoy.assisto.utils.TenantInfo;
@@ -125,7 +125,7 @@ public class RetailSalesLanding extends DashBoardActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
-                intent.setClass(RetailSalesLanding.this, RetailSalesReturn.class);
+                intent.setClass(RetailSalesLanding.this, RetailSalesReturnActivity.class);
                 startActivity(intent);
             }
         });

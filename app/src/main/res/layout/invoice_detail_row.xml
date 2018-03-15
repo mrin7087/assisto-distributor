@@ -79,4 +79,32 @@
 
     </RelativeLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/return_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Return Qty"
+            android:textSize="12.5sp"
+            android:textColor="@color/textColorWebApp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/return_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Return Total"
+            android:textSize="12.5sp"
+            android:textColor="@color/textColorWebApp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
 </LinearLayout>

@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,23 +13,36 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.epson.epos2.Epos2Exception;
+import com.epson.epos2.printer.Printer;
+import com.epson.epos2.printer.PrinterStatusInfo;
+import com.epson.epos2.printer.ReceiveListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.techassisto.mrinmoy.assisto.DashBoardActivity;
 import com.techassisto.mrinmoy.assisto.R;
+import com.techassisto.mrinmoy.assisto.epsonPrinter.PrinterDiscoveryActivity;
+import com.techassisto.mrinmoy.assisto.epsonPrinter.ShowMsg;
 import com.techassisto.mrinmoy.assisto.retailSales.RetailInvoiceDetails;
+import com.techassisto.mrinmoy.assisto.retailSales.SalesInvoiceDetail;
 import com.techassisto.mrinmoy.assisto.retailSales.retailInvoiceList.InvoiceActivity;
 import com.techassisto.mrinmoy.assisto.utils.APIs;
+import com.techassisto.mrinmoy.assisto.utils.ApiClient;
+import com.techassisto.mrinmoy.assisto.utils.ApiInterface;
 import com.techassisto.mrinmoy.assisto.utils.Constants;
+import com.techassisto.mrinmoy.assisto.utils.TenantInfo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,13 +56,20 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static com.techassisto.mrinmoy.assisto.RoundClass.round;
 
-public class RetailInvoiceDetailsActivity extends DashBoardActivity {
+public class RetailInvoiceDetailsActivity extends DashBoardActivity implements ReceiveListener {
 
+    private Context mContext = null;
     private static final String TAG = "Assisto.InvoiceDetails";
     private Activity mActivity = null;
     private InvoiceDetailsAPITask mInvoiceDetailsAPITask  = null;
@@ -63,15 +84,25 @@ public class RetailInvoiceDetailsActivity extends DashBoardActivity {
     String invoice_no;
     String STATUS = "NORMAL";
     int EDIT_PRODUCT = 1;
+    private double totalQuantityReturned = 0.0;
 
     private InvoiceSaveTask mSubmitTask = null;
 
     private int mSavedInvoiceId = -1;
 
+    //Printer related
+    private String mTarget = null;
+    private Printer  mPrinter = null;
+    private static final int ADD_PRINTER_REQUEST = 2;
+//    ADD_PRINTER_REQUEST
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_retail_invoice_details);
+
+        mContext = this;
+
         Intent intent = this.getIntent();
         invoice_no=intent.getStringExtra("invoice_no");
         mActivity = this;
@@ -82,6 +113,7 @@ public class RetailInvoiceDetailsActivity extends DashBoardActivity {
         Log.i(TAG, "In Details Activity");
         mListView.setAdapter(mAdapter);
         Log.i(TAG, "In Function");
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.hide();
@@ -107,6 +139,10 @@ public class RetailInvoiceDetailsActivity extends DashBoardActivity {
                 }
             }
         });
+
+        //Get the printer address
+        SharedPreferences userPref = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE);
+        mTarget = userPref.getString(Constants.UserPref.SP_PRINTER, null);
 
     }
 
@@ -135,7 +171,23 @@ public class RetailInvoiceDetailsActivity extends DashBoardActivity {
                 invoiceTotalView.setText("Total: "+String.format("%.02f", roundedTotal));
                 invoiceRoundView.setText("Round Off: "+String.format("%.02f", roundedValue));
                 mAdapter.notifyDataSetChanged();
+            }
+        }
+        else if (requestCode == ADD_PRINTER_REQUEST) {
+            Log.i(TAG, "onActivityResult: ADD_PRINTER_REQUEST, resultCode: " + resultCode);
+            if (resultCode == Activity.RESULT_OK) {
+                if (data != null) {
+                    String target = data.getStringExtra(getString(R.string.title_target));
+                    Toast.makeText(getApplicationContext(), target, Toast.LENGTH_SHORT).show();
 
+                    if (target != null) {
+                        mTarget = target;
+                        SharedPreferences.Editor editor = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE).edit();
+                        editor.putString(Constants.UserPref.SP_PRINTER, mTarget);
+                        editor.commit();
+                        Log.i(TAG, "mTarget : " + mTarget);
+                    }
+                }
             }
         }
     }
@@ -162,55 +214,63 @@ public class RetailInvoiceDetailsActivity extends DashBoardActivity {
 
         if (item.getItemId() == R.id.action_delete){
 //            Toast.makeText(getApplicationContext(), "Clicked", Toast.LENGTH_SHORT).show();
-            AlertDialog.Builder builder;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
-            } else {
-                builder = new AlertDialog.Builder(this);
-            }
-            builder.setTitle("DELETE INVOICE")
-                    .setMessage("Are you sure you want to delete this invoice?")
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            if (retailInvoiceDetails.id != null) {
-//                        Toast.makeText(getApplicationContext(), "Yes: "+retailInvoiceDetails.id, Toast.LENGTH_SHORT).show();
-                                deleteInvoice();
+            if (totalQuantityReturned == 0.0) {
+                AlertDialog.Builder builder;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
+                } else {
+                    builder = new AlertDialog.Builder(this);
+                }
+                builder.setTitle("DELETE INVOICE")
+                        .setMessage("Are you sure you want to delete this invoice?")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (retailInvoiceDetails.id != null) {
+                                    //                        Toast.makeText(getApplicationContext(), "Yes: "+retailInvoiceDetails.id, Toast.LENGTH_SHORT).show();
+                                    deleteInvoice();
+                                }
                             }
-                        }
-                    })
-                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener(){
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Toast.makeText(getApplicationContext(), "Invoice not deleted", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(getApplicationContext(), "Invoice not deleted", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+            }else{
+                Toast.makeText(getApplicationContext(), "Cannot delete invoice. Once sales return is made against an invoice, it cannot be deleted.", Toast.LENGTH_LONG).show();
+            }
             return true;
         }
         else if (item.getItemId() == R.id.action_edit){
-            STATUS = "EDIT";
-            invalidateOptionsMenu();
-            TextView invoiceTotalView = (TextView) findViewById(R.id.invoicetotalview);
-            invoiceTotalView.setText("Total: "+retailInvoiceDetails.getTotal());
-            invoiceTotalView.setVisibility(View.VISIBLE);
+            if (totalQuantityReturned == 0.0) {
+                STATUS = "EDIT";
+                invalidateOptionsMenu();
+                TextView invoiceTotalView = (TextView) findViewById(R.id.invoicetotalview);
+                invoiceTotalView.setText("Total: " + retailInvoiceDetails.getTotal());
+                invoiceTotalView.setVisibility(View.VISIBLE);
 
-            TextView invoiceRoundView = (TextView) findViewById(R.id.invoiceroundview);
-            invoiceRoundView.setText("Round: "+retailInvoiceDetails.getRoundoff());
-            invoiceRoundView.setVisibility(View.VISIBLE);
+                TextView invoiceRoundView = (TextView) findViewById(R.id.invoiceroundview);
+                invoiceRoundView.setText("Round: " + retailInvoiceDetails.getRoundoff());
+                invoiceRoundView.setVisibility(View.VISIBLE);
 
-            TextView invoice_noview = (TextView) findViewById(R.id.invoice_no);
-            invoice_noview.setVisibility(View.GONE);
-            TextView dateview = (TextView) findViewById(R.id.date);
-            dateview.setVisibility(View.GONE);
-            TextView cgstview = (TextView) findViewById(R.id.cgst);
-            cgstview.setVisibility(View.GONE);
-            TextView sgstview = (TextView) findViewById(R.id.sgst);
-            sgstview.setVisibility(View.GONE);
-            TextView totalview = (TextView) findViewById(R.id.billtotal);
-            totalview.setText("Original Total: "+retailInvoiceDetails.getTotal());
-            TextView roundview = (TextView) findViewById(R.id.billround);
-            roundview.setVisibility(View.GONE);
+                TextView invoice_noview = (TextView) findViewById(R.id.invoice_no);
+                invoice_noview.setVisibility(View.GONE);
+                TextView dateview = (TextView) findViewById(R.id.date);
+                dateview.setVisibility(View.GONE);
+                TextView cgstview = (TextView) findViewById(R.id.cgst);
+                cgstview.setVisibility(View.GONE);
+                TextView sgstview = (TextView) findViewById(R.id.sgst);
+                sgstview.setVisibility(View.GONE);
+                TextView totalview = (TextView) findViewById(R.id.billtotal);
+                totalview.setText("Original Total: " + retailInvoiceDetails.getTotal());
+                TextView roundview = (TextView) findViewById(R.id.billround);
+                roundview.setVisibility(View.GONE);
+            }else{
+                Toast.makeText(getApplicationContext(), "Cannot edit invoice. Once sales return is made against an invoice, it cannot be edited.", Toast.LENGTH_LONG).show();
+            }
 
 
         }
@@ -241,6 +301,24 @@ public class RetailInvoiceDetailsActivity extends DashBoardActivity {
                     .show();
 
             return true;
+        }
+        else if (item.getItemId() == R.id.action_add_printer) {
+            Log.i(TAG, "Add Printer");
+
+            Intent intent = new Intent();
+            intent.setClass(this, PrinterDiscoveryActivity.class);
+            startActivityForResult(intent, ADD_PRINTER_REQUEST);
+        }
+        else if (item.getItemId() == R.id.action_print) {
+            Log.i(TAG, "Printing old invoice");
+            if (mTarget == null) {
+                Log.i(TAG, "Target is NULL.. return");
+                Snackbar.make(findViewById(R.id.fab), "Add a Printer first to print!", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+            else {
+                printInvoice();
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -289,22 +367,22 @@ public class RetailInvoiceDetailsActivity extends DashBoardActivity {
             productArr[i].unit_multi = Double.parseDouble(mModelList.get(i).getUnit_multi());
             productArr[i].sales = Double.parseDouble(mModelList.get(i).getSales_price());
             productArr[i].is_tax = mModelList.get(i).getIs_tax_included();
-            productArr[i].discount_amount = 0.0;
+            productArr[i].discount_amount = Double.parseDouble(mModelList.get(i).getDiscount_amount());
             productArr[i].cgst_p = Double.parseDouble(mModelList.get(i).getCgst_percent());
             productArr[i].sgst_p = Double.parseDouble(mModelList.get(i).getSgst_percent());
             double thisTotal = productArr[i].sales * productArr[i].quantity; //to store line total with tax
-            if (productArr[i].is_tax) {
-
-                totalTaxPercent= productArr[i].cgst_p+ productArr[i].sgst_p;
-                totalTaxDivider=(100+totalTaxPercent)/100;
-                taxTotal=round(thisTotal-thisTotal/totalTaxDivider,2);
-                cgstTotal=round(taxTotal/2,2);
-                sgstTotal=round(taxTotal/2,2);
-//                billTotal+=round(thisTotal,2);
-//                billSubTotal+=thisTotal-taxTotal;
-                thisNonTaxTotal = round(thisTotal-taxTotal, 2);
-            }
-            else{
+//            if (productArr[i].is_tax) {
+//
+//                totalTaxPercent= productArr[i].cgst_p+ productArr[i].sgst_p;
+//                totalTaxDivider=(100+totalTaxPercent)/100;
+//                taxTotal=round(thisTotal-thisTotal/totalTaxDivider,2);
+//                cgstTotal=round(taxTotal/2,2);
+//                sgstTotal=round(taxTotal/2,2);
+////                billTotal+=round(thisTotal,2);
+////                billSubTotal+=thisTotal-taxTotal;
+//                thisNonTaxTotal = round(thisTotal-taxTotal, 2);
+//            }
+//            else{
                 cgstTotal=round((thisTotal*productArr[i].cgst_p)/100,2);
                 sgstTotal=round((thisTotal*productArr[i].sgst_p)/100,2);
                 taxTotal = cgstTotal + sgstTotal;
@@ -312,7 +390,7 @@ public class RetailInvoiceDetailsActivity extends DashBoardActivity {
 //                billTotal+=thisTotal+taxTotal;
 //                billSubTotal+=thisNonTaxTotal ;
                 thisTotal = thisTotal+taxTotal;
-            }
+//            }
             productArr[i].cgst_v = cgstTotal;
             productArr[i].sgst_v = sgstTotal;
             productArr[i].taxable_total = thisNonTaxTotal;
@@ -624,8 +702,12 @@ public class RetailInvoiceDetailsActivity extends DashBoardActivity {
             Log.i(TAG, "In Populate Details Info");
             for (int i=0; i<allItems.size(); i++){
                 try{
-//                    JSONObject detail = mProductDetails.getJSONObject(i);
-                    mModelList.add(new RetailInvoiceLineDetails(allItems.get(i).getProduct_id(), allItems.get(i).getProduct_name(), allItems.get(i).getSales_price(), allItems.get(i).getQuantity(), allItems.get(i).getCgst_value(), allItems.get(i).getSgst_value(), allItems.get(i).getLine_total(), allItems.get(i).getProduct_hsn(), allItems.get(i).getCgst_percent(), allItems.get(i).getSgst_percent(), allItems.get(i).getIs_tax_included(), allItems.get(i).getUnit_multi(), allItems.get(i).getUnit(), allItems.get(i).getUnit_id()));
+                    mModelList.add(new RetailInvoiceLineDetails(allItems.get(i)));
+                    try {
+                        totalQuantityReturned+= Double.parseDouble(allItems.get(i).getQuantity_returned());
+                    }catch (Exception e){
+
+                    }
                 }catch (Exception e){
 
                 }
@@ -634,6 +716,7 @@ public class RetailInvoiceDetailsActivity extends DashBoardActivity {
             mAdapter.notifyDataSetChanged();
         }
     }
+
 
     public void deleteInvoice(){
 
@@ -759,7 +842,7 @@ public class RetailInvoiceDetailsActivity extends DashBoardActivity {
                 mInvoiceDelete = new JSONObject(details);
                 if (mInvoiceDelete.length() == 0){
                     Log.i(TAG, "Invoice delete Length: "+ mInvoiceDelete.length());
-//                    Toast.makeText(getApplicationContext(), "No Invoices found", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getApplicationContext( ), "No Invoices found", Toast.LENGTH_SHORT).show();
                     mInvoiceDelete = null;
                     return Constants.Status.ERR_INVALID;
                 }
@@ -771,6 +854,7 @@ public class RetailInvoiceDetailsActivity extends DashBoardActivity {
         }
 
         private void checkDeleteStatus(){
+//            Toast.makeText(getApplicationContext(), "Checking delete status", Toast.LENGTH_SHORT).show();
             try {
                 String is_delete = mInvoiceDelete.getString("success");
                 if (is_delete.length()>0){
@@ -780,10 +864,10 @@ public class RetailInvoiceDetailsActivity extends DashBoardActivity {
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                 }else{
-                    Toast.makeText(getApplicationContext(), "Oops!! Something went wrong. Try Again", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Oops!! Something went wrong. Kindly try again.", Toast.LENGTH_SHORT).show();
                 }
-
             } catch (JSONException e) {
+                Toast.makeText(getApplicationContext(), "Hmm!! Could not delete. Note that if sales return is made against an invoice, that invoice cannot be deleted.", Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             }
         }
@@ -910,6 +994,501 @@ public class RetailInvoiceDetailsActivity extends DashBoardActivity {
         }
     }
 
+    private void printInvoice() {
+        Log.i(TAG, "printInvoice");
+        Log.i(TAG, "mCurrentInvoice not null!!");
+
+        boolean success = runPrintReceiptSequence();
+
+        Log.i(TAG, "runPrintReceiptSequence, res: " + success);
+
+        if (success == false) {
+            Toast.makeText(getApplicationContext(), "Data saved, but failed to print", Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    private boolean runPrintReceiptSequence() {
+        if (!initializeObject()) {
+            Log.i(TAG, "initializeObject failed!!");
+            return false;
+        }
+
+        if (!createReceiptData()) {
+            Log.i(TAG, "createReceiptData failed!!");
+            finalizeObject();
+            return false;
+        }
+
+        if (!printData()) {
+            Log.i(TAG, "printData failed!!");
+            finalizeObject();
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean printData() {
+        if (mPrinter == null) {
+            return false;
+        }
+
+        if (!connectPrinter()) {
+            return false;
+        }
+
+        PrinterStatusInfo status = mPrinter.getStatus();
+
+        dispPrinterWarnings(status);
+
+        if (!isPrintable(status)) {
+            ShowMsg.showMsg(makeErrorMessage(status), mContext);
+            try {
+                mPrinter.disconnect();
+            }
+            catch (Exception ex) {
+                // Do nothing
+            }
+            return false;
+        }
+
+        try {
+            mPrinter.sendData(Printer.PARAM_DEFAULT);
+        }
+        catch (Exception e) {
+            ShowMsg.showException(e, "sendData", mContext);
+            try {
+                mPrinter.disconnect();
+            }
+            catch (Exception ex) {
+                // Do nothing
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean initializeObject() {
+        try {
+            mPrinter = new Printer(Printer.TM_M10, Printer.MODEL_ANK, mContext);
+        }
+        catch (Exception e) {
+            ShowMsg.showException(e, "Printer", mContext);
+            return false;
+        }
+
+        mPrinter.setReceiveEventListener(this);
+
+        return true;
+    }
+
+    private void finalizeObject() {
+        if (mPrinter == null) {
+            return;
+        }
+
+        mPrinter.clearCommandBuffer();
+
+        mPrinter.setReceiveEventListener(null);
+
+        mPrinter = null;
+    }
+
+    private boolean connectPrinter() {
+        boolean isBeginTransaction = false;
+
+        if (mPrinter == null) {
+            return false;
+        }
+
+        try {
+            mPrinter.connect(mTarget.toString(), Printer.PARAM_DEFAULT);
+        }
+        catch (Exception e) {
+            ShowMsg.showException(e, "connect", mContext);
+//            Toast.makeText(getApplicationContext(), "Oops!! Could -not connect printer. Invoice is saved.", Toast.LENGTH_LONG).show();
+            SharedPreferences.Editor editor = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE).edit();
+            editor.putString(Constants.UserPref.SP_PRINTER, null);
+            editor.commit();
+            mTarget = null;
+            return false;
+        }
+
+        try {
+            mPrinter.beginTransaction();
+            isBeginTransaction = true;
+        }
+        catch (Exception e) {
+            ShowMsg.showException(e, "beginTransaction", mContext);
+        }
+
+        if (isBeginTransaction == false) {
+            try {
+                mPrinter.disconnect();
+            }
+            catch (Epos2Exception e) {
+                // Do nothing
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void disconnectPrinter() {
+        if (mPrinter == null) {
+            return;
+        }
+
+        try {
+            mPrinter.endTransaction();
+        }
+        catch (final Exception e) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public synchronized void run() {
+                    ShowMsg.showException(e, "endTransaction", mContext);
+                }
+            });
+        }
+
+        try {
+            mPrinter.disconnect();
+        }
+        catch (final Exception e) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public synchronized void run() {
+                    ShowMsg.showException(e, "disconnect", mContext);
+                }
+            });
+        }
+
+        finalizeObject();
+    }
+
+    private boolean isPrintable(PrinterStatusInfo status) {
+        if (status == null) {
+            return false;
+        }
+
+        if (status.getConnection() == Printer.FALSE) {
+            return false;
+        }
+        else if (status.getOnline() == Printer.FALSE) {
+            return false;
+        }
+        else {
+            //print available
+        }
+
+        return true;
+    }
+
+    private boolean createReceiptData() {
+        String method = "";
+        StringBuilder textData = new StringBuilder();
+
+        if (mPrinter == null) {
+            return false;
+        }
+
+        try {
+            method = "addTextAlign";
+            mPrinter.addTextAlign(Printer.ALIGN_CENTER);
+
+            method = "addFeedLine";
+            mPrinter.addFeedLine(1);
+
+            TenantInfo tenantInfo = null;
+            SharedPreferences userPref = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE);
+            String tenant = userPref.getString(Constants.UserPref.SP_TENANT, null);
+            if (tenant != null) {
+                Gson gson = new GsonBuilder().serializeNulls().create();
+                tenantInfo = gson.fromJson(tenant, TenantInfo.class);
+                Log.i(TAG, "Tenant:" + tenantInfo.tenant_name + " First Name:" + tenantInfo.first_name);
+            }
+            Double totalDiscount = 0.0;
+            String invoiceDateString = retailInvoiceDetails.getDate();
+            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(invoiceDateString);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            String printDate = dateFormat.format(date);
+
+            // PRODUCT DETAILS
+            textData.append("---------------------------------------\n");
+            textData.append("Tax Invoice                         Date\n");
+//            textData.append("1707090001                     21-07-2017\n");
+            textData.append(invoice_no+"                     "+printDate+"\n");
+            textData.append(tenantInfo.tenant_name+"\n"); //Tenant Name
+            textData.append(retailInvoiceDetails.warehouse_address+","+retailInvoiceDetails.warehouse_city+ "\n");   //Warehouse Address
+//            textData.append(mWarehouseAddress+ "\n");   //Warehouse Address
+//            textData.append(mWarehouseStateName+"\n");  //Warehouse State
+//            textData.append("         GSTIN:19A   WPKJ14741017B78Z     \n");
+            if (TextUtils.isEmpty(tenantInfo.tenant_gst)){
+
+            }
+            else {
+                textData.append(" GSTIN:" + tenantInfo.tenant_gst + "\n");
+            }
+            textData.append("Item\n");
+            //Original Text
+//            textData.append("HSN   Qty   Unit   Dcnt   Rate\n");
+//            textData.append("CGST%  CGST AMT   SGST%  SGST AMT  Total\n");
+            //Revised Text
+            textData.append("HSN   Qty   Unit   Dcnt   GST   Total\n");
+            textData.append("---------------------------------------\n");
+            method = "addText";
+            mPrinter.addTextStyle(Printer.PARAM_DEFAULT, Printer.PARAM_DEFAULT, Printer.TRUE, Printer.PARAM_DEFAULT);
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            for (int i=0; i < retailInvoiceDetails.getLine_items().size() ; i++) {
+                RetailInvoiceLineDetails line_detail = retailInvoiceDetails.getLine_items().get(i);
+
+                //Line 1
+                textData.append(line_detail.getProduct_name() + "\n");
+                if (TextUtils.isEmpty(line_detail.getProduct_hsn())) {
+                    textData.append("     ");
+                }
+                else {
+                    textData.append(line_detail.getProduct_hsn() + " ");
+                }
+                textData.append(line_detail.getQuantity() + "  ");
+                textData.append(line_detail.getUnit() + "  ");
+                //Original Text
+//                textData.append(String.format("%.2f",product.discount_amount )+ "  ");
+//                textData.append(String.format("%.2f",product.sales_after_tax) );
+//                textData.append(String.format("%.2f",product.discount_amount * product.quantity)+ "  ");
+//                Double zero_discount = 0.00;
+                textData.append(String.format("%.2f",Double.parseDouble(line_detail.getDiscount_amount()) * Double.parseDouble(line_detail.getQuantity()))+ "  ");
+                textData.append(Double.parseDouble(line_detail.getCgst_percent())*2  + "  ");
+                textData.append(String.format("%.2f",Double.parseDouble(line_detail.getLine_total())) );
+                textData.append("\n");
+                totalDiscount+= Double.parseDouble(line_detail.getDiscount_amount()) * Double.parseDouble(line_detail.getQuantity());
+            }
+
+            textData.append("---------------------------------------\n");
+            method = "addText";
+            mPrinter.addTextStyle(Printer.PARAM_DEFAULT, Printer.PARAM_DEFAULT, Printer.PARAM_DEFAULT, Printer.PARAM_DEFAULT);
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            // SUBTOTAL
+            textData.append("SUBTOTAL: ");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addTextAlign(Printer.ALIGN_RIGHT);
+            textData.append(String.format("%.2f",Double.parseDouble(retailInvoiceDetails.getSubtotal()))+ "\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            // CGST TOTAL
+            if (Double.parseDouble(retailInvoiceDetails.getCgsttotal()) > 0) {
+                mPrinter.addTextAlign(Printer.ALIGN_CENTER);
+                textData.append("CGST: ");
+                mPrinter.addText(textData.toString());
+                textData.delete(0, textData.length());
+
+                mPrinter.addTextAlign(Printer.ALIGN_RIGHT);
+                textData.append(String.format("%.2f", Double.parseDouble(retailInvoiceDetails.getCgsttotal())) + "\n");
+                mPrinter.addText(textData.toString());
+                textData.delete(0, textData.length());
+            }
+
+            // SGST TOTAL
+            if (Double.parseDouble(retailInvoiceDetails.getSgsttotal()) > 0) {
+                mPrinter.addTextAlign(Printer.ALIGN_CENTER);
+                textData.append("SGST: ");
+                mPrinter.addText(textData.toString());
+                textData.delete(0, textData.length());
+
+                mPrinter.addTextAlign(Printer.ALIGN_RIGHT);
+                textData.append(String.format("%.2f", Double.parseDouble(retailInvoiceDetails.getSgsttotal())) + "\n");
+                mPrinter.addText(textData.toString());
+                textData.delete(0, textData.length());
+            }
+
+            // ROUND OFF
+            mPrinter.addTextAlign(Printer.ALIGN_CENTER);
+            textData.append("Round off: ");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addTextAlign(Printer.ALIGN_RIGHT);
+            textData.append(String.format("%.2f",Double.parseDouble(retailInvoiceDetails.getRoundoff()))+ "\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            // TOTAL
+            mPrinter.addTextAlign(Printer.ALIGN_CENTER);
+            method = "addTextSize";
+            mPrinter.addTextSize(2, 2);
+            method = "addText";
+            textData.append("TOTAL: ");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addTextAlign(Printer.ALIGN_RIGHT);
+            textData.append(String.format("%.2f",Double.parseDouble(retailInvoiceDetails.getTotal()))+ "\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            // TOTAL DISCOUNT
+            if (totalDiscount > 0.0) {
+                textData.append("\n");
+                mPrinter.addTextAlign(Printer.ALIGN_CENTER);
+                method = "addTextSize";
+                mPrinter.addTextSize(1, 1);
+                mPrinter.addTextFont(Printer.FONT_B);
+                mPrinter.addTextStyle(0, 0, 1, 4);
+                method = "addText";
+                textData.append("YOUR TOTAL SAVINGS: ");
+                mPrinter.addText(textData.toString());
+                textData.delete(0, textData.length());
+
+                mPrinter.addTextAlign(Printer.ALIGN_RIGHT);
+                textData.append(String.format("%.2f",totalDiscount)+ "\n");
+                mPrinter.addText(textData.toString());
+                textData.delete(0, textData.length());
+            }
+
+
+
+            method = "addTextSize";
+            mPrinter.addTextSize(1, 1);
+            method = "addFeedLine";
+            mPrinter.addFeedLine(1);
+
+            textData.append("---------------------------------------\n");
+
+            //This is used to print barcode of invoice id.
+            int barcodeWidth=2;
+            int barcodeHeight=100;
+            method = "addFeedLine";
+            mPrinter.addFeedLine(2);
+            method = "addBarcode";
+            mPrinter.addBarcode(String.valueOf(invoice_no),
+                    Printer.BARCODE_CODE39,
+                    Printer.HRI_BELOW,
+                    Printer.FONT_A,
+                    barcodeWidth,
+                    barcodeHeight);
+
+            method = "addCut";
+            mPrinter.addCut(Printer.CUT_FEED);
+        }
+        catch (Exception e) {
+            ShowMsg.showException(e, method, mContext);
+            return false;
+        }
+
+        textData = null;
+
+        return true;
+    }
+
+    private String makeErrorMessage(PrinterStatusInfo status) {
+        String msg = "";
+
+        if (status.getOnline() == Printer.FALSE) {
+            msg += getString(R.string.handlingmsg_err_offline);
+        }
+        if (status.getConnection() == Printer.FALSE) {
+            msg += getString(R.string.handlingmsg_err_no_response);
+        }
+        if (status.getCoverOpen() == Printer.TRUE) {
+            msg += getString(R.string.handlingmsg_err_cover_open);
+        }
+        if (status.getPaper() == Printer.PAPER_EMPTY) {
+            msg += getString(R.string.handlingmsg_err_receipt_end);
+        }
+        if (status.getPaperFeed() == Printer.TRUE || status.getPanelSwitch() == Printer.SWITCH_ON) {
+            msg += getString(R.string.handlingmsg_err_paper_feed);
+        }
+        if (status.getErrorStatus() == Printer.MECHANICAL_ERR || status.getErrorStatus() == Printer.AUTOCUTTER_ERR) {
+            msg += getString(R.string.handlingmsg_err_autocutter);
+            msg += getString(R.string.handlingmsg_err_need_recover);
+        }
+        if (status.getErrorStatus() == Printer.UNRECOVER_ERR) {
+            msg += getString(R.string.handlingmsg_err_unrecover);
+        }
+        if (status.getErrorStatus() == Printer.AUTORECOVER_ERR) {
+            if (status.getAutoRecoverError() == Printer.HEAD_OVERHEAT) {
+                msg += getString(R.string.handlingmsg_err_overheat);
+                msg += getString(R.string.handlingmsg_err_head);
+            }
+            if (status.getAutoRecoverError() == Printer.MOTOR_OVERHEAT) {
+                msg += getString(R.string.handlingmsg_err_overheat);
+                msg += getString(R.string.handlingmsg_err_motor);
+            }
+            if (status.getAutoRecoverError() == Printer.BATTERY_OVERHEAT) {
+                msg += getString(R.string.handlingmsg_err_overheat);
+                msg += getString(R.string.handlingmsg_err_battery);
+            }
+            if (status.getAutoRecoverError() == Printer.WRONG_PAPER) {
+                msg += getString(R.string.handlingmsg_err_wrong_paper);
+            }
+        }
+        if (status.getBatteryLevel() == Printer.BATTERY_LEVEL_0) {
+            msg += getString(R.string.handlingmsg_err_battery_real_end);
+        }
+
+        return msg;
+    }
+
+    private void dispPrinterWarnings(PrinterStatusInfo status) {
+        String warningsMsg = "";
+
+        if (status == null) {
+            return;
+        }
+
+        if (status.getPaper() == Printer.PAPER_NEAR_END) {
+            warningsMsg += getString(R.string.handlingmsg_warn_receipt_near_end);
+        }
+
+        if (status.getBatteryLevel() == Printer.BATTERY_LEVEL_1) {
+            warningsMsg += getString(R.string.handlingmsg_warn_battery_near_end);
+        }
+
+        Toast.makeText(getApplicationContext(), warningsMsg, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onPtrReceive(final Printer printerObj, final int code, final PrinterStatusInfo status, final String printJobId) {
+        Log.i(TAG, "onPtrReceive Code: "+code);
+        if (status == null){
+            Log.i(TAG, "onPtrReceive status is null");
+        }
+        else{
+            Log.i(TAG, "onPtrReceive status not null");
+        }
+        Log.i(TAG, "onPtrReceive printjobid: "+printJobId);
+
+//        if (printJobId == null ){
+//            return;
+//        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public synchronized void run() {
+                ShowMsg.showResult(code, makeErrorMessage(status), mContext);
+
+                dispPrinterWarnings(status);
+
+                //updateButtonState(true);
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        disconnectPrinter();
+                    }
+                }).start();
+            }
+        });
+    }
 
 
 }

@@ -179,11 +179,11 @@ public class AddProduct extends AppCompatActivity {
         if (requestCode == SCAN_PRODUCT_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
 //                String barcode = data.getStringExtra("barcode");
-                Barcode barcodedata = data.getParcelableExtra("barcode");
-                String barcode = barcodedata.displayValue;
-                Toast.makeText(getApplicationContext(), "Fetching Product Details: " + barcode, Toast.LENGTH_LONG).show();
-                getProduct(barcode, true);
             }
+            Barcode barcodedata = data.getParcelableExtra("barcode");
+            String barcode = barcodedata.displayValue;
+            Toast.makeText(getApplicationContext(), "Fetching Product Details: " + barcode, Toast.LENGTH_LONG).show();
+            getProduct(barcode, true);
         }
     }
 

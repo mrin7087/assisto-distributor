@@ -20,6 +20,10 @@ public class RetailInvoiceDetails {
     public String sgsttotal;
     public String total;
     public String roundoff;
+    public String warehouse_address;
+    public String warehouse_city;
+    public String warehouse_pin;
+
     public List<RetailInvoiceLineDetails> line_items;
 
     public List<RetailInvoiceLineDetails> getLine_items() {

@@ -7,7 +7,7 @@ package com.techassisto.mrinmoy.assisto.retailSales.retailInvoiceDetails;
 public class RetailInvoiceLineDetails {
 
 //    private ProductInfo mProduct;
-
+    private String id;
     private String product_name;
     private String product_hsn;
     private String sales_price;
@@ -25,29 +25,42 @@ public class RetailInvoiceLineDetails {
     private String unit_multi;
     private String unit_id;
     private String unit;
+    private String discount_amount;
 
-    public RetailInvoiceLineDetails(String product_id, String product_name, String sales_price, String quantity, String cgst_value, String sgst_value, String line_total, String product_hsn, String cgst_percent, String sgst_percent, Boolean is_tax_included, String unit_multi, String unit, String unit_id) {
-        this.product_name = product_name; //Ok
-        this.sales_price = sales_price; //Ok
-        this.quantity = quantity;  //Ok
-        this.original_qty = quantity;
-        this.cgst_value = cgst_value;
-        this.sgst_value = sgst_value;
-        this.line_total = line_total;
-        this.product_hsn = product_hsn;  //Ok
-        this.cgst_percent = cgst_percent;  //Ok
-        this.sgst_percent = sgst_percent;  //Ok
-        this.product_id = product_id;  //Ok
-        this.is_tax_included = is_tax_included;
-        this.unit_multi = unit_multi;
-        this.unit = unit;  //Ok
-        this.unit_id = unit_id;  //Ok
+
+    public RetailInvoiceLineDetails(RetailInvoiceLineDetails item) {
+        this.product_name = item.getProduct_name(); //Ok
+        this.sales_price = item.getSales_price(); //Ok
+        this.quantity = item.getQuantity();  //Ok
+        this.original_qty = item.getQuantity();
+        this.cgst_value = item.getCgst_value();
+        this.sgst_value = item.getSgst_value();
+        this.line_total = item.getLine_total();
+        this.product_hsn = item.getProduct_hsn();  //Ok
+        this.cgst_percent = item.getCgst_percent();  //Ok
+        this.sgst_percent = item.getSgst_percent();  //Ok
+        this.product_id = item.getProduct_id();  //Ok
+        this.is_tax_included = item.getIs_tax_included();
+        this.unit_multi = item.getUnit_multi();
+        this.unit = item.getUnit();  //Ok
+        this.unit_id = item.getUnit_id();  //Ok
+        this.discount_amount = item.getDiscount_amount();
+        this.quantity_returned = item.quantity_returned;
     }
 
 //    public RetailInvoiceLineDetails (ProductInfo product){
 //        this.mProduct = product;
 //
 //    }
+
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getProduct_name() {
         return product_name;
@@ -131,5 +144,21 @@ public class RetailInvoiceLineDetails {
 
     public String getUnit_id() {
         return unit_id;
+    }
+
+    public String getDiscount_amount() {
+        return discount_amount;
+    }
+
+    public void setDiscount_amount(String discount_amount) {
+        this.discount_amount = discount_amount;
+    }
+
+    public String getQuantity_returned() {
+        return quantity_returned;
+    }
+
+    public void setQuantity_returned(String quantity_returned) {
+        this.quantity_returned = quantity_returned;
     }
 }
