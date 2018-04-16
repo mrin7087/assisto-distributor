@@ -43,6 +43,7 @@ import com.techassisto.mrinmoy.assisto.ProductInfo;
 import com.techassisto.mrinmoy.assisto.R;
 import com.techassisto.mrinmoy.assisto.epsonPrinter.PrinterDiscoveryActivity;
 import com.techassisto.mrinmoy.assisto.epsonPrinter.ShowMsg;
+import com.techassisto.mrinmoy.assisto.retailSales.PaymentModeAdapter;
 import com.techassisto.mrinmoy.assisto.utils.APIs;
 import com.techassisto.mrinmoy.assisto.utils.ApiClient;
 import com.techassisto.mrinmoy.assisto.utils.ApiInterface;
@@ -1150,12 +1151,14 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
                 mPrinter.addText(textData.toString());
                 textData.delete(0, textData.length());
 
-                textData.append("CHANGE DUE: ");
-                mPrinter.addText(textData.toString());
-                textData.delete(0, textData.length());
+                String to_print = "Paid: "+ String.format("%.2f",amountPaid)+", Change: "+String.format("%.2f",returnAmount);
 
-                mPrinter.addTextAlign(Printer.ALIGN_RIGHT);
-                textData.append(String.format("%.2f",returnAmount)+ "\n");
+//                textData.append("CHANGE DUE: ");
+//                mPrinter.addText(textData.toString());
+//                textData.delete(0, textData.length());
+
+//                mPrinter.addTextAlign(Printer.ALIGN_RIGHT);
+                textData.append(to_print+ "\n");
                 mPrinter.addText(textData.toString());
                 textData.delete(0, textData.length());
             }

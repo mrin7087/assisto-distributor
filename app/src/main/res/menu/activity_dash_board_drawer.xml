@@ -33,6 +33,11 @@
             android:title="Service Sales" />
 
         <item
+            android:id="@+id/nav_print_barcode"
+            android:icon="@drawable/ic_barcode_scan"
+            android:title="Print Barcode" />
+
+        <item
             android:id="@+id/nav_purchase"
             android:icon="@drawable/ic_retail_sales"
             android:title="Purchase Record" />

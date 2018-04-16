@@ -141,6 +141,10 @@
             android:label="Edit Invoice"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar.Transparent" />
 
+        <activity android:name=".retailSales.retailInvoiceDetails.EditPaymentMode"
+            android:label="Edit Payment Mode"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar.Transparent" />
+
         <activity android:name=".retailSales.retailReportDownload.RetailReportDownload"
             android:label="Retail Reports"
             android:theme="@style/AppTheme.NoActionBar" />

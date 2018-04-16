@@ -34,6 +34,7 @@ public class RetailInvoiceListArrayAdapter extends ArrayAdapter <LatestSalesInvo
         protected TextView cgsttotal;
         protected TextView sgsttotal;
         protected TextView total;
+        protected TextView payment_name;
     }
 
     @Override
@@ -49,6 +50,7 @@ public class RetailInvoiceListArrayAdapter extends ArrayAdapter <LatestSalesInvo
             viewHolder.cgsttotal = (TextView) view.findViewById(R.id.cgsttotal);
             viewHolder.sgsttotal = (TextView) view.findViewById(R.id.sgsttotal);
             viewHolder.total = (TextView) view.findViewById(R.id.total);
+            viewHolder.payment_name = (TextView) view.findViewById(R.id.payment_name);
             view.setTag(viewHolder);
         }else{
             view=convertView;
@@ -62,6 +64,7 @@ public class RetailInvoiceListArrayAdapter extends ArrayAdapter <LatestSalesInvo
         holder.cgsttotal.setText(list.get(position).getCgsttotal());
         holder.sgsttotal.setText(list.get(position).getSgsttotal());
         holder.total.setText(list.get(position).getTotal());
+        holder.payment_name.setText(list.get(position).getPayment_name());
 
         return view;
 

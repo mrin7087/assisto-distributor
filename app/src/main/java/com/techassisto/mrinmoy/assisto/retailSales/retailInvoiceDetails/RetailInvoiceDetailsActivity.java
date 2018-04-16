@@ -299,8 +299,13 @@ public class RetailInvoiceDetailsActivity extends DashBoardActivity implements R
                     })
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();
-
             return true;
+        }
+        else if ((item.getItemId() == R.id.action_update_pay_mode)){
+            Intent intent = new Intent();
+            intent.setClass(RetailInvoiceDetailsActivity.this, EditPaymentMode.class);
+            intent.putExtra("Invoice ID", retailInvoiceDetails.id);
+            startActivity(intent);
         }
         else if (item.getItemId() == R.id.action_add_printer) {
             Log.i(TAG, "Add Printer");

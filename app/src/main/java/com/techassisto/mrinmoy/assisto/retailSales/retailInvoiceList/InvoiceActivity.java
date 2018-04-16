@@ -291,7 +291,7 @@ public class InvoiceActivity extends DashBoardActivity {
             for (int i = 0; i<mInvoiceList.length(); i++){
                 try{
                     JSONObject invoice = mInvoiceList.getJSONObject(i);
-                    mModelList.add(new LatestSalesInvoices(invoice.getString("id"), invoice.getString("invoice_id"), invoice.getString("date"), invoice.getString("cgsttotal"), invoice.getString("sgsttotal"), invoice.getString("total")));
+                    mModelList.add(new LatestSalesInvoices(invoice.getString("id"), invoice.getString("invoice_id"), invoice.getString("date"), invoice.getString("cgsttotal"), invoice.getString("sgsttotal"), invoice.getString("total") , invoice.getString("payment_mode_name")));
                     mInvoiceNo.add(invoice.getString("invoice_id"));
                 }catch (Exception e){
 

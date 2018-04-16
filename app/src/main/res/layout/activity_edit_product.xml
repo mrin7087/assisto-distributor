@@ -97,7 +97,7 @@
                     </android.support.design.widget.TextInputLayout>
 
                     <Button
-                        android:id="@+id/submit_butto15n"
+                        android:id="@+id/submit_button"
                         style="?android:textAppearanceSmall"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

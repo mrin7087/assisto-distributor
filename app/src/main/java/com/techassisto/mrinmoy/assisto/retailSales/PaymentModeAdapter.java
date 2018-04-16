@@ -1,4 +1,4 @@
-package com.techassisto.mrinmoy.assisto.retailSales.retailNewInvoice;
+package com.techassisto.mrinmoy.assisto.retailSales;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;

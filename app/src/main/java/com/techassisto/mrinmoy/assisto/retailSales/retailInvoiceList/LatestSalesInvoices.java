@@ -16,7 +16,8 @@ public class LatestSalesInvoices {
     private String cgsttotal;
     private String sgsttotal;
     private String total;
-    public  LatestSalesInvoices (String  id, String invoice_id, String date, String cgsttotal, String sgsttotal, String total){
+    private String payment_name;
+    public  LatestSalesInvoices (String  id, String invoice_id, String date, String cgsttotal, String sgsttotal, String total, String payment_name){
         this.id=id;
         this.invoice_id = invoice_id;
 //        this.date = date;
@@ -24,6 +25,7 @@ public class LatestSalesInvoices {
         this.cgsttotal = cgsttotal;
         this.sgsttotal = sgsttotal;
         this.total = total;
+        this.payment_name = payment_name;
     }
 
     public String getId() {return id;}
@@ -50,6 +52,14 @@ public class LatestSalesInvoices {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public void setPayment_name(String payment_name) {
+        this.payment_name = payment_name;
+    }
+
+    public String getPayment_name() {
+        return payment_name;
     }
 
     public void setInvoice_id(String invoice_id) {
