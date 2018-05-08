@@ -3,6 +3,8 @@
     package="com.techassisto.mrinmoy.assisto">
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -12,6 +14,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -168,6 +171,15 @@
         <activity android:name=".serviceSales.ServiceReportDownload.ServiceReportDownload"
             android:label="Service Reports"
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity android:name=".PrintBarcode.ConnectBarcodePrinter"
+            android:label="Select Printer"
+            android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
+        <activity android:name=".PrintBarcode.PrintBarcodeActivity"
+            android:label="Print Barcode"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
 
     </application>
 

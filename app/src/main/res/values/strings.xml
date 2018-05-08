@@ -104,6 +104,14 @@
     <string name="prompt_product_quantity">Quantity</string>
     <!--++ Add Vendor Form ++-->
 
+    <!--++ Product Related ++-->
+
+    <string-array name="product_identifier_array">
+        <item>Identify By Name</item>
+        <item>Identify By SKU</item>
+        <item>Identify By Barcode</item>
+    </string-array>
+
     <!--EPSON-->
     <string name="title_err_code">Error Code</string>
     <string name="title_err_method">Method</string>

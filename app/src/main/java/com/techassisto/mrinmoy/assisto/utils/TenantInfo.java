@@ -11,4 +11,5 @@ public class TenantInfo {
     public String tenant_address;
     public String tenant_state;
     public String tenant_gst;
+    public String tenant_phone;
 }

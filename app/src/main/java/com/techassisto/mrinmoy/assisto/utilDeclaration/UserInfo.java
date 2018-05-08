@@ -1,4 +1,4 @@
-package com.techassisto.mrinmoy.assisto;
+package com.techassisto.mrinmoy.assisto.utilDeclaration;
 
 /**
  * Created by Mrinmoy on 6/1/2017.

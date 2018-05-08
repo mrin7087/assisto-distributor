@@ -8,8 +8,8 @@ public class Constants {
     //IP ADDR
 //    public static final String SERVER_ADDR = "http://192.168.1.2:7087/";
 //    public static final String SERVER_ADDR = "http://192.168.43.18:8000/";
-        public static final String SERVER_ADDR = "http://192.168.31.246:8000/";
-//    public static final String SERVER_ADDR = "https://www.techassisto.com/";
+//        public static final String SERVER_ADDR = "http://192.168.31.246:8000/";
+    public static final String SERVER_ADDR = "https://www.techassisto.com/";
 
     //NETWORK STATUS
     public class Status {

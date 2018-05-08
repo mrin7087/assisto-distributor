@@ -1,6 +1,6 @@
 package com.techassisto.mrinmoy.assisto.serviceSales.serviceNewInvoice;
 
-import com.techassisto.mrinmoy.assisto.ServiceInfo;
+import com.techassisto.mrinmoy.assisto.utilDeclaration.ServiceInfo;
 
 /**
  * Created by sayantan on 3/12/17.

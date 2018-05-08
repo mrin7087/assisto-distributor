@@ -21,7 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.techassisto.mrinmoy.assisto.DashBoardActivity;
 import com.techassisto.mrinmoy.assisto.R;
-import com.techassisto.mrinmoy.assisto.WarehouseInfo;
+import com.techassisto.mrinmoy.assisto.utilDeclaration.WarehouseInfo;
 import com.techassisto.mrinmoy.assisto.purchase.newInventoryReceipt.NewProductReceipt;
 import com.techassisto.mrinmoy.assisto.retailSales.retailNewInvoice.WarehouseAdapter;
 import com.techassisto.mrinmoy.assisto.utils.APIs;

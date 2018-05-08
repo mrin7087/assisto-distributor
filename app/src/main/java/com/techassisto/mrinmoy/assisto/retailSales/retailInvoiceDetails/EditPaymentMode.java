@@ -14,7 +14,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.techassisto.mrinmoy.assisto.PaymentModeOption;
+import com.techassisto.mrinmoy.assisto.utilDeclaration.PaymentModeOption;
 import com.techassisto.mrinmoy.assisto.R;
 import com.techassisto.mrinmoy.assisto.retailSales.PaymentModeAdapter;
 import com.techassisto.mrinmoy.assisto.retailSales.retailInvoiceList.InvoiceActivity;

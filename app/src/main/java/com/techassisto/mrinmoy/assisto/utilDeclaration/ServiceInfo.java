@@ -1,4 +1,4 @@
-package com.techassisto.mrinmoy.assisto;
+package com.techassisto.mrinmoy.assisto.utilDeclaration;
 
 import com.google.gson.JsonArray;
 

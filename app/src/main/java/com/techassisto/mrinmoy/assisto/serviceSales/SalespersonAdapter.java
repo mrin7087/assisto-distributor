@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.techassisto.mrinmoy.assisto.R;
-import com.techassisto.mrinmoy.assisto.UserListInfo;
+import com.techassisto.mrinmoy.assisto.utilDeclaration.UserListInfo;
 
 import java.util.List;
 

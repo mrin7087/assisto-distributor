@@ -1,4 +1,4 @@
-package com.techassisto.mrinmoy.assisto;
+package com.techassisto.mrinmoy.assisto.utilDeclaration;
 
 import java.util.ArrayList;
 import java.util.List;

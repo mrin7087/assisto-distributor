@@ -38,8 +38,8 @@ import com.epson.epos2.printer.ReceiveListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.techassisto.mrinmoy.assisto.DashBoardActivity;
-import com.techassisto.mrinmoy.assisto.PaymentModeOption;
-import com.techassisto.mrinmoy.assisto.ProductInfo;
+import com.techassisto.mrinmoy.assisto.utilDeclaration.PaymentModeOption;
+import com.techassisto.mrinmoy.assisto.utilDeclaration.ProductInfo;
 import com.techassisto.mrinmoy.assisto.R;
 import com.techassisto.mrinmoy.assisto.epsonPrinter.PrinterDiscoveryActivity;
 import com.techassisto.mrinmoy.assisto.epsonPrinter.ShowMsg;
@@ -71,7 +71,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.techassisto.mrinmoy.assisto.RoundClass.round;
+import static com.techassisto.mrinmoy.assisto.utilDeclaration.RoundClass.round;
 
 public class NewSalesInvoice extends DashBoardActivity implements ReceiveListener{
     private final static String TAG = "Assisto.NewSalesInvoice";
@@ -170,7 +170,20 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
         fab.setAlpha((float) 0.7);
         CoordinatorLayout.LayoutParams params= (CoordinatorLayout.LayoutParams)
                 fab.getLayoutParams();
-        params.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+        params.gravity = Gravity.BOTTOM;
+//        params.gravity = Gravity.BOTTOM;
+//        params.setMarginStart(25);
+        params.leftMargin = 40;
+
+        FloatingActionButton fab2 = (FloatingActionButton) findViewById(R.id.fab2);
+        fab2.setVisibility(View.VISIBLE);
+        fab2.setAlpha((float) 0.7);
+        CoordinatorLayout.LayoutParams params2= (CoordinatorLayout.LayoutParams)
+                fab.getLayoutParams();
+        params2.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+//        params.gravity = Gravity.BOTTOM;
+//        params.setMarginStart(25);
+        params2.setMarginStart(120);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,6 +194,21 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
                 Intent intent = new Intent();
                 intent.setClass(NewSalesInvoice.this, AddProduct.class);
                 intent.putExtra("warehouseId", mWarehouseId);
+                intent.putExtra("calledFor", "Add Product");
+                startActivityForResult(intent, ADD_PRODUCT_REQUEST);
+            }
+        });
+
+        fab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                amountPaid = 0.0;
+                returnAmount = 0.0;
+                mInvoiceCustomerPaidView.setVisibility(View.GONE);
+                Intent intent = new Intent();
+                intent.setClass(NewSalesInvoice.this, AddProduct.class);
+                intent.putExtra("warehouseId", mWarehouseId);
+                intent.putExtra("calledFor", "Quick Scan");
                 startActivityForResult(intent, ADD_PRODUCT_REQUEST);
             }
         });
@@ -573,8 +601,11 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             Log.i(TAG, "onActivityResult: ADD_PRODUCT_REQUEST, resultCode: " + resultCode);
             if (resultCode == Activity.RESULT_OK) {
                 String product = data.getStringExtra("product");
-                if (product != null) {
-                    addProduct(product);
+                String error = data.getStringExtra("error");
+                if (error != "Nil" || error != null) {
+                    if (product != null) {
+                        addProduct(product);
+                    }
                 }
             }
         }
@@ -933,8 +964,8 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             mPrinter.connect(mTarget.toString(), Printer.PARAM_DEFAULT);
         }
         catch (Exception e) {
-            ShowMsg.showException(e, "connect", mContext);
-//            Toast.makeText(getApplicationContext(), "Oops!! Could -not connect printer. Invoice is saved.", Toast.LENGTH_LONG).show();
+            ShowMsg.showException(e, "activity_connect_barcode_printer", mContext);
+//            Toast.makeText(getApplicationContext(), "Oops!! Could -not activity_connect_barcode_printer printer. Invoice is saved.", Toast.LENGTH_LONG).show();
             SharedPreferences.Editor editor = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE).edit();
             editor.putString(Constants.UserPref.SP_PRINTER, null);
             editor.commit();

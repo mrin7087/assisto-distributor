@@ -29,7 +29,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.techassisto.mrinmoy.assisto.DashBoardActivity;
 import com.techassisto.mrinmoy.assisto.R;
-import com.techassisto.mrinmoy.assisto.UserListInfo;
+import com.techassisto.mrinmoy.assisto.utilDeclaration.UserListInfo;
 import com.techassisto.mrinmoy.assisto.serviceSales.SalespersonAdapter;
 import com.techassisto.mrinmoy.assisto.utils.APIs;
 import com.techassisto.mrinmoy.assisto.utils.Constants;

@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.techassisto.mrinmoy.assisto.PrintBarcode.ConnectBarcodePrinter;
 import com.techassisto.mrinmoy.assisto.customer.CustomerLanding;
 import com.techassisto.mrinmoy.assisto.purchase.PurchaseLanding;
 import com.techassisto.mrinmoy.assisto.retailSales.RetailSalesLanding;
@@ -215,6 +216,13 @@ public abstract class DashBoardActivity extends AppCompatActivity
 
             Intent intent = new Intent();
             intent.setClass(DashBoardActivity.this, PurchaseLanding.class);
+            startActivity(intent);
+
+        } else if (id == R.id.nav_print_barcode) {
+            //Toast.makeText(this, "Selected Logout", Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent();
+            intent.setClass(DashBoardActivity.this, ConnectBarcodePrinter.class);
             startActivity(intent);
 
         } else if (id == R.id.nav_manufacturer) {

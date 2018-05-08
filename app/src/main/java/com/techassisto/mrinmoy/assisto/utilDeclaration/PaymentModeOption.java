@@ -1,4 +1,4 @@
-package com.techassisto.mrinmoy.assisto;
+package com.techassisto.mrinmoy.assisto.utilDeclaration;
 
 /**
  * Created by sayantan on 10/2/18.
@@ -6,8 +6,6 @@ package com.techassisto.mrinmoy.assisto;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
-import java.util.List;
 
 public class PaymentModeOption {
     @SerializedName("name")

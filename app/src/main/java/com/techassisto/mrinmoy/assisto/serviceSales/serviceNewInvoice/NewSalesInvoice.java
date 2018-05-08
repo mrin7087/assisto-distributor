@@ -35,9 +35,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.techassisto.mrinmoy.assisto.DashBoardActivity;
-import com.techassisto.mrinmoy.assisto.PaymentModeInfo;
+import com.techassisto.mrinmoy.assisto.utilDeclaration.PaymentModeInfo;
 import com.techassisto.mrinmoy.assisto.R;
-import com.techassisto.mrinmoy.assisto.ServiceInfo;
+import com.techassisto.mrinmoy.assisto.utilDeclaration.ServiceInfo;
 import com.techassisto.mrinmoy.assisto.epsonPrinter.PrinterDiscoveryActivity;
 import com.techassisto.mrinmoy.assisto.epsonPrinter.ShowMsg;
 import com.techassisto.mrinmoy.assisto.utils.APIs;
@@ -61,7 +61,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.techassisto.mrinmoy.assisto.RoundClass.round;
+import static com.techassisto.mrinmoy.assisto.utilDeclaration.RoundClass.round;
 
 /**
  * Created by sayantan on 3/12/17.
@@ -881,7 +881,7 @@ public class NewSalesInvoice extends DashBoardActivity implements ReceiveListene
             mPrinter.connect(mTarget.toString(), Printer.PARAM_DEFAULT);
         }
         catch (Exception e) {
-            ShowMsg.showException(e, "connect", mContext);
+            ShowMsg.showException(e, "activity_connect_barcode_printer", mContext);
             return false;
         }
 

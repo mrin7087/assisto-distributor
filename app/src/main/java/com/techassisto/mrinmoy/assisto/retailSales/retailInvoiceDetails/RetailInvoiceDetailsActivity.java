@@ -20,7 +20,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,11 +35,8 @@ import com.techassisto.mrinmoy.assisto.R;
 import com.techassisto.mrinmoy.assisto.epsonPrinter.PrinterDiscoveryActivity;
 import com.techassisto.mrinmoy.assisto.epsonPrinter.ShowMsg;
 import com.techassisto.mrinmoy.assisto.retailSales.RetailInvoiceDetails;
-import com.techassisto.mrinmoy.assisto.retailSales.SalesInvoiceDetail;
 import com.techassisto.mrinmoy.assisto.retailSales.retailInvoiceList.InvoiceActivity;
 import com.techassisto.mrinmoy.assisto.utils.APIs;
-import com.techassisto.mrinmoy.assisto.utils.ApiClient;
-import com.techassisto.mrinmoy.assisto.utils.ApiInterface;
 import com.techassisto.mrinmoy.assisto.utils.Constants;
 import com.techassisto.mrinmoy.assisto.utils.TenantInfo;
 
@@ -61,11 +57,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-import static com.techassisto.mrinmoy.assisto.RoundClass.round;
+import static com.techassisto.mrinmoy.assisto.utilDeclaration.RoundClass.round;
 
 public class RetailInvoiceDetailsActivity extends DashBoardActivity implements ReceiveListener {
 
@@ -1112,8 +1104,8 @@ public class RetailInvoiceDetailsActivity extends DashBoardActivity implements R
             mPrinter.connect(mTarget.toString(), Printer.PARAM_DEFAULT);
         }
         catch (Exception e) {
-            ShowMsg.showException(e, "connect", mContext);
-//            Toast.makeText(getApplicationContext(), "Oops!! Could -not connect printer. Invoice is saved.", Toast.LENGTH_LONG).show();
+            ShowMsg.showException(e, "activity_connect_barcode_printer", mContext);
+//            Toast.makeText(getApplicationContext(), "Oops!! Could -not activity_connect_barcode_printer printer. Invoice is saved.", Toast.LENGTH_LONG).show();
             SharedPreferences.Editor editor = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE).edit();
             editor.putString(Constants.UserPref.SP_PRINTER, null);
             editor.commit();

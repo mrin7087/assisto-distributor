@@ -58,4 +58,7 @@ public class APIs {
     public static final String service_salespersons_get      = "servicesales/getsalesusers/";
 
     public static final String service_userreport_download   = "servicesales/user-wise-service/data/";
+
+    //Product Detail API
+    public static final String product_print_barcode         = "master/product/productbarcodeprint/";
 }

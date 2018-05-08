@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.techassisto.mrinmoy.assisto.PaymentModeInfo;
+import com.techassisto.mrinmoy.assisto.utilDeclaration.PaymentModeInfo;
 import com.techassisto.mrinmoy.assisto.R;
 
 import java.util.List;

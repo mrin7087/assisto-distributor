@@ -23,7 +23,7 @@ import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.techassisto.mrinmoy.assisto.BarcodeFiles.ScanActivity;
-import com.techassisto.mrinmoy.assisto.PurchaseProductInfo;
+import com.techassisto.mrinmoy.assisto.utilDeclaration.PurchaseProductInfo;
 import com.techassisto.mrinmoy.assisto.R;
 import com.techassisto.mrinmoy.assisto.utils.APIs;
 import com.techassisto.mrinmoy.assisto.utils.Constants;

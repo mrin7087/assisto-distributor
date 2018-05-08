@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.techassisto.mrinmoy.assisto.WarehouseInfo;
+import com.techassisto.mrinmoy.assisto.utilDeclaration.WarehouseInfo;
 
 import java.util.List;
 

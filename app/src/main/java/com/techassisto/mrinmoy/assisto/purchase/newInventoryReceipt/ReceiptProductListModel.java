@@ -1,6 +1,6 @@
 package com.techassisto.mrinmoy.assisto.purchase.newInventoryReceipt;
 
-import com.techassisto.mrinmoy.assisto.PurchaseProductInfo;
+import com.techassisto.mrinmoy.assisto.utilDeclaration.PurchaseProductInfo;
 
 /**
  * Created by sayantan on 25/10/17.

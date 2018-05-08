@@ -1,6 +1,6 @@
 package com.techassisto.mrinmoy.assisto.retailSales.retailNewInvoice;
 
-import com.techassisto.mrinmoy.assisto.ProductInfo;
+import com.techassisto.mrinmoy.assisto.utilDeclaration.ProductInfo;
 
 /**
  * Created by Mrinmoy on 6/25/2017.

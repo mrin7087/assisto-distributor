@@ -24,7 +24,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.techassisto.mrinmoy.assisto.DashBoardActivity;
 import com.techassisto.mrinmoy.assisto.R;
-import com.techassisto.mrinmoy.assisto.WarehouseInfo;
+import com.techassisto.mrinmoy.assisto.utilDeclaration.WarehouseInfo;
 import com.techassisto.mrinmoy.assisto.retailSales.retailDailyReport.DailySalesReportActivity;
 import com.techassisto.mrinmoy.assisto.retailSales.retailDashboard.RetailDashboardActivity;
 import com.techassisto.mrinmoy.assisto.retailSales.retailInvoiceList.InvoiceActivity;
@@ -486,7 +486,7 @@ public class RetailSalesLanding extends DashBoardActivity {
 //                httpConnection.setRequestProperty("Authorization", "jwt " + mToken);
 //
 //                httpConnection.setConnectTimeout(10000); //10secs
-//                httpConnection.connect();
+//                httpConnection.activity_connect_barcode_printer();
 
                 Log.i(TAG, "response code:" + httpConnection.getResponseCode());
                 if (httpConnection.getResponseCode() != 200){
@@ -501,7 +501,7 @@ public class RetailSalesLanding extends DashBoardActivity {
 //                HttpURLConnection c = (HttpURLConnection) u.openConnection();
 //                c.setRequestMethod("GET");
 //                c.setDoOutput(true);
-//                c.connect();
+//                c.activity_connect_barcode_printer();
 
                 InputStream in = httpConnection.getInputStream();
 
@@ -585,7 +585,7 @@ public class RetailSalesLanding extends DashBoardActivity {
 //            HttpURLConnection c = (HttpURLConnection) u.openConnection();
 //            c.setRequestMethod("GET");
 //            c.setDoOutput(true);
-//            c.connect();
+//            c.activity_connect_barcode_printer();
 //
 //            InputStream in = c.getInputStream();
 //

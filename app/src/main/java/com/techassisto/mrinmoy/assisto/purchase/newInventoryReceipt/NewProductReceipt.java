@@ -31,7 +31,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.techassisto.mrinmoy.assisto.DashBoardActivity;
-import com.techassisto.mrinmoy.assisto.PurchaseProductInfo;
+import com.techassisto.mrinmoy.assisto.utilDeclaration.PurchaseProductInfo;
 import com.techassisto.mrinmoy.assisto.R;
 import com.techassisto.mrinmoy.assisto.utils.APIs;
 import com.techassisto.mrinmoy.assisto.utils.Constants;
@@ -56,7 +56,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.techassisto.mrinmoy.assisto.RoundClass.round;
+import static com.techassisto.mrinmoy.assisto.utilDeclaration.RoundClass.round;
 
 /**
  * Created by sayantan on 25/10/17.

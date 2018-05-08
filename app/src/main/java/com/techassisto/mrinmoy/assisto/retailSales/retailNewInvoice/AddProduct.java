@@ -25,10 +25,8 @@ import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.techassisto.mrinmoy.assisto.BarcodeFiles.ScanActivity;
-import com.techassisto.mrinmoy.assisto.CodeScannerActivity;
-import com.techassisto.mrinmoy.assisto.ProductInfo;
+import com.techassisto.mrinmoy.assisto.utilDeclaration.ProductInfo;
 import com.techassisto.mrinmoy.assisto.R;
-import com.techassisto.mrinmoy.assisto.purchase.newInventoryReceipt.AddPurchaseProduct;
 import com.techassisto.mrinmoy.assisto.utils.APIs;
 import com.techassisto.mrinmoy.assisto.utils.Constants;
 
@@ -56,6 +54,7 @@ public class AddProduct extends AppCompatActivity {
     private CheckBox mCustomIsTaxInclChkbox = null;
     private EditText mCustomRate = null;
     private int mWarehouseId = -1;
+    private String calledFor;
 
     private ProductInfo mProduct;
 
@@ -74,11 +73,21 @@ public class AddProduct extends AppCompatActivity {
                 mWarehouseId = -1;
             } else {
                 mWarehouseId = extras.getInt("warehouseId");
+                calledFor = extras.getString("calledFor");
             }
         } else {
             mWarehouseId = (int) savedInstanceState.getSerializable("warehouseId");
+            calledFor = (String) savedInstanceState.getSerializable("calledFor");
         }
-        Log.i(TAG, "Warehouse ID : " + mWarehouseId);
+
+        Log.i(TAG, "Warehouse ID: " + mWarehouseId);
+        Log.i(TAG, "Called For: " + calledFor);
+
+        if (calledFor.equals("Quick Scan")){
+            Toast.makeText(getApplicationContext(), "Quick Scan - kindly scan product barcode." , Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(AddProduct.this, ScanActivity.class);
+            startActivityForResult(intent, SCAN_PRODUCT_REQUEST);
+        }
 
         final ProductAutoCompleteTextView prodView = (ProductAutoCompleteTextView) findViewById(R.id.product_name);
         prodView.setThreshold(3);
@@ -180,10 +189,14 @@ public class AddProduct extends AppCompatActivity {
             if (resultCode == Activity.RESULT_OK) {
 //                String barcode = data.getStringExtra("barcode");
             }
-            Barcode barcodedata = data.getParcelableExtra("barcode");
-            String barcode = barcodedata.displayValue;
-            Toast.makeText(getApplicationContext(), "Fetching Product Details: " + barcode, Toast.LENGTH_LONG).show();
-            getProduct(barcode, true);
+            try {
+                Barcode barcodedata = data.getParcelableExtra("barcode");
+                String barcode = barcodedata.displayValue;
+                Toast.makeText(getApplicationContext(), "Fetching Product Details: " + barcode, Toast.LENGTH_LONG).show();
+                getProduct(barcode, true);
+            }catch (Exception e){
+                Toast.makeText(getApplicationContext(), "Scan not successful, kindly retry. ", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -371,6 +384,11 @@ public class AddProduct extends AppCompatActivity {
         private void populateProductInfo() {
             Log.i(TAG, "populate Product info" + mProduct);
 
+            if (calledFor.equals("Quick Scan")){
+                quickSubmitProduct();
+
+            }
+
             mSubmitBtn.setVisibility(View.VISIBLE);
 
             // Auto Fill the product form
@@ -474,12 +492,62 @@ public class AddProduct extends AppCompatActivity {
             }
         }
 
+        // Send the added product
+        String product = (new Gson().toJson(mProduct));
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("product", product);
+        returnIntent.putExtra("error", "Nil");
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
+    }
+
+
+    public void quickSubmitProduct() {
+
+        //Error Handling
+
+        if (mProduct == null) {
+            Toast.makeText(getApplicationContext(), "No product found!! Please retry", Toast.LENGTH_LONG).show();
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("error", "No Product");
+            setResult(Activity.RESULT_OK, returnIntent);
+            finish();
+        }
+
+        // Set the selected quantity
+        mProduct.selectedQuantity = 1.00;
+
+        Log.i(TAG, "Rate Size: " + mProduct.rate.size());
+
+        if (mProduct.rate.size() == 0) {
+            Log.i(TAG, "Inside rate size 0");
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("error", "No rate");
+            setResult(Activity.RESULT_OK, returnIntent);
+            finish();
+        }
+
+        try {
+            mProduct.selectedRate = Double.valueOf(mProduct.rate.get(0).tentative_sales_rate);
+            mProduct.selectedIsTaxIncluded = mProduct.rate.get(0).is_tax_included;
+        }catch (Exception e){
+            Toast.makeText(getApplicationContext(), "No rate provided. Cannot use quick scan for the product.", Toast.LENGTH_LONG).show();
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("error", "No rate");
+            setResult(Activity.RESULT_OK, returnIntent);
+            finish();
+        }
+
+
+        mProduct.disc_type = 0;
+        mProduct.disc = 0;
 
 
         // Send the added product
         String product = (new Gson().toJson(mProduct));
         Intent returnIntent = new Intent();
         returnIntent.putExtra("product", product);
+        returnIntent.putExtra("error", "Nil");
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }

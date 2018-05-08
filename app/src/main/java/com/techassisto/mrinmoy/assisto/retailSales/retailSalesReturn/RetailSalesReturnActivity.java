@@ -57,7 +57,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
@@ -70,7 +69,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.techassisto.mrinmoy.assisto.RoundClass.round;
+import static com.techassisto.mrinmoy.assisto.utilDeclaration.RoundClass.round;
 
 /**
  * Created by sayantan on 11/2/18.
@@ -205,7 +204,7 @@ public class RetailSalesReturnActivity extends DashBoardActivity implements Rece
             ApiInterface apiService =
                     ApiClient.getClient().create(ApiInterface.class);
             String authorization = "jwt " + authToken;
-            Call<SalesInvoiceDetail> call = apiService.getRtailInvoiceDetail(invoice_no, authorization);
+            Call<SalesInvoiceDetail> call = apiService.getRetailInvoiceDetail(invoice_no, authorization);
             call.enqueue(new Callback<SalesInvoiceDetail>() {
                 @Override
                 public void onResponse(Call<SalesInvoiceDetail> call, Response<SalesInvoiceDetail> response) {
@@ -863,8 +862,8 @@ public class RetailSalesReturnActivity extends DashBoardActivity implements Rece
             mPrinter.connect(mTarget.toString(), Printer.PARAM_DEFAULT);
         }
         catch (Exception e) {
-            ShowMsg.showException(e, "connect", mContext);
-//            Toast.makeText(getApplicationContext(), "Oops!! Could -not connect printer. Invoice is saved.", Toast.LENGTH_LONG).show();
+            ShowMsg.showException(e, "activity_connect_barcode_printer", mContext);
+//            Toast.makeText(getApplicationContext(), "Oops!! Could -not activity_connect_barcode_printer printer. Invoice is saved.", Toast.LENGTH_LONG).show();
             SharedPreferences.Editor editor = getSharedPreferences(Constants.UserPref.SP_NAME, MODE_PRIVATE).edit();
             editor.putString(Constants.UserPref.SP_PRINTER, null);
             editor.commit();
